@@ -93,7 +93,7 @@ function applyProfile(socket, data) {
    Khoa bao mat: bien moi truong BRIDGE_KEY tren Render; cau noi gui kem khoa nay. */
 const BRIDGE_KEY = process.env.BRIDGE_KEY || '';
 const TT_MAX_GUESTS = 40;
-const TT_IDLE_MS = 2 * 60 * 1000; // khan gia TikTok roi phong (ngung moi dau hieu) 2 phut thi roi chua, nhan vat bien mat
+const TT_IDLE_MS = 2 * 60 * 60 * 1000; // chi la luoi an toan: khach TikTok o lai suot buoi live (cau noi bao live_end thi ca sảnh roi chua), 2 gio khong dau hieu moi tu roi
 const ttGuests = {}; // id -> { lastSeen }
 let ttGenderFlip = false;
 
@@ -191,6 +191,14 @@ const FORTUNES = [
 function handleLiveEvent(evt) {
     if (!evt || typeof evt !== 'object') return;
     const type = evt.type;
+    if (type === 'live_end') {
+        // Buoi live ket thuc (cau noi bao): toan bo khach TikTok roi chua, sảnh trong lai
+        for (const gid of Object.keys(ttGuests)) {
+            delete ttGuests[gid];
+            if (users[gid]) { delete users[gid]; io.emit('user_left', { id: gid }); }
+        }
+        return;
+    }
     if (type === 'member' || type === 'chat' || type === 'gift' || type === 'follow') {
         const id = ensureTtGuest(evt);
         if (!id) return;
