@@ -1454,6 +1454,72 @@
       .breath { bottom: 30cqw; }
       .merit-box { left: 2cqw; top: auto; bottom: 36cqw; }
       .welcome-banner { top: 118cqw; }
+      /* ---- NÚT BẬT TIẾNG trên sảnh (bản .32) ----
+         Trình duyệt chỉ cho trang phát tiếng SAU một lần chạm/bấm của
+         người dùng, nên khi âm thanh CHƯA thực sự chạy, sảnh hiện một
+         nút bật tiếng LỚN, nhấp nháy nhẹ, không thể bỏ lỡ; âm thanh
+         chạy thật rồi thì nút tự ẩn hẳn. Vị trí: căn giữa theo chiều
+         ngang ở vùng dưới–giữa sảnh (bottom 32cqw, mép trên của cụm
+         dừng ở ~128cqw) — nằm DƯỚI ban thờ/tượng Phật và hào quang
+         (vùng tranh trên kết thúc ở ~93cqw), TRÊN cổng CỬA VÀO ở đáy
+         (cổng bắt đầu ở ~155cqw), và không chạm thẻ hướng dẫn
+         trên–trái hay hộp TẤM LÒNG THÀNH trên–phải. Nằm TRONG khung
+         sảnh nên hiện ở mọi chế độ: thường, ?full và ?daisanh. */
+      .sound-gate {
+        position: absolute; left: 50%; bottom: 32cqw; transform: translateX(-50%);
+        z-index: 45; width: min(86cqw, calc(100% - 5cqw));
+        display: flex; flex-direction: column; align-items: center; gap: 1.8cqw;
+        line-height: 1.35; text-align: center;
+      }
+      .sound-gate[hidden] { display: none !important; }
+      .sound-gate-btn {
+        pointer-events: auto; cursor: pointer; font-family: inherit;
+        font-size: 4.7cqw; font-weight: 800; letter-spacing: 0.01em; line-height: 1.25;
+        color: #fff3d0; background: linear-gradient(180deg, #a8381b, #6e2113);
+        border: 2.5px solid #ffd968; border-radius: 999px;
+        padding: 3.4cqw 6.5cqw; white-space: nowrap;
+        box-shadow: 0 10px 30px rgba(10, 3, 0, 0.55);
+        animation: soundGatePulse 1.6s ease-in-out infinite;
+      }
+      .sound-gate-btn:hover { filter: brightness(1.13); }
+      .sound-gate-btn:active { transform: translateY(1px); }
+      /* Nhấp nháy bằng QUẦNG SÁNG lan tỏa (box-shadow) chứ KHÔNG dùng
+         transform/scale: thân nút đứng yên tuyệt đối nên lần chạm nào
+         cũng trúng ngay, kể cả trong khung tương tác của phần mềm
+         live và các trình kiểm tra tự động (nút chuyển động liên tục
+         khiến cú bấm bị chờ "ổn định" mãi không bấm được). */
+      @keyframes soundGatePulse {
+        0%, 100% { box-shadow: 0 10px 30px rgba(10, 3, 0, 0.55), 0 0 0 0 rgba(255, 217, 104, 0.5); }
+        50% { box-shadow: 0 10px 30px rgba(10, 3, 0, 0.55), 0 0 0 2.6cqw rgba(255, 217, 104, 0); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .sound-gate-btn { animation: none; }
+      }
+      .sound-gate-msg {
+        margin: 0; max-width: 74cqw;
+        background: rgba(16, 9, 3, 0.92); color: #ffe9b0;
+        border: 1.5px solid rgba(255, 163, 94, 0.95); border-radius: 10px;
+        padding: 1.6cqw 3cqw; font-size: 2.6cqw; font-weight: 600; line-height: 1.45;
+      }
+      .sound-gate-msg[hidden] { display: none !important; }
+      /* ---- Trạng thái HAI LỚP ÂM THANH trên sảnh (bản .32) ----
+         Hai chip nhỏ ở góc dưới–phải sảnh, hiện ở mọi chế độ (kể cả
+         ?daisanh): lớp NỀN THIỀN và lớp TỤNG · MÕ đang chạy hay chưa,
+         đọc từ trạng thái THẬT của bộ máy âm thanh (không suy đoán),
+         để nhìn vào biết ngay lớp nào đang thiếu tiếng. */
+      .audio-layers {
+        position: absolute; right: 1.6cqw; bottom: 1.6cqw; z-index: 40;
+        display: flex; flex-direction: column; gap: 0.9cqw; align-items: flex-end;
+        line-height: 1.3; pointer-events: none;
+      }
+      .audio-layers .al-chip {
+        background: rgba(16, 9, 3, 0.82); color: rgba(255, 233, 189, 0.92);
+        border: 1.5px solid rgba(217, 164, 65, 0.6); border-radius: 999px;
+        padding: 0.8cqw 2.2cqw; font-size: 2.15cqw; font-weight: 600; white-space: nowrap;
+      }
+      .audio-layers .al-chip b { color: #ffb27a; font-weight: 800; }
+      .audio-layers .al-chip.on b { color: #a5e8a1; }
+      .audio-layers .al-chip.hold b { color: #ffd968; }
       @media (max-width: 560px) {
         .stage-merit { width: 20.5cqw; top: 8.2cqw; bottom: auto; padding: 1.6cqw 1.6cqw 1.4cqw; }
         .stage-merit h3 { font-size: 10.5px; }
@@ -1664,6 +1730,14 @@
             <span class="tier-box"><em>10+ COINS</em><b>🪷 Hoa sen</b></span>
           </div>
           <div class="live-guide" aria-label="Hướng dẫn cho khách xem live">🙏 Khách trên live gõ <b>!dang huong</b> để dâng hương · <b>!vai lay</b> để vái lạy · <b>!thinh chuong</b> để thỉnh chuông · gõ <b>a di đà phật</b> để niệm Phật · ghi <b>lời cầu nguyện</b> để thả đèn hoa đăng · tặng quà để ghi danh <b>Bảng Công Đức</b></div>
+          <div class="sound-gate" id="soundGate">
+            <button class="sound-gate-btn" id="btnSoundGate" type="button">🔊 Chạm để bật tiếng nhạc</button>
+            <p class="sound-gate-msg" id="soundGateMsg" role="status" aria-live="polite" hidden>Tiếng chưa lên — trình duyệt vẫn đang giữ tiếng. Hãy chạm lại nút này một lần nữa.</p>
+          </div>
+          <div class="audio-layers" aria-label="Trạng thái hai lớp âm thanh của sảnh">
+            <span class="al-chip" id="alPadChip">🎵 Nền thiền: <b>chưa chạy</b></span>
+            <span class="al-chip" id="alMoChip">🥁 Tụng · mõ: <b>chưa chạy</b></span>
+          </div>
         </div>
 
         <div class="controls">
@@ -1681,10 +1755,10 @@
             <option value="youtube">🎧 Nhạc thiền An Nhiên (YouTube)</option>
           </select>
           <label class="music-vol" for="musicVol">Âm lượng thiền
-            <input type="range" id="musicVol" min="0" max="100" value="45" aria-label="Âm lượng nhạc thiền" />
+            <input type="range" id="musicVol" min="0" max="100" value="70" aria-label="Âm lượng nhạc thiền" />
           </label>
           <span class="timer" id="medTimer">Đã thiền <strong id="medTime">00:00</strong></span>
-          <p class="music-hint">Nguồn mặc định khi vào chùa là <strong>nhạc nền tổng hợp 🙏 An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút</strong>, chạy theo từng pha xen kẽ: lúc nhạc nền thiền An Nhiên êm nhẹ vang lên (mức nền ~45%) thì tiếng mõ chỉ điểm thưa nhẹ; tới <strong>đợt tụng kinh</strong> thì <strong>nhạc nền tắt hẳn</strong> — chỉ còn tiếng gõ mõ đều chậm và tiếng tụng kinh xa xa, không nhạc nền, không chuông bát chen vào — hết đợt tụng nhạc nền mới nhẹ nhàng trở lại. Cứ đúng <strong>3 phút một lần</strong>, nhạc nền tắt hẳn trước, chỉ còn tiếng mõ, và giọng đọc của chùa đọc <strong>một đoạn pháp ngắn</strong> (kệ Pháp Cú và lời Phật dạy quen thuộc, xoay vòng từng đoạn khác nhau); đọc xong nhạc nền mới trở lại như cũ, và nếu đang có thông báo khác thì chùa chờ thông báo xong mới đọc pháp. Nút bật/tắt và thanh âm lượng ở trên điều khiển luôn khung nhạc tổng hợp này. Ở màn hình live (<strong>?full</strong> / <strong>?daisanh</strong>) toàn bộ khung nhạc tổng hợp <strong>tự khởi động ngay khi trang tải xong</strong>; ở chế độ thường nhạc bắt đầu sau lần chạm/bấm đầu tiên (quy định của trình duyệt). Các bản đơn lẻ — <strong>Tụng kinh Phật pháp</strong>, <strong>Thiền tịnh tâm</strong> thuần nhạc cụ không lời, <strong>Pháp thoại trước khi ngủ (YouTube)</strong> — bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ &amp; Chữa Lành Phiền Não | Lời Phật Dạy” của kênh <strong>Gieo Mầm Phước Báu</strong> — và <strong>Nhạc thiền An Nhiên (YouTube)</strong> — vẫn nằm trong menu chọn nhạc phía trên để ai muốn nghe thì tự chọn; nếu video bị chủ kênh chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về kiểu <strong>Thiền tịnh tâm</strong> có sẵn.</p>
+          <p class="music-hint">Nguồn mặc định khi vào chùa là <strong>nhạc nền tổng hợp 🙏 An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút</strong>, chạy theo từng pha xen kẽ: lúc nhạc nền thiền An Nhiên vang lên rõ ràng (mức nền ~70%) thì tiếng mõ chỉ điểm thưa nhẹ ở phía dưới; tới <strong>đợt tụng kinh</strong> thì <strong>nhạc nền tắt hẳn</strong> — chỉ còn tiếng gõ mõ đều chậm và tiếng tụng kinh xa xa, không nhạc nền, không chuông bát chen vào — hết đợt tụng nhạc nền mới nhẹ nhàng trở lại. Cứ đúng <strong>3 phút một lần</strong>, nhạc nền tắt hẳn trước, chỉ còn tiếng mõ, và giọng đọc của chùa đọc <strong>một đoạn pháp ngắn</strong> (kệ Pháp Cú và lời Phật dạy quen thuộc, xoay vòng từng đoạn khác nhau); đọc xong nhạc nền mới trở lại như cũ, và nếu đang có thông báo khác thì chùa chờ thông báo xong mới đọc pháp. Nút bật/tắt và thanh âm lượng ở trên điều khiển luôn khung nhạc tổng hợp này. Ở màn hình live (<strong>?full</strong> / <strong>?daisanh</strong>) toàn bộ khung nhạc tổng hợp <strong>tự khởi động ngay khi trang tải xong</strong>; ở chế độ thường nhạc bắt đầu sau lần chạm/bấm đầu tiên (quy định của trình duyệt). Các bản đơn lẻ — <strong>Tụng kinh Phật pháp</strong>, <strong>Thiền tịnh tâm</strong> thuần nhạc cụ không lời, <strong>Pháp thoại trước khi ngủ (YouTube)</strong> — bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ &amp; Chữa Lành Phiền Não | Lời Phật Dạy” của kênh <strong>Gieo Mầm Phước Báu</strong> — và <strong>Nhạc thiền An Nhiên (YouTube)</strong> — vẫn nằm trong menu chọn nhạc phía trên để ai muốn nghe thì tự chọn; nếu video bị chủ kênh chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về kiểu <strong>Thiền tịnh tâm</strong> có sẵn.</p>
           <p class="yt-status" id="ytStatus" role="status" aria-live="polite" hidden></p>
           <div class="yt-holder" aria-hidden="true"><div id="ytPlayer"></div></div>
         </div>
@@ -2024,7 +2098,7 @@
            "pháp thoại" / "Thiền tịnh tâm" vào bộ nhớ) sẽ được di trú
            sang mặc định mới ở restorePrefs bên dưới. */
         var musicChosenByUser = false;
-        var musicVolume = 0.45; // âm lượng mặc định THẤP (45%) — "một chút nhạc nền" vừa làm nền, không át giọng đọc thông báo
+        var musicVolume = 0.7; // âm lượng mặc định 70% (chủ chùa chốt bản .32: nền An Nhiên phải nghe TO, RÕ bằng loa điện thoại — vẫn dưới giọng đọc thông báo vì giọng đọc là kênh riêng speechSynthesis ở mức tối đa)
         /* MẶC ĐỊNH khi vào chùa (kể cả màn hình phát ?full và ?daisanh)
            là "tonghop" — CHẾ ĐỘ NHẠC NỀN TỔNG HỢP do chủ chùa chốt:
            nhạc thiền phong cách An Nhiên êm nhẹ làm nền chính (~45%),
@@ -2707,6 +2781,14 @@
           }
           if (typeof p.musicVolume === "number" && isFinite(p.musicVolume)) {
             musicVolume = Math.max(0, Math.min(1, p.musicVolume));
+            /* DI TRÚ MỨC ÂM LƯỢNG (bản .32): giá trị lưu bằng ĐÚNG
+               mặc định cũ 0,45 nghĩa là máy này chưa từng tự chỉnh âm
+               lượng (chỉ mang mặc định cũ theo các bản trước) — nâng
+               lên mặc định mới 0,70 theo lời chủ chùa chốt, để máy đã
+               dùng trang lâu (đúng máy phát live) cũng nghe nền to rõ
+               như máy mới. Ai đã tự kéo thanh trượt sang mức khác thì
+               giữ nguyên mức của họ. */
+            if (Math.abs(musicVolume - 0.45) < 0.001) musicVolume = 0.7;
             if (musicVolEl) musicVolEl.value = String(Math.round(musicVolume * 100));
           }
           if (p.soundOn === false && btnSound) {
@@ -2949,14 +3031,20 @@
           freqs.forEach(function (f, i) {
             // Hai lớp sóng chồng nhau (sine ấm + triangle rất nhẹ, lệch tông
             // ±2 cent) cho hợp âm có "hơi thở" chứ không phẳng lì như bản cũ.
-            [{ type: "sine", det: 0, g: 0.020 }, { type: "triangle", det: 2.5, g: 0.006 }].forEach(function (layer) {
+            /* Độ hiện diện của hợp âm nền đã TĂNG MẠNH ở bản .32 theo
+               lời chủ chùa ("muốn nghe tiếng nhạc An Nhiên to hơn"):
+               gain mỗi lớp sóng ~2,4 lần bản cũ và lowpass mở lên
+               850 Hz để hài âm lọt qua loa điện thoại nhỏ — nền thiền
+               là lớp nghe rõ nhất trong pha nền, mõ chỉ điểm nhịp
+               phía dưới. */
+            [{ type: "sine", det: 0, g: 0.048 }, { type: "triangle", det: 2.5, g: 0.015 }].forEach(function (layer) {
               var o = audioCtx.createOscillator();
               var g = audioCtx.createGain();
               var lp = audioCtx.createBiquadFilter();
               o.type = layer.type;
               o.frequency.value = f;
               o.detune.value = layer.det * (i % 2 ? 1 : -1);
-              lp.type = "lowpass"; lp.frequency.value = 620; lp.Q.value = 0.4;
+              lp.type = "lowpass"; lp.frequency.value = 850; lp.Q.value = 0.4;
               var peak = layer.g * (i === 0 ? 1.15 : 1);
               g.gain.setValueAtTime(0, t0);
               g.gain.linearRampToValueAtTime(peak, t0 + 6);
@@ -2976,10 +3064,10 @@
           // cũng im theo — không chen vào khoảnh khắc tụng/đọc.
           var bowlDest = chant.padGain || chant.master;
           var partials = [
-            { m: 1.0, g: 0.075, d: 14 },
-            { m: 2.02, g: 0.028, d: 9 },
-            { m: 2.74, g: 0.016, d: 6.5 },
-            { m: 3.76, g: 0.008, d: 4 }
+            { m: 1.0, g: 0.105, d: 14 },
+            { m: 2.02, g: 0.038, d: 9 },
+            { m: 2.74, g: 0.022, d: 6.5 },
+            { m: 3.76, g: 0.011, d: 4 }
           ];
           partials.forEach(function (p) {
             var o = audioCtx.createOscillator();
@@ -3171,14 +3259,18 @@
 
         /* Âm lượng tổng (master) suy từ thanh trượt của khách:
            - "chant" (Nhạc Phật pháp): tỉ lệ thẳng với thanh
-             trượt × 0.95, nên ở mức mặc định 45% cho ≈0.43 — đúng tinh
-             thần "một chút nhạc nền": thấp vừa làm nền, không át giọng
-             đọc thông báo (giọng đọc còn tự duck nhạc xuống nữa).
+             trượt × 0.95, nên ở mức mặc định 70% cho ≈0.67.
            - "ambient" (Thiền tịnh tâm): giữ công thức cũ, êm hơn.
-           - "tonghop" (mặc định mới): như "chant" — thanh trượt 45% cho
-             master ≈0.43, và lớp nền thiền nằm trọn trong master này
-             nên nền chính ở mức ~45% như chủ chùa chốt; lớp tụng/mõ
-             thấp hơn nền một chút qua hai tuyến gain con (0,72 / 0,85). */
+           - "tonghop" (mặc định): như "chant" — thanh trượt mặc định
+             70% cho master ≈0.67 (chủ chùa chốt bản .32: nền An Nhiên
+             phải nghe TO, RÕ bằng loa điện thoại), và gain của chính
+             lớp nền (drone/hợp âm) đã tăng mạnh trong startChant/
+             padChord nên nền là lớp nghe rõ nhất trong pha nền; lớp
+             tụng/mõ thấp hơn nền một chút qua hai tuyến gain con
+             (0,72 / 0,85), riêng mõ trong pha nền chỉ 0,45 — điểm
+             nhịp phía dưới nền. Giọng đọc thông báo/đọc pháp đi kênh
+             speechSynthesis riêng ở mức tối đa nên vẫn nổi trên nền,
+             và nhạc còn tự duck xuống khi có thông báo thường. */
         function musicMasterVolume() {
           if (musicMode === "ambient") return 0.14 + musicVolume * 0.5;
           return musicVolume * 0.95;
@@ -3211,11 +3303,11 @@
             // LFO ~14 giây; toàn bộ lớp này nối vào tuyến padGain nên
             // pha tụng/đọc pháp tắt hẳn được cả nền trong một nốt nhạc.
             var droneGain = audioCtx.createGain();
-            droneGain.gain.value = 0.028;
+            droneGain.gain.value = 0.08; // bản .32: nền trầm tăng ~2,9 lần để đệm rõ dưới hợp âm (loa điện thoại vẫn chủ yếu nghe hợp âm ở dải giữa)
             var breathLfo = audioCtx.createOscillator();
             var breathDepth = audioCtx.createGain();
             breathLfo.type = "sine"; breathLfo.frequency.value = 0.071; // ≈ chu kỳ 14 giây
-            breathDepth.gain.value = 0.013;
+            breathDepth.gain.value = 0.032;
             breathLfo.connect(breathDepth); breathDepth.connect(droneGain.gain);
             var lpA = audioCtx.createBiquadFilter();
             lpA.type = "lowpass"; lpA.frequency.value = 340;
@@ -3226,6 +3318,7 @@
               o.connect(lpA); o.start();
             });
             breathLfo.start();
+            chant.padStarted = true; // CỜ KIỂM CHỨNG (bản .32): lớp nền thiền ĐÃ thực sự khởi động — drone + hơi gió đang chạy và hợp âm được lên lịch đều vào tuyến padGain, không phải chỉ có máy tụng/mõ chạy
             // Lớp hơi gió mỏng thở cùng nhịp, chỉ để không gian có "không khí"
             var noiseLen = audioCtx.sampleRate * 2;
             var noiseBuf = audioCtx.createBuffer(1, noiseLen, audioCtx.sampleRate);
@@ -3234,10 +3327,10 @@
             for (var ni = 0; ni < noiseLen; ni++) { var w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; nd[ni] = last * 3.2; }
             var noise = audioCtx.createBufferSource(); noise.buffer = noiseBuf; noise.loop = true;
             var nBp = audioCtx.createBiquadFilter(); nBp.type = "bandpass"; nBp.frequency.value = 480; nBp.Q.value = 0.5;
-            var nGain = audioCtx.createGain(); nGain.gain.value = 0.007;
+            var nGain = audioCtx.createGain(); nGain.gain.value = 0.016;
             var nLfo = audioCtx.createOscillator(); var nDepth = audioCtx.createGain();
             nLfo.type = "sine"; nLfo.frequency.value = 0.071;
-            nDepth.gain.value = 0.004;
+            nDepth.gain.value = 0.009;
             nLfo.connect(nDepth); nDepth.connect(nGain.gain);
             noise.connect(nBp); nBp.connect(nGain); nGain.connect(chant.padGain);
             noise.start(); nLfo.start();
@@ -3382,6 +3475,7 @@
           chant.padGain = null;
           chant.voiceGain = null;
           chant.moGain = null;
+          chant.padStarted = false;
           chant.running = false;
         }
 
@@ -3419,6 +3513,178 @@
           window.addEventListener("load", liveAutoplayTry);
           [600, 1500, 3000, 6000, 12000].forEach(function (ms) { setTimeout(liveAutoplayTry, ms); });
         }
+
+        /* ================= NÚT BẬT TIẾNG TRÊN SẢNH (bản .32) =================
+           Luật của mọi trình duyệt: trang KHÔNG được tự phát tiếng
+           trước một lần tương tác thật của người dùng — đó là lý do
+           màn hình live nạp lại nguồn là im lặng dù nhạc đang "bật".
+           Khối này biến lần mở tiếng thành MỘT LẦN BẤM KHÔNG THỂ BỎ
+           LỠ: nút "🔊 Chạm để bật tiếng nhạc" lớn, nhấp nháy, hiện
+           ngay trên sảnh ở MỌI chế độ (thường, ?full, ?daisanh) chừng
+           nào âm thanh CHƯA THỰC SỰ chạy; bấm nút (hoặc lần chạm/bấm
+           ĐẦU TIÊN ở bất cứ đâu trên trang) là mở khóa TOÀN BỘ hệ
+           thống âm thanh NGAY TRONG SỰ KIỆN BẤM ĐÓ: bộ máy WebAudio
+           được resume, khung nhạc hiện hành khởi động ngay, và cả
+           GIỌNG ĐỌC (lời mời khách vào chùa, cảm tạ, đọc pháp) được
+           "mồi" bằng một câu đọc âm lượng 0 ngay trong cú bấm để về
+           sau phát được mà không cần bấm thêm.
+           TRẠNG THÁI TRUNG THỰC: nút chỉ ẩn khi kiểm chứng thật là
+           bộ âm thanh đang ở trạng thái "running" VÀ khung nhạc đang
+           chạy (hoặc trình YouTube đang PLAYING). Bấm mà bộ máy vẫn
+           bị trình duyệt giữ ở trạng thái treo thì nút Ở LẠI kèm dòng
+           báo "tiếng chưa lên — chạm lại", tuyệt đối không hiện
+           trạng thái đang phát giả. Hai chip "Nền thiền / Tụng · mõ"
+           ở góc dưới–phải sảnh cũng đọc từ cùng trạng thái thật này.
+           Trang được nạp lại/làm mới (nguồn live nạp lại) là một
+           phiên âm thanh mới toanh: nút tự hiện lại nếu tiếng chưa
+           chạy, đúng như chủ chùa cần khi làm mới nguồn phát. */
+        var soundGateEl = document.getElementById("soundGate");
+        var soundGateBtnEl = document.getElementById("btnSoundGate");
+        var soundGateMsgEl = document.getElementById("soundGateMsg");
+        var alPadChipEl = document.getElementById("alPadChip");
+        var alMoChipEl = document.getElementById("alMoChip");
+        var unlockAttempted = false;
+
+        function audioReallyRunning() {
+          if (!soundOn) return false;
+          if (isYtMode(musicMode)) {
+            try {
+              return !!(ytPlayer && ytReady && window.YT && YT.PlayerState &&
+                ytPlayer.getPlayerState && ytPlayer.getPlayerState() === YT.PlayerState.PLAYING);
+            } catch (e) { return false; }
+          }
+          return !!(audioCtx && audioCtx.state === "running" && chant && chant.running);
+        }
+
+        // Trạng thái TỪNG LỚP đọc từ bộ máy thật: lớp nền thiền và
+        // lớp tụng · mõ. Ở chế độ tổng hợp, trong đợt tụng/đọc pháp
+        // lớp nền "tắt hẳn" là ĐÚNG LUẬT (không phải lỗi thiếu tiếng)
+        // nên chip ghi rõ lý do thay vì báo "chưa chạy".
+        function layerChipStates() {
+          if (!soundOn) return { pad: ["", "đang tắt"], mo: ["", "đang tắt"] };
+          if (isYtMode(musicMode)) {
+            var playing = audioReallyRunning();
+            return {
+              pad: [playing ? "on" : "", playing ? "YouTube đang phát" : "YouTube chưa phát"],
+              mo: ["hold", "theo nguồn YouTube"]
+            };
+          }
+          var eng = !!(audioCtx && audioCtx.state === "running" && chant && chant.running);
+          if (!eng) return { pad: ["", "chưa chạy"], mo: ["", "chưa chạy"] };
+          if (musicMode === "ambient") return { pad: ["on", "đang phát"], mo: ["hold", "không có ở chế độ này"] };
+          if (musicMode === "chant") return { pad: ["on", "đang phát"], mo: ["on", "đang chạy"] };
+          // tonghop
+          if (dharmaReading) return { pad: ["hold", "tắt hẳn — đang đọc pháp"], mo: ["on", "đang gõ đều"] };
+          if (chant.phase === "tung") return { pad: ["hold", "tắt hẳn — đang đợt tụng"], mo: ["on", "đang chạy"] };
+          return { pad: ["on", "đang phát"], mo: ["on", "đang điểm nhịp"] };
+        }
+
+        function syncSoundGate() {
+          var running = audioReallyRunning();
+          if (soundGateEl) soundGateEl.hidden = running || !soundOn;
+          if (soundGateMsgEl) {
+            // Chỉ báo "chưa lên" sau khi ĐÃ bấm thử mà vẫn chưa chạy;
+            // chưa từng bấm thì nút lớn tự nó đã nói rõ điều cần làm.
+            soundGateMsgEl.hidden = running || !unlockAttempted;
+          }
+          var st = layerChipStates();
+          if (alPadChipEl) { alPadChipEl.innerHTML = "🎵 Nền thiền: <b>" + st.pad[1] + "</b>"; alPadChipEl.className = "al-chip" + (st.pad[0] ? " " + st.pad[0] : ""); }
+          if (alMoChipEl) { alMoChipEl.innerHTML = "🥁 Tụng · mõ: <b>" + st.mo[1] + "</b>"; alMoChipEl.className = "al-chip" + (st.mo[0] ? " " + st.mo[0] : ""); }
+          if (audioCtx && !audioCtx._gateHooked) {
+            audioCtx._gateHooked = true;
+            try { audioCtx.onstatechange = function () { syncSoundGate(); }; } catch (e) {}
+          }
+        }
+
+        // "Mồi" giọng đọc ngay trong sự kiện bấm: một câu đọc âm
+        // lượng 0 để mở khóa kênh speechSynthesis (nhiều trình duyệt
+        // di động/nguồn phát chặn giọng đọc cho tới lần phát đầu tiên
+        // nằm trong một tương tác). Sau lần mồi này, lời mời khách
+        // vào chùa, lời cảm tạ và các lượt đọc pháp phát bình thường.
+        function primeSpeechUnlock() {
+          try {
+            if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+            try { window.speechSynthesis.resume(); } catch (e1) {}
+            var prime = new SpeechSynthesisUtterance("Nam mô A Di Đà Phật");
+            prime.lang = "vi-VN";
+            prime.volume = 0;
+            prime.rate = 1.4;
+            var pv = pickViVoice();
+            if (pv) prime.voice = pv;
+            window.speechSynthesis.speak(prime);
+          } catch (e2) {}
+        }
+
+        function verifyAudioUnlock() {
+          // Kiểm chứng TRUNG THỰC sau cú bấm ở vài nhịp: bộ máy kịp
+          // resume xong thì khởi động nốt khung nhạc nếu chưa chạy,
+          // rồi đồng bộ lại nút/chip theo kết quả THẬT.
+          [150, 500, 1200].forEach(function (ms) {
+            setTimeout(function () {
+              if (soundOn && !isYtMode(musicMode) && audioCtx && audioCtx.state === "running" && chant && !chant.running) startChant();
+              syncSoundGate();
+            }, ms);
+          });
+        }
+
+        function attemptAudioUnlock(viaGateButton) {
+          unlockAttempted = true;
+          if (!soundOn) {
+            // Bấm nút bật tiếng khi công tắc nhạc đang tắt = chủ ý
+            // bật lại: mở công tắc như nút "🎵 Nhạc thiền" rồi mở khóa.
+            if (!viaGateButton) { syncSoundGate(); return; }
+            soundOn = true;
+            if (btnSound) {
+              btnSound.textContent = "🎵 Nhạc thiền: Bật";
+              btnSound.classList.add("active");
+              btnSound.setAttribute("aria-pressed", "true");
+            }
+            savePrefs();
+          }
+          ensureAudio();
+          primeSpeechUnlock();
+          if (isYtMode(musicMode)) {
+            startYouTube();
+          } else if (audioCtx) {
+            try {
+              var rp = audioCtx.resume();
+              if (rp && rp.then) rp.then(function () { tryStartMusic(); syncSoundGate(); }, function () { syncSoundGate(); });
+            } catch (e) {}
+            tryStartMusic(); // nếu bộ máy đã "running" sẵn thì khung nhạc khởi động ngay trong chính sự kiện bấm này
+          }
+          verifyAudioUnlock();
+          syncSoundGate();
+        }
+
+        if (soundGateBtnEl) soundGateBtnEl.addEventListener("click", function () { attemptAudioUnlock(true); });
+        // Lần chạm/bấm ĐẦU TIÊN ở bất cứ đâu trên trang cũng mở khóa
+        // toàn bộ (kèm mồi giọng đọc) — không bắt buộc phải trúng nút.
+        ["pointerdown", "touchstart", "keydown"].forEach(function (evt) {
+          document.addEventListener(evt, function () {
+            if (!soundOn) return;
+            if (audioReallyRunning()) { syncSoundGate(); return; }
+            attemptAudioUnlock(false);
+          }, { passive: true });
+        });
+        setInterval(syncSoundGate, 700);
+        syncSoundGate();
+        // Tay nắm chẩn đoán trạng thái âm thanh THẬT (tự kiểm/chẩn
+        // đoán): tình trạng bộ máy, từng lớp đã khởi động chưa, mức
+        // gain nền hiện tại và nút bật tiếng đang hiện hay ẩn.
+        window.chuaAudioState = function () {
+          return {
+            ctxState: audioCtx ? audioCtx.state : null,
+            soundOn: soundOn,
+            mode: musicMode,
+            chantRunning: !!(chant && chant.running),
+            padStarted: !!(chant && chant.padStarted),
+            padLevel: chant && typeof chant._padLevel === "number" ? chant._padLevel : null,
+            padGainNow: chant && chant.padGain ? Math.round(chant.padGain.gain.value * 1000) / 1000 : null,
+            reallyRunning: audioReallyRunning(),
+            gateVisible: soundGateEl ? !soundGateEl.hidden : null,
+            unlockAttempted: unlockAttempted
+          };
+        };
 
         /* ================= GIỌNG ĐỌC THÀNH TIẾNG (speechSynthesis) =================
            Đọc theo HÀNG ĐỢI, không bao giờ đọc chồng: (a) lời cảm tạ khi
@@ -3591,6 +3857,9 @@
         window.chuaTongHopState = function () {
           return {
             mode: musicMode,
+            ctxState: audioCtx ? audioCtx.state : null,
+            padStarted: !!(chant && chant.padStarted),
+            padGainNow: chant && chant.padGain ? Math.round(chant.padGain.gain.value * 1000) / 1000 : null,
             running: !!(chant && chant.running),
             phase: chant ? chant.phase : null,
             padLevel: chant && typeof chant._padLevel === "number" ? chant._padLevel : null,
