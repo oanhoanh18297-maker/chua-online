@@ -915,6 +915,57 @@
         .merit-box { left: 8px; right: auto; top: auto; bottom: 8px; }
         .gift-tag { bottom: 52px; font-size: 11px; padding: 5px 11px; max-width: 56%; }
       }
+      /* ---- Nút Full sảnh Cầu Bình An: mở riêng chánh điện lên toàn màn hình ---- */
+      .hall-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 8px 12px; flex-wrap: wrap; padding: 2px 2px 10px;
+      }
+      .hall-bar .hall-name {
+        font-family: "Playfair Display", serif; font-size: 17px; font-weight: 700;
+        color: var(--lacquer); letter-spacing: 0.3px; line-height: 1.25;
+      }
+      @media (prefers-color-scheme: dark) { .hall-bar .hall-name { color: var(--gold); } }
+      .btn-full-hall {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: linear-gradient(180deg, var(--lacquer), var(--lacquer-deep));
+        color: #ffe9bd; border: 2px solid var(--gold);
+        border-radius: 999px; padding: 10px 18px;
+        font-size: 14.5px; font-weight: 700; line-height: 1.2;
+        box-shadow: 0 6px 18px rgba(84, 40, 10, 0.28); white-space: nowrap;
+      }
+      .btn-full-hall:hover { filter: brightness(1.12); }
+      .btn-exit-full {
+        position: fixed;
+        top: calc(10px + env(safe-area-inset-top, 0px));
+        right: 12px;
+        z-index: 90;
+        display: none;
+        align-items: center; gap: 6px;
+        background: rgba(30, 17, 8, 0.9); color: #ffe9bd;
+        border: 1.5px solid var(--gold); border-radius: 999px;
+        padding: 9px 16px; font-size: 14px; font-weight: 700; line-height: 1.2;
+        box-shadow: 0 8px 20px rgba(15, 6, 1, 0.5);
+      }
+      .btn-exit-full:hover { background: rgba(64, 32, 10, 0.95); }
+      /* Đang ở chế độ full sảnh: hiện nút Thoát, ẩn nút Mở */
+      .stage.hall-is-full .btn-exit-full { display: inline-flex; }
+      .stage.hall-is-full .btn-full-hall { visibility: hidden; }
+      .stage.hall-is-full { padding: 12px; }
+      /* Toàn màn hình gốc: phần tử sảnh phủ kín màn hình, cuộn nội bộ nếu dài */
+      .stage:fullscreen { overflow-y: auto; background: var(--bg); border-radius: 0; }
+      .stage:-webkit-full-screen { overflow-y: auto; background: var(--bg); border-radius: 0; }
+      /* Dự phòng khi trình duyệt không hỗ trợ Fullscreen API (như iPhone Safari):
+         sảnh cố định phủ kín khung nhìn, nền chùa, cuộn nội bộ */
+      .stage.hall-fallback {
+        position: fixed; inset: 0; z-index: 80;
+        overflow-y: auto; -webkit-overflow-scrolling: touch;
+        background: var(--bg); border: none; border-radius: 0; box-shadow: none;
+      }
+      body.hall-locked { overflow: hidden; }
+      @media (max-width: 560px) {
+        .hall-bar .hall-name { font-size: 15px; }
+        .btn-full-hall { padding: 9px 14px; font-size: 13.5px; }
+      }
     </style>
   </head>
   <body>
@@ -948,6 +999,11 @@
       </section>
 
       <section class="stage" aria-label="Chánh điện chùa">
+        <div class="hall-bar">
+          <span class="hall-name">🛕 Sảnh Cầu Bình An</span>
+          <button class="btn-full-hall" id="btnFullHall" type="button" aria-pressed="false">⛶ Full sảnh Cầu Bình An</button>
+        </div>
+        <button class="btn-exit-full" id="btnExitFull" type="button" aria-label="Thoát chế độ full sảnh">✕ Thoát</button>
         <div class="canvas-holder">
           <canvas id="templeCanvas" width="960" height="600"></canvas>
           <button class="merit-box" id="btnMerit" type="button" aria-label="Mở hòm công đức để xem mã QR">
@@ -3305,6 +3361,82 @@
       });
       refreshBtn();
     })();
+    </script>
+    <script>
+      // Nút "⛶ Full sảnh Cầu Bình An": mở riêng khu chánh điện (sảnh cầu
+      // bình an) lên toàn màn hình. Ưu tiên Fullscreen API gốc trên phần tử
+      // .stage; trình duyệt không hỗ trợ (như iPhone Safari) thì dùng chế độ
+      // dự phòng CSS: sảnh cố định phủ kín khung nhìn, cuộn nội bộ. Nút
+      // "✕ Thoát" luôn hiện khi đang full; thoát full gốc cũng gỡ dự phòng.
+      (function () {
+        "use strict";
+        var stage = document.querySelector(".stage");
+        var btnOpen = document.getElementById("btnFullHall");
+        var btnExit = document.getElementById("btnExitFull");
+        if (!stage || !btnOpen || !btnExit) return;
+        var fallbackOn = false;
+
+        function fsElement() {
+          return document.fullscreenElement || document.webkitFullscreenElement || null;
+        }
+        function setState() {
+          var on = !!fsElement() || fallbackOn;
+          stage.classList.toggle("hall-is-full", on);
+          document.body.classList.toggle("hall-locked", fallbackOn);
+          btnOpen.setAttribute("aria-pressed", on ? "true" : "false");
+          btnOpen.textContent = on ? "⛶ Đang full sảnh" : "⛶ Full sảnh Cầu Bình An";
+        }
+        function enterFallback() {
+          fallbackOn = true;
+          stage.classList.add("hall-fallback");
+          setState();
+          stage.scrollTop = 0;
+        }
+        function leaveFallback() {
+          fallbackOn = false;
+          stage.classList.remove("hall-fallback");
+          setState();
+        }
+        function openFull() {
+          var req = stage.requestFullscreen || stage.webkitRequestFullscreen;
+          if (req) {
+            try {
+              var r = req.call(stage);
+              if (r && r.catch) r.catch(function () { enterFallback(); });
+              // Trình duyệt cũ có thể không trả promise và cũng không vào
+              // được full trên phần tử thường — kiểm tra lại ngay sau đó.
+              setTimeout(function () {
+                if (!fsElement() && !fallbackOn) enterFallback();
+              }, 400);
+            } catch (e) { enterFallback(); }
+          } else {
+            enterFallback();
+          }
+          setState();
+        }
+        function closeFull() {
+          if (fsElement()) {
+            var ex = document.exitFullscreen || document.webkitExitFullscreen;
+            if (ex) { try { ex.call(document); } catch (e) {} }
+          }
+          if (fallbackOn) leaveFallback();
+          setState();
+        }
+        btnOpen.addEventListener("click", function () {
+          if (stage.classList.contains("hall-is-full")) closeFull(); else openFull();
+        });
+        btnExit.addEventListener("click", closeFull);
+        ["fullscreenchange", "webkitfullscreenchange"].forEach(function (ev) {
+          document.addEventListener(ev, function () {
+            if (!fsElement() && fallbackOn) leaveFallback();
+            setState();
+          });
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && fallbackOn) leaveFallback();
+        });
+        setState();
+      })();
     </script>
   </body>
 </html>
