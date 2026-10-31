@@ -12,6 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
+    <meta name="chua-build" content="2026-10-31.2" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1097,6 +1098,8 @@
       .btn-exit-full:hover { background: rgba(64, 32, 10, 0.95); }
       /* Đang ở chế độ full sảnh: hiện nút Thoát, ẩn nút Mở */
       .stage.hall-is-full .btn-exit-full { display: inline-flex; }
+      /* Chế độ phát live "?full": nút Thoát không hiện lên hình phát */
+      body.live-full .btn-exit-full { display: none !important; }
       .stage.hall-is-full .btn-full-hall { visibility: hidden; }
       .stage.hall-is-full { padding: 12px; }
       /* Toàn màn hình gốc: phần tử sảnh phủ kín màn hình, cuộn nội bộ nếu dài */
@@ -1404,6 +1407,61 @@
         var myDisplayName = "Bạn";
         var myGender = "nam";
 
+        /* ---- Tự làm mới liên tục + giữ hồ sơ/nhạc đã lưu ----
+           - Hồ sơ (tên + giới tính), kiểu nhạc, âm lượng và bật/tắt nhạc
+             được lưu ngay trên máy/trình duyệt đang mở chùa, nên sau mỗi
+             lần trang tự tải lại mọi thứ vẫn nguyên như trước.
+           - Chế độ phát live: mở trang bằng địa chỉ có "?full" (nguồn
+             liên kết trong TikTok LIVE Studio). */
+        var LIVE_FULL_MODE = false;
+        try { LIVE_FULL_MODE = new URLSearchParams(window.location.search).has("full"); } catch (e) {}
+        var PREFS_KEY = "chuaThanhTinhPrefsV1";
+        function loadPrefs() {
+          try {
+            var raw = window.localStorage.getItem(PREFS_KEY);
+            if (!raw) return null;
+            var p = JSON.parse(raw);
+            return (p && typeof p === "object") ? p : null;
+          } catch (e) { return null; }
+        }
+        function savePrefs() {
+          try {
+            var p = {};
+            var nm = visitorNameInput ? visitorNameInput.value.trim().slice(0, 24) : "";
+            if (nm) {
+              p.name = nm;
+              p.gender = normalizeGender(visitorGenderSel ? visitorGenderSel.value : myGender);
+              p.hasProfile = true;
+            }
+            p.musicMode = musicMode;
+            p.musicVolume = musicVolume;
+            p.soundOn = soundOn;
+            window.localStorage.setItem(PREFS_KEY, JSON.stringify(p));
+          } catch (e) { /* trình duyệt chặn lưu trữ: bỏ qua, trang vẫn chạy như cũ */ }
+        }
+        /* Tải lại trang có chốt chặn vòng lặp: hai lần tự tải lại liên
+           tiếp phải cách nhau tối thiểu 30 giây. Các cơ chế tự làm mới
+           (có bản mới / mất kết nối lâu) đều đi qua hàm này. */
+        window.chuaAutoReload = function (reason) {
+          try {
+            var KEY = "chuaAutoReloadAt";
+            var last = parseInt(window.sessionStorage.getItem(KEY) || "0", 10) || 0;
+            if (Date.now() - last < 30000) return false;
+            window.sessionStorage.setItem(KEY, String(Date.now()));
+          } catch (e) {}
+          window.location.reload();
+          return true;
+        };
+        /* Theo dõi mất kết nối máy chủ để tự hồi phục: chỉ tính khi đã
+           từng kết nối thành công rồi bị rớt (hoặc, ở chế độ "?full",
+           khi nguồn live không nối được máy chủ ngay từ đầu). Người
+           dùng tự bấm ngắt kết nối thì không tính. */
+        var connWanted = false;
+        var everConnected = false;
+        var manualDisconnect = false;
+        var outageSince = 0;
+        var outageReloaded = false;
+
         /* ---------------- Trạng thái ---------------- */
         var LAM_COLORS = ["#7d8ca3", "#8a97a5", "#6f7f95", "#97a08b", "#a08b7d", "#7f7263"];
         var MALE_COLORS = ["#5f7d95", "#64748a", "#546e84", "#6f8598", "#4f6b84", "#5b7386"];   // Phật tử nam: lam xám xanh
@@ -1584,10 +1642,35 @@
           }
           if (identityPreview) identityPreview.textContent = genderSymbol(myGender) + " " + myDisplayName + " — " + genderLabel(myGender);
           if (bzSyncIdentity()) {}
+          savePrefs();
           emitProfile();
           if (announce) note("<strong>Đã vào chùa với tên “" + escapeHtml(myDisplayName) + "” — " + genderLabel(myGender) + ":</strong> bảng tên “" + genderSymbol(myGender) + " " + escapeHtml(myDisplayName) + "” đã hiện trên đầu nhân vật của bạn" + (myGender === "nu" ? " (áo lam hồng tím, tóc dài búi cài hoa sen, dáng áo xòe)." : " (áo lam xám xanh, tóc ngắn, dáng áo thẳng)."));
         }
         function bzSyncIdentity() { return false; }
+        /* Khôi phục hồ sơ + lựa chọn nhạc đã lưu từ lần mở trước —
+           nhờ vậy sau mỗi lần trang tự tải lại, tên/giới tính trên bảng
+           tên và nhạc thiền vẫn y nguyên, không phải đặt lại. */
+        (function restorePrefs() {
+          var p = loadPrefs();
+          if (!p) return;
+          if (p.musicMode && musicModeSel && (p.musicMode === "youtube" || p.musicMode === "ambient" || p.musicMode === "chant")) {
+            musicMode = p.musicMode;
+            musicModeSel.value = p.musicMode;
+          }
+          if (typeof p.musicVolume === "number" && isFinite(p.musicVolume)) {
+            musicVolume = Math.max(0, Math.min(1, p.musicVolume));
+            if (musicVolEl) musicVolEl.value = String(Math.round(musicVolume * 100));
+          }
+          if (p.soundOn === false && btnSound) {
+            soundOn = false;
+            btnSound.textContent = "🔇 Nhạc thiền: Tắt";
+            btnSound.classList.remove("active");
+            btnSound.setAttribute("aria-pressed", "false");
+          }
+          if (p.name && visitorNameInput) visitorNameInput.value = String(p.name).slice(0, 24);
+          if (p.gender && visitorGenderSel) visitorGenderSel.value = normalizeGender(p.gender);
+          if (p.name || p.gender) applyIdentity(false);
+        })();
         if (btnSetIdentity) btnSetIdentity.addEventListener("click", function () { tryStartMusic(); applyIdentity(true); });
         if (visitorNameInput) visitorNameInput.addEventListener("input", function () { applyIdentity(false); });
         if (visitorGenderSel) visitorGenderSel.addEventListener("change", function () { applyIdentity(true); });
@@ -3061,7 +3144,21 @@
           var g = giftQueue.shift();
           var bless = GIFT_BLESSINGS[giftBlessIdx % GIFT_BLESSINGS.length].split("{ten}").join(g.name);
           giftBlessIdx++;
-          if (giftWhoEl) giftWhoEl.innerHTML = "Phật tử <strong>" + escapeHtml(g.name) + "</strong> vừa tặng <strong>" + escapeHtml(g.gift) + "</strong>" + (g.count > 1 ? " × " + g.count : "") + " trên TikTok Live 🎁";
+          if (giftWhoEl) {
+            // Tên người tặng + tên quà là dữ liệu từ xa (TikTok Live):
+            // dựng bằng textContent và thẻ <strong> tạo sẵn, tuyệt đối
+            // không đưa chuỗi từ xa qua innerHTML.
+            giftWhoEl.textContent = "";
+            giftWhoEl.appendChild(document.createTextNode("Phật tử "));
+            var gwName = document.createElement("strong");
+            gwName.textContent = g.name;
+            giftWhoEl.appendChild(gwName);
+            giftWhoEl.appendChild(document.createTextNode(" vừa tặng "));
+            var gwGift = document.createElement("strong");
+            gwGift.textContent = g.gift;
+            giftWhoEl.appendChild(gwGift);
+            giftWhoEl.appendChild(document.createTextNode((g.count > 1 ? " × " + g.count : "") + " trên TikTok Live 🎁"));
+          }
           if (giftBlessEl) giftBlessEl.textContent = "“" + bless + "”";
           if (giftQueueEl) {
             if (giftQueue.length) {
@@ -3125,9 +3222,21 @@
           var extra = 0;
           if (welcomeQueue.length >= 3) { extra = welcomeQueue.length; welcomeQueue.length = 0; }
           if (welcomeTextEl) {
-            welcomeTextEl.innerHTML = extra > 0
-              ? "🙏 <strong>" + escapeHtml(nm) + "</strong> cùng <strong>" + extra + " Phật tử</strong> khác đã vào sảnh chùa"
-              : "🙏 <strong>" + escapeHtml(nm) + "</strong> đã vào sảnh chùa";
+            // Tên khách là dữ liệu từ xa: dựng bằng textContent như trên.
+            welcomeTextEl.textContent = "";
+            welcomeTextEl.appendChild(document.createTextNode("🙏 "));
+            var wwName = document.createElement("strong");
+            wwName.textContent = nm;
+            welcomeTextEl.appendChild(wwName);
+            if (extra > 0) {
+              welcomeTextEl.appendChild(document.createTextNode(" cùng "));
+              var wwExtra = document.createElement("strong");
+              wwExtra.textContent = extra + " Phật tử";
+              welcomeTextEl.appendChild(wwExtra);
+              welcomeTextEl.appendChild(document.createTextNode(" khác đã vào sảnh chùa"));
+            } else {
+              welcomeTextEl.appendChild(document.createTextNode(" đã vào sảnh chùa"));
+            }
           }
           if (welcomeBanner) { welcomeBanner.classList.add("show"); welcomeBanner.setAttribute("aria-hidden", "false"); }
           setTimeout(showNextWelcome, 4000);
@@ -3255,6 +3364,7 @@
         /* ----- Nút bật/tắt âm thanh (nhạc thiền + tụng kinh + chuông) ----- */
         btnSound.addEventListener("click", function () {
           soundOn = !soundOn;
+          savePrefs();
           btnSound.textContent = soundOn ? "🎵 Nhạc thiền: Bật" : "🔇 Nhạc thiền: Tắt";
           btnSound.classList.toggle("active", soundOn);
           btnSound.setAttribute("aria-pressed", soundOn ? "true" : "false");
@@ -3274,6 +3384,7 @@
         /* ----- Âm lượng riêng cho nhạc thiền: chỉnh trực tiếp lên master gain ----- */
         if (musicVolEl) musicVolEl.addEventListener("input", function () {
           musicVolume = (parseInt(musicVolEl.value, 10) || 0) / 100;
+          savePrefs();
           if (musicMode === "youtube" && ytPlayer && ytReady) {
             try { ytPlayer.setVolume(ytVolumeValue()); } catch (e) {}
           }
@@ -3288,6 +3399,7 @@
           var wasRunning = chant.running || ytPlayWanted;
           var prevMode = musicMode;
           musicMode = musicModeSel.value;
+          savePrefs();
           stopAllMusic();
           if (musicMode === "youtube") {
             // Người dùng chủ động chọn lại YouTube: cho phép thử phát lại từ đầu,
@@ -3482,10 +3594,15 @@
             setConnUI("off", "Đang tĩnh tâm một mình", "Không tải được thư viện Socket.io — kiểm tra mạng rồi thử lại.");
             return;
           }
+          connWanted = true;
+          manualDisconnect = false;
           socket = io(url, { transports: ["websocket", "polling"], timeout: 6000, reconnectionAttempts: 2 });
 
           socket.on("connect", function () {
             connected = true;
+            everConnected = true;
+            outageSince = 0;
+            outageReloaded = false;
             var oldSelf = users[myId];
             var newUsers = {};
             Object.keys(users).forEach(function (id) { if (id !== myId) newUsers[id] = users[id]; });
@@ -3639,6 +3756,7 @@
 
           socket.on("disconnect", function () {
             connected = false;
+            if (!manualDisconnect && everConnected && !outageSince) outageSince = Date.now();
             clearRemoteUsers(); // mất kết nối: các Phật tử khác cũng rời khỏi màn hình của mình, chỉ còn lại mình
             addChatSys("Đã ngắt kết nối khỏi chùa chung — bạn đang ở chùa một mình.");
             updateChatHint();
@@ -3646,6 +3764,7 @@
           });
 
           socket.on("connect_error", function () {
+            if (LIVE_FULL_MODE && connWanted && !connected && !outageSince) outageSince = Date.now();
             if (!connected) {
               setConnUI("off", "Đang tĩnh tâm một mình", "Chưa gặp được server tại " + url + " — hãy chắc chắn server Node.js đang chạy ở địa chỉ đó, rồi kết nối lại.");
             }
@@ -3655,6 +3774,9 @@
         btnConnect.addEventListener("click", function () {
           tryStartMusic();
           if (connected && socket) {
+            manualDisconnect = true;
+            connWanted = false;
+            outageSince = 0;
             socket.disconnect();
             socket = null;
             connected = false;
@@ -3675,6 +3797,35 @@
           setConnUI("off", "Đang kết nối…", "Đang tìm server tại " + url + " …");
           connectServer(url);
         });
+
+        /* Chế độ phát live "?full": tự nối vào server chùa tại chính địa
+           chỉ đang mở (nếu chưa có kết nối nào). Bản chùa chạy trên
+           server thật thường đã có sẵn bước tự kết nối khi mở trang —
+           kiểm tra biến socket trước để không kết nối trùng hai lần. */
+        if (LIVE_FULL_MODE && (location.protocol === "https:" || location.protocol === "http:")) {
+          setTimeout(function () {
+            if (!connected && !socket) {
+              if (serverUrlInput) serverUrlInput.value = location.origin;
+              connectServer(location.origin);
+            }
+          }, 1600);
+        }
+
+        /* Mất kết nối máy chủ kéo dài quá 60 giây mà không nối lại được
+           thì tự tải lại trang một lần để hồi phục (mỗi đợt mất kết nối
+           chỉ tải lại một lần; nối lại được thì mốc được đặt lại). */
+        setInterval(function () {
+          if (!connected && outageSince && !outageReloaded && Date.now() - outageSince > 60000) {
+            if (window.chuaAutoReload) {
+              // Chỉ đánh dấu đã tải lại khi lần tải lại thật sự diễn ra;
+              // chốt chống vòng lặp từ chối thì để nhịp sau thử lại.
+              outageReloaded = window.chuaAutoReload("disconnect") === true;
+            } else {
+              outageReloaded = true;
+              window.location.reload();
+            }
+          }
+        }, 5000);
 
         updateCount();
       })();
@@ -3754,7 +3905,7 @@
         put(tuViPos,'Tử Vi'); put((tuViPos-1+12)%12,'Thiên Cơ'); put((tuViPos-3+12)%12,'Thái Dương'); put((tuViPos-4+12)%12,'Vũ Khúc'); put((tuViPos-5+12)%12,'Thiên Đồng'); put((tuViPos-8+12)%12,'Liêm Trinh');
         put(phuPos,'Thiên Phủ'); put((phuPos+1)%12,'Thái Âm'); put((phuPos+2)%12,'Tham Lang'); put((phuPos+3)%12,'Cự Môn'); put((phuPos+4)%12,'Thiên Tướng'); put((phuPos+5)%12,'Thiên Lương'); put((phuPos+6)%12,'Thất Sát'); put((phuPos+10)%12,'Phá Quân');
         var starAtMenh=stars[menhChi]||'Vô Chính Diệu';
-        var html='<h3 style="margin:18px 0 2px;font-family:Playfair Display,serif;font-size:21px">Lá số của '+name.replace(/</g,'&lt;')+' · '+gender+' · '+D+'/'+M+'/'+Y+' · Giờ '+CHI[hChi]+'</h3>';
+        var html='<h3 style="margin:18px 0 2px;font-family:Playfair Display,serif;font-size:21px">Lá số của '+name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')+' · '+gender+' · '+D+'/'+M+'/'+Y+' · Giờ '+CHI[hChi]+'</h3>';
         html+='<p style="color:var(--ink-soft);margin:0">Tuổi <strong>'+CAN[yCan]+' '+CHI[yChi]+'</strong> · Nạp Âm <strong>'+nap+'</strong> · Mệnh <strong>'+menh+'</strong> · Nhật Chủ (bản mệnh ngày sinh) là <strong>'+CAN[dCan]+' '+CAN_HANH[dCan]+'</strong></p>';
         html+='<div class="pillars">'+pillars.map(function(p){return '<div class="pillar"><small>Trụ '+p.k+'</small><strong>'+CAN[p.can]+' '+CHI[p.chi]+'</strong><span>Thiên Can '+CAN_HANH[p.can]+' · Địa Chi '+CHI_HANH[p.chi]+'</span></div>'}).join('')+'</div>';
         html+='<h4 style="margin:14px 0 4px">⚖️ Cân bằng Ngũ Hành trong Tứ Trụ</h4><div class="bars">'+Object.keys(counts).map(function(k){return '<div class="bar-row"><span>'+k+'</span><div class="bar"><i style="width:'+(counts[k]/8*100)+'%"></i></div><b>'+counts[k]+'</b></div>'}).join('')+'</div>';
@@ -3898,6 +4049,37 @@
         if (!stage || !btnOpen || !btnExit) return;
         var fallbackOn = false;
 
+        /* ---- Chế độ phát live "?full" ----
+           Mở bằng địa chỉ …/?full (nguồn liên kết TikTok LIVE Studio):
+           đã có hồ sơ tên/giới tính đã lưu thì tự bật sẵn Full sảnh
+           ngay khi trang tải xong — sau mỗi lần trang tự làm mới, hình
+           phát vẫn chỉ là sảnh chùa kín khung, không quay về cổng vào.
+           Chưa có hồ sơ: trang hiện cổng vào như thường; Phật tử điền
+           tên và bấm "Vào Chùa" xong thì trang mới tự bật Full sảnh. */
+        var liveFullParam = false;
+        try { liveFullParam = new URLSearchParams(window.location.search).has("full"); } catch (e) {}
+        function savedProfileExists() {
+          try {
+            var raw = window.localStorage.getItem("chuaThanhTinhPrefsV1");
+            if (!raw) return false;
+            var p = JSON.parse(raw);
+            return !!(p && p.hasProfile && p.name && String(p.name).trim());
+          } catch (e) { return false; }
+        }
+        function enterLiveFull() {
+          document.body.classList.add("live-full");
+          if (!fallbackOn && !fsElement()) enterFallback();
+        }
+        if (liveFullParam) {
+          if (savedProfileExists()) {
+            if (document.readyState === "complete") setTimeout(enterLiveFull, 350);
+            else window.addEventListener("load", function () { setTimeout(enterLiveFull, 350); });
+          } else {
+            var btnEnterGate = document.getElementById("btnSetIdentity");
+            if (btnEnterGate) btnEnterGate.addEventListener("click", function () { setTimeout(enterLiveFull, 60); });
+          }
+        }
+
         function fsElement() {
           return document.fullscreenElement || document.webkitFullscreenElement || null;
         }
@@ -3958,6 +4140,71 @@
           if (e.key === "Escape" && fallbackOn) leaveFallback();
         });
         setState();
+      })();
+    </script>
+    <script>
+      // Tự kiểm tra phiên bản mới khoảng 2 phút một lần: tải lại chính
+      // trang này (bỏ qua bộ nhớ đệm) rồi so dấu ấn nội dung với bản
+      // đang chạy. Thấy bản mới đã được triển khai thì tự tải lại trang
+      // để cập nhật — người dùng không phải tự tay làm mới nữa. Lỗi
+      // mạng thì bỏ qua, đợi lần kiểm tra tiếp theo.
+      (function () {
+        "use strict";
+        if (location.protocol !== "https:" && location.protocol !== "http:") return;
+        var metaEl = document.querySelector('meta[name="chua-build"]');
+        var currentBuild = metaEl ? (metaEl.getAttribute("content") || "") : "";
+        var baselineHash = null;
+        var candidateHash = null;
+        var reloading = false;
+
+        function hashText(t) {
+          var h = 0x811c9dc5;
+          for (var i = 0; i < t.length; i++) {
+            h ^= t.charCodeAt(i);
+            h = (h * 0x01000193) >>> 0;
+          }
+          return ("0000000" + h.toString(16)).slice(-8) + ":" + t.length;
+        }
+        function buildOf(t) {
+          var m = /<meta[^>]+name="chua-build"[^>]*>/i.exec(t);
+          if (!m) return "";
+          var c = /content="([^"]*)"/i.exec(m[0]);
+          return c ? c[1] : "";
+        }
+        function doReload() {
+          if (reloading) return;
+          if (window.chuaAutoReload) {
+            // Chốt chống vòng lặp có thể từ chối (vừa tự tải lại <30 giây
+            // trước): khi đó KHÔNG khóa cờ reloading, để lần kiểm tra
+            // sau vẫn thử tải lại được.
+            reloading = window.chuaAutoReload("version") === true;
+          } else {
+            reloading = true;
+            window.location.reload();
+          }
+        }
+        function checkVersion() {
+          var url;
+          try { url = location.pathname + "?__chua_v=" + Date.now(); } catch (e) { return; }
+          fetch(url, { cache: "no-store", credentials: "same-origin" }).then(function (res) {
+            if (!res || !res.ok) return null;
+            return res.text();
+          }).then(function (text) {
+            if (!text || reloading) return;
+            if (text.indexOf("templeCanvas") === -1) return; // không phải trang chùa — không so
+            var b = buildOf(text);
+            if (currentBuild && b && b !== currentBuild) { doReload(); return; }
+            var h = hashText(text);
+            if (baselineHash === null) { baselineHash = h; return; }
+            if (h === baselineHash) { candidateHash = null; return; }
+            // Chỉ tải lại khi cùng một bản mới xuất hiện ở hai lần kiểm
+            // tra liên tiếp — tránh tải lại vì nội dung chập chờn.
+            if (candidateHash === h) doReload();
+            else candidateHash = h;
+          }).catch(function () { /* mạng chập chờn: bỏ qua, lần sau kiểm lại */ });
+        }
+        setTimeout(checkVersion, 10000);
+        setInterval(checkVersion, 120000);
       })();
     </script>
   </body>
