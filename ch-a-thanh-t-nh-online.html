@@ -135,6 +135,12 @@
       }
       .canvas-holder {
         position: relative;
+        /* Mọi lớp phủ trong sảnh (tiêu đề, câu đối, bia công đức, banner…)
+           cỡ theo đơn vị cqw — tỉ lệ với bề ngang của chính khung sảnh này.
+           Khung bị thu hẹp (màn hình laptop thấp, nguồn LIVE Studio…) thì
+           chữ và bảng phủ co theo khung, không còn đè lên nhau như khi cỡ
+           chữ tính theo cửa sổ trình duyệt (vw) hay px cố định. */
+        container-type: inline-size;
         border-radius: 10px;
         overflow: hidden;
         border: 3px solid var(--wood);
@@ -160,14 +166,18 @@
       .merit-box {
         position: absolute;
         top: 14px;
+        top: 2.8cqw;
         left: calc(50% + 116px);
+        left: calc(50% + 23.2cqw);
         z-index: 5;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 2px;
         width: 80px;
+        width: 16cqw;
         padding: 7px 5px 7px;
+        padding: 1.4cqw 1cqw;
         background: linear-gradient(180deg, var(--lacquer), var(--lacquer-deep));
         color: #ffe9bd;
         border: 2px solid var(--gold);
@@ -180,35 +190,42 @@
       .merit-box::before {
         content: "";
         width: 32px;
+        width: 6.4cqw;
         height: 5px;
+        height: 1cqw;
         border-radius: 3px;
         background: #2e1508;
         box-shadow: inset 0 1px 3px rgba(0,0,0,0.9), 0 1px 0 rgba(255,220,150,0.35);
       }
-      .merit-box .mb-icon { font-size: 15px; line-height: 1; }
+      .merit-box .mb-icon { font-size: 15px; font-size: 3cqw; line-height: 1; }
       .merit-box .mb-label {
         font-size: 12px;
+        font-size: 2.4cqw;
         font-weight: 700;
         letter-spacing: 0.2px;
         text-align: center;
         white-space: nowrap;
       }
-      .merit-box .mb-hint { font-size: 10px; opacity: 0.85; font-weight: 500; }
+      .merit-box .mb-hint { font-size: 10px; font-size: 2cqw; opacity: 0.85; font-weight: 500; }
       .merit-box:hover { filter: brightness(1.1); }
       .merit-box:active { transform: translateY(1px); }
       .breath {
         position: absolute;
         left: 50%;
         bottom: 74px;
+        bottom: 14.8cqw;
         transform: translateX(-50%);
         display: none;
         align-items: center;
         gap: 10px;
+        gap: 2cqw;
         background: rgba(43, 32, 20, 0.72);
         color: #fdf3dd;
         padding: 8px 16px 8px 12px;
+        padding: 1.6cqw 3.2cqw 1.6cqw 2.4cqw;
         border-radius: 999px;
         font-size: 14px;
+        font-size: 2.8cqw;
         font-weight: 500;
         line-height: 1;
         pointer-events: none;
@@ -217,7 +234,7 @@
       }
       .breath.on { display: inline-flex; }
       .breath .orb {
-        width: 12px; height: 12px; border-radius: 50%;
+        width: 12px; height: 12px; width: 2.4cqw; height: 2.4cqw; border-radius: 50%;
         background: var(--gold-soft);
         transition: transform 3.8s ease-in-out;
         flex: none;
@@ -230,12 +247,15 @@
         position: absolute;
         left: 50%;
         top: 12px;
+        top: 2.4cqw;
         transform: translate(-50%, -16px);
         z-index: 6;
         width: min(560px, calc(100% - 24px));
+        width: calc(100% - 4.8cqw);
         text-align: center;
         line-height: 1.45;
         padding: 13px 34px 12px;
+        padding: 2.6cqw 6.8cqw 2.4cqw;
         background:
           radial-gradient(120px 26px at 50% 0, rgba(255, 214, 130, 0.35), transparent 70%),
           linear-gradient(180deg, #9c3520, #71200f 55%, #5f1a0c);
@@ -252,22 +272,27 @@
         content: "";
         position: absolute;
         top: -9px;
+        top: -1.8cqw;
         width: 2px;
         height: 12px;
+        height: 2.4cqw;
         background: #d9a441;
       }
-      .gift-banner::before { left: 26px; }
-      .gift-banner::after { right: 26px; }
+      .gift-banner::before { left: 26px; left: 5.2cqw; }
+      .gift-banner::after { right: 26px; right: 5.2cqw; }
       .gift-banner .gb-thanks {
         font-size: 13px;
+        font-size: 2.6cqw;
         font-weight: 700;
         letter-spacing: 1.6px;
+        letter-spacing: 0.32cqw;
         text-transform: uppercase;
         color: #f6cf7d;
         margin: 0 0 2px;
       }
       .gift-banner .gb-who {
         font-size: 17px;
+        font-size: 3.4cqw;
         font-weight: 600;
         margin: 0;
         overflow-wrap: anywhere;
@@ -276,12 +301,14 @@
       .gift-banner .gb-bless {
         font-family: "Playfair Display", serif;
         font-size: clamp(16px, 2.6vw, 20px);
+        font-size: 4cqw;
         line-height: 1.5;
         margin: 5px 0 1px;
         color: #ffedb8;
       }
       .gift-banner .gb-queue {
         font-size: 11.5px;
+        font-size: 2.3cqw;
         color: rgba(255, 238, 196, 0.75);
         margin: 3px 0 0;
         display: none;
@@ -695,6 +722,7 @@
       .altar-head {
         position: absolute;
         top: 10px;
+        top: 2cqw;
         left: 50%;
         transform: translateX(-50%);
         width: min(540px, 60%);
@@ -707,7 +735,9 @@
         font-family: "Playfair Display", serif;
         font-weight: 700;
         font-size: clamp(20px, 3.2vw, 31px);
+        font-size: 6.2cqw;
         letter-spacing: 2px;
+        letter-spacing: 0.4cqw;
         color: #ffe9a8;
         text-shadow: 0 2px 10px rgba(20, 8, 0, 0.85), 0 0 26px rgba(120, 60, 0, 0.55);
         margin: 0;
@@ -718,10 +748,13 @@
         color: #f0b64a;
         vertical-align: 0.4em;
         margin: 0 10px;
+        margin: 0 2cqw;
       }
       .altar-head .ah-hint {
         margin: 3px 0 0;
+        margin: 0.6cqw 0 0;
         font-size: 12px;
+        font-size: 2.4cqw;
         font-weight: 500;
         color: #fdf3dd;
         text-shadow: 0 1px 6px rgba(20, 8, 0, 0.92), 0 0 14px rgba(20, 8, 0, 0.6);
@@ -729,6 +762,7 @@
       .couplet {
         position: absolute;
         top: 15%;
+        top: 26.7cqw;
         z-index: 3;
         transform: translateX(-50%);
         display: flex;
@@ -736,6 +770,7 @@
         align-items: center;
         gap: 1px;
         padding: 16px 11px 14px;
+        padding: 3.2cqw 2.2cqw 2.8cqw;
         background: linear-gradient(180deg, #a23420, #7c2110 60%, #671b0d);
         border: 2px solid #d9a441;
         border-radius: 7px;
@@ -744,6 +779,7 @@
         font-family: "Playfair Display", serif;
         font-weight: 700;
         font-size: clamp(14px, 2.3vw, 22px);
+        font-size: 4.4cqw;
         line-height: 1.28;
         letter-spacing: 0.4px;
         pointer-events: none;
@@ -754,10 +790,13 @@
       .couplet::before {
         content: "";
         width: 30px;
+        width: 6cqw;
         height: 4px;
+        height: 0.8cqw;
         border-radius: 2px;
         background: #d9a441;
         margin-bottom: 6px;
+        margin-bottom: 1.2cqw;
         flex: none;
       }
       .couplet.fade { opacity: 0; }
@@ -775,6 +814,7 @@
            và cao khoảng 160px (4 chữ xếp dọc); cộng thêm khoảng hở cho hoa sen
            trên đỉnh bia (top -25px) để cả hai câu đối đều đọc trọn vẹn. */
         top: calc(15% + 190px);
+        top: 64.7cqw;
         z-index: 7;
         width: 34%;
         min-width: 0;
@@ -782,6 +822,7 @@
         border: 2px solid #97814c;
         border-radius: 12px 12px 7px 7px;
         padding: 16px 12px 12px;
+        padding: 3.2cqw 2.4cqw 2.4cqw;
         color: #ecd28e;
         box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.35), inset 0 0 26px rgba(0, 0, 0, 0.5), 0 16px 32px rgba(15, 8, 2, 0.55);
         line-height: 1.4;
@@ -792,9 +833,11 @@
         position: absolute;
         left: 50%;
         top: -15px;
+        top: -3cqw;
         transform: translateX(-50%);
         width: 56%;
         height: 30px;
+        height: 6cqw;
         background: linear-gradient(180deg, #57503f, #3a362c);
         border: 2px solid #97814c;
         border-bottom: none;
@@ -805,8 +848,10 @@
         position: absolute;
         left: -5%;
         bottom: -11px;
+        bottom: -2.2cqw;
         width: 110%;
         height: 12px;
+        height: 2.4cqw;
         background: linear-gradient(180deg, #3d392f, #24221c);
         border: 1.5px solid #7d6a3e;
         border-radius: 4px;
@@ -815,22 +860,28 @@
       .merit-board .stele-cap {
         position: absolute;
         top: -25px;
+        top: -5cqw;
         left: 50%;
         transform: translateX(-50%);
         font-size: 17px;
+        font-size: 3.4cqw;
         line-height: 1;
         filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
       }
       .merit-board h3 {
         margin: 0 0 8px;
+        margin: 0 0 1.6cqw;
         font-family: "Playfair Display", serif;
         font-size: 15.5px;
+        font-size: 3.1cqw;
         letter-spacing: 1.4px;
+        letter-spacing: 0.28cqw;
         color: #ffd968;
         text-align: center;
         text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 230, 160, 0.22);
         border-bottom: 1px solid rgba(217, 164, 65, 0.4);
         padding-bottom: 6px;
+        padding-bottom: 1.2cqw;
       }
       .merit-board ol {
         list-style: none;
@@ -839,13 +890,17 @@
         display: flex;
         flex-direction: column;
         gap: 3px;
+        gap: 0.6cqw;
       }
       .merit-board li {
         display: flex;
         align-items: center;
         gap: 7px;
+        gap: 1.4cqw;
         font-size: 12.4px;
+        font-size: 2.5cqw;
         padding: 2px 6px;
+        padding: 0.4cqw 1.2cqw;
         border-radius: 6px;
         background: rgba(255, 214, 120, 0.05);
       }
@@ -853,11 +908,13 @@
       .merit-board .mb-rank {
         flex: none;
         width: 19px; height: 19px;
+        width: 3.8cqw; height: 3.8cqw;
         border-radius: 50%;
         background: rgba(0, 0, 0, 0.35);
         border: 1px solid rgba(217, 164, 65, 0.5);
         color: #ffd977;
         font-size: 11px;
+        font-size: 2.2cqw;
         font-weight: 700;
         display: inline-flex;
         align-items: center;
@@ -875,6 +932,7 @@
       .merit-board .mb-empty {
         margin: 0;
         font-size: 12px;
+        font-size: 2.4cqw;
         font-style: italic;
         color: rgba(236, 210, 142, 0.82);
         text-align: center;
@@ -885,6 +943,7 @@
         position: absolute;
         left: 50%;
         bottom: 114px;
+        bottom: 22.8cqw;
         transform: translate(-50%, 8px);
         z-index: 6;
         max-width: min(560px, 58%);
@@ -893,7 +952,9 @@
         color: #ffe9b0;
         border-radius: 999px;
         padding: 6px 14px;
+        padding: 1.2cqw 2.8cqw;
         font-size: 12.5px;
+        font-size: 2.5cqw;
         font-weight: 600;
         line-height: 1.35;
         text-align: center;
@@ -913,12 +974,15 @@
         position: absolute;
         left: 50%;
         bottom: 156px;
+        bottom: 31.2cqw;
         transform: translate(-50%, 14px);
         z-index: 6;
         width: min(480px, calc(100% - 36px));
+        width: min(96cqw, calc(100% - 7.2cqw));
         text-align: center;
         line-height: 1.45;
         padding: 11px 22px 10px;
+        padding: 2.2cqw 4.4cqw 2cqw;
         background:
           radial-gradient(110px 24px at 50% 0, rgba(255, 214, 130, 0.3), transparent 70%),
           linear-gradient(180deg, #4a3220, #33220f 55%, #271806);
@@ -933,6 +997,7 @@
       .welcome-banner.show { opacity: 1; transform: translate(-50%, 0); }
       .welcome-banner .wb-text {
         font-size: 16.5px;
+        font-size: 3.3cqw;
         font-weight: 600;
         margin: 0;
         overflow-wrap: anywhere;
@@ -940,6 +1005,7 @@
       .welcome-banner .wb-text strong { color: #fff3d6; }
       .welcome-banner .wb-sub {
         font-size: 12px;
+        font-size: 2.4cqw;
         font-style: italic;
         color: rgba(255, 238, 196, 0.82);
         margin: 2px 0 0;
@@ -956,7 +1022,9 @@
         text-align: center;
         line-height: 1.5;
         padding: 7px 12px 8px;
+        padding: 1.4cqw 2.4cqw 1.6cqw;
         font-size: 12.5px;
+        font-size: 2.5cqw;
         font-weight: 500;
         color: #ffe9b0;
         background: linear-gradient(180deg, rgba(38, 22, 8, 0.84), rgba(24, 13, 4, 0.93));
@@ -975,7 +1043,7 @@
       }
       /* Hòm công đức dời sang phía trái tượng Phật để khoảng giữa chánh
          điện thoáng cho dòng Cầu Bình An và băng câu đối lớn bên trái */
-      .merit-box { left: 10px; top: 318px; }
+      .merit-box { left: 10px; top: 318px; left: 2cqw; top: 63.6cqw; }
       @media (max-width: 560px) {
         .altar-head { top: 6px; width: 54%; }
         .altar-head .ah-title { font-size: 17px; letter-spacing: 1px; }
