@@ -93,7 +93,7 @@ function applyProfile(socket, data) {
    Khoa bao mat: bien moi truong BRIDGE_KEY tren Render; cau noi gui kem khoa nay. */
 const BRIDGE_KEY = process.env.BRIDGE_KEY || '';
 const TT_MAX_GUESTS = 40;
-const TT_IDLE_MS = 5 * 60 * 1000; // khan gia TikTok khong tuong tac 5 phut thi roi chua
+const TT_IDLE_MS = 2 * 60 * 1000; // khan gia TikTok roi phong (ngung moi dau hieu) 2 phut thi roi chua, nhan vat bien mat
 const ttGuests = {}; // id -> { lastSeen }
 let ttGenderFlip = false;
 
