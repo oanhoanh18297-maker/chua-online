@@ -199,7 +199,7 @@
       .breath {
         position: absolute;
         left: 50%;
-        bottom: 14px;
+        bottom: 74px;
         transform: translateX(-50%);
         display: none;
         align-items: center;
@@ -884,7 +884,7 @@
       .gift-tag {
         position: absolute;
         left: 50%;
-        bottom: 56px;
+        bottom: 114px;
         transform: translate(-50%, 8px);
         z-index: 6;
         max-width: min(560px, 58%);
@@ -905,6 +905,74 @@
         transition: opacity 0.4s ease, transform 0.4s ease;
       }
       .gift-tag.show { opacity: 1; transform: translate(-50%, 0); }
+      /* ---- Lời chào khi một khách TikTok vừa vào sảnh chùa ----
+         Bảng chào nâu trầm viền vàng treo ở nửa dưới chánh điện (trên khu
+         đệm thiền, dưới ban thờ): không che tượng Phật, hai câu đối hay
+         bia công đức. Mỗi khách hiện vài giây, đông khách thì xếp hàng. */
+      .welcome-banner {
+        position: absolute;
+        left: 50%;
+        bottom: 156px;
+        transform: translate(-50%, 14px);
+        z-index: 6;
+        width: min(480px, calc(100% - 36px));
+        text-align: center;
+        line-height: 1.45;
+        padding: 11px 22px 10px;
+        background:
+          radial-gradient(110px 24px at 50% 0, rgba(255, 214, 130, 0.3), transparent 70%),
+          linear-gradient(180deg, #4a3220, #33220f 55%, #271806);
+        color: #ffeec4;
+        border: 2px solid #d9a441;
+        border-radius: 10px;
+        box-shadow: 0 12px 30px rgba(24, 8, 2, 0.5), inset 0 0 0 3px rgba(39, 24, 6, 0.85), inset 0 0 0 5px rgba(217, 164, 65, 0.45);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+      .welcome-banner.show { opacity: 1; transform: translate(-50%, 0); }
+      .welcome-banner .wb-text {
+        font-size: 16.5px;
+        font-weight: 600;
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      .welcome-banner .wb-text strong { color: #fff3d6; }
+      .welcome-banner .wb-sub {
+        font-size: 12px;
+        font-style: italic;
+        color: rgba(255, 238, 196, 0.82);
+        margin: 2px 0 0;
+      }
+      /* ---- Dòng hướng dẫn cố định cho khách xem live ----
+         Dải chữ ở sát đáy khung sảnh 9:16 như dòng chạy dưới của buổi live:
+         luôn hiện, dễ đọc, không che ban thờ / câu đối / bia công đức. */
+      .live-guide {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 5;
+        text-align: center;
+        line-height: 1.5;
+        padding: 7px 12px 8px;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: #ffe9b0;
+        background: linear-gradient(180deg, rgba(38, 22, 8, 0.84), rgba(24, 13, 4, 0.93));
+        border-top: 1.5px solid rgba(217, 164, 65, 0.75);
+        pointer-events: none;
+      }
+      .live-guide b { color: #ffd968; font-weight: 700; white-space: nowrap; }
+      @media (prefers-reduced-motion: reduce) {
+        .welcome-banner { transition: opacity 0.2s ease; transform: translate(-50%, 0); }
+      }
+      @media (max-width: 560px) {
+        .welcome-banner { bottom: 148px; padding: 9px 14px 8px; }
+        .welcome-banner .wb-text { font-size: 14px; }
+        .welcome-banner .wb-sub { font-size: 10.5px; }
+        .live-guide { font-size: 11.3px; padding: 6px 8px 7px; }
+      }
       /* Hòm công đức dời sang phía trái tượng Phật để khoảng giữa chánh
          điện thoáng cho dòng Cầu Bình An và băng câu đối lớn bên trái */
       .merit-box { left: 10px; top: 318px; }
@@ -925,7 +993,7 @@
         .couplet.left { left: 21%; }
         .couplet.right { left: 79%; }
         .merit-box { left: 8px; right: auto; top: 246px; bottom: auto; }
-        .gift-tag { bottom: 52px; font-size: 11px; padding: 5px 11px; max-width: 56%; }
+        .gift-tag { bottom: 108px; font-size: 11px; padding: 5px 11px; max-width: 56%; }
       }
       /* ---- Nút Full sảnh Cầu Bình An: mở riêng chánh điện lên toàn màn hình ---- */
       .hall-bar {
@@ -1043,6 +1111,11 @@
             <p class="mb-empty" id="meritBoardEmpty">Chưa có công đức — tặng quà trên live TikTok để ghi danh</p>
           </aside>
           <div class="gift-tag" id="giftTag" role="status" aria-live="polite"></div>
+          <div class="welcome-banner" id="welcomeBanner" role="status" aria-live="polite" aria-hidden="true">
+            <p class="wb-text" id="welcomeText"></p>
+            <p class="wb-sub">Nam mô A Di Đà Phật — chúc Phật tử thân tâm an lạc, vạn sự bình an 🪷</p>
+          </div>
+          <div class="live-guide" aria-label="Hướng dẫn cho khách xem live">🙏 Khách trên live gõ <b>!dang huong</b> để dâng hương · <b>!vai lay</b> để vái lạy · <b>!thinh chuong</b> để thỉnh chuông · tặng quà để ghi danh <b>Bia Công Đức</b></div>
         </div>
 
         <div class="controls">
@@ -1104,6 +1177,16 @@
           một <strong>cuốn thư chúc lành sẽ hiện ngay giữa chánh điện</strong> kèm tiếng chuông, ghi rõ tên người tặng và món quà,
           để cả phòng live cùng đọc được. Nhiều quà đến cùng lúc sẽ hiện lần lượt, không mất lời chúc nào.
           Kèm theo đó, một nhãn nhỏ <strong>“Cầu Bình An – {tên} tặng {quà}”</strong> hiện trong sân chùa ngay dưới chánh điện.
+        </p>
+        <p style="margin-top:10px">
+          <strong>Chào khách TikTok mới vào sảnh:</strong> khi server đưa một khách từ phòng live vào chùa qua sự kiện
+          <em>new_user</em> với định danh hoặc tên mang tiền tố <em>tt_</em> (nhân vật khách TikTok), trang sẽ hiện trong sảnh một bảng chào trang trọng
+          <strong>“🙏 {Tên khách} đã vào sảnh chùa”</strong> trong ít giây — nhiều khách vào cùng lúc thì xếp hàng hiện lần lượt,
+          khách vào quá đông sẽ gộp chung một lời chào — và <strong>nhân vật của khách cúi chào một cái</strong> ngay khi xuất hiện.
+          Cầu nối cũng có thể gọi trực tiếp <em>window.chaoPhatTuMoi({ ten: "Tên khách" })</em> hoặc <em>postMessage</em> một gói
+          <em>{ type: "tiktok_member", name }</em>. Ở sát đáy khung sảnh luôn có sẵn <strong>dòng hướng dẫn cố định cho khách xem live</strong>:
+          gõ <em>!dang huong</em> để dâng hương · <em>!vai lay</em> để vái lạy · <em>!thinh chuong</em> để thỉnh chuông · tặng quà để ghi danh Bia Công Đức —
+          luồng dâng hương qua bình luận vẫn do server và TikFinity đảm nhiệm như trước, trang chỉ chào khách và hướng dẫn rõ ràng.
         </p>
         <p style="margin-top:10px">
           <strong>Bia công đức (tấm bia đá ở góc phải chánh điện, đối diện với chuông ở góc trái):</strong> server tính điểm từ quà tặng trên TikTok Live
@@ -2947,11 +3030,64 @@
         }
         // Kênh 3: hàm toàn cục cho cầu nối / tiện ích mở rộng gọi trực tiếp
         window.hienLoiChucQuaTang = hienLoiChucQuaTang;
+
+        /* ----- LỜI CHÀO KHI KHÁCH TIKTOK VỪA VÀO SẢNH CHÙA -----
+           Khi server đưa một khách TikTok vào chùa (sự kiện "new_user" với
+           nhân vật tt_<tên>), trang hiện trong sảnh một bảng chào trang
+           trọng "🙏 <Tên khách> đã vào sảnh chùa" trong ít giây, đồng thời
+           nhân vật của khách cúi chào một cái ngay khi xuất hiện.
+           Nhiều khách vào cùng lúc thì lời chào xếp hàng hiện lần lượt;
+           nếu khách vào quá đông, gộp phần còn lại vào cùng một lời chào
+           để bảng không chạy mãi. Cầu nối cũng có thể gọi trực tiếp
+           window.chaoPhatTuMoi({ ten: "Tên khách" }) hoặc postMessage
+           { type: "tiktok_member" | "tiktok_join", name }. */
+        var welcomeBanner = document.getElementById("welcomeBanner");
+        var welcomeTextEl = document.getElementById("welcomeText");
+        var welcomeQueue = [];
+        var welcomeShowing = false;
+        var welcomeRecent = {};
+        function showNextWelcome() {
+          if (!welcomeQueue.length) {
+            welcomeShowing = false;
+            if (welcomeBanner) { welcomeBanner.classList.remove("show"); welcomeBanner.setAttribute("aria-hidden", "true"); }
+            return;
+          }
+          welcomeShowing = true;
+          var nm = welcomeQueue.shift();
+          var extra = 0;
+          if (welcomeQueue.length >= 3) { extra = welcomeQueue.length; welcomeQueue.length = 0; }
+          if (welcomeTextEl) {
+            welcomeTextEl.innerHTML = extra > 0
+              ? "🙏 <strong>" + escapeHtml(nm) + "</strong> cùng <strong>" + extra + " Phật tử</strong> khác đã vào sảnh chùa"
+              : "🙏 <strong>" + escapeHtml(nm) + "</strong> đã vào sảnh chùa";
+          }
+          if (welcomeBanner) { welcomeBanner.classList.add("show"); welcomeBanner.setAttribute("aria-hidden", "false"); }
+          setTimeout(showNextWelcome, 4000);
+        }
+        function chaoPhatTuMoi(name, userObj) {
+          var nm = String(name == null ? "" : name).replace(/^tt_/i, "").trim().slice(0, 40);
+          if (!nm) nm = "Phật tử";
+          // Nhân vật của khách cúi chào một cái khi vừa xuất hiện trong sảnh
+          if (userObj) {
+            var target = userObj;
+            setTimeout(function () { if (target.action === "walking") beginBow(target); }, 450);
+          }
+          var now = Date.now();
+          if (welcomeRecent[nm] && now - welcomeRecent[nm] < 6000) return; // vừa chào khách này rồi — không lặp bảng chào
+          welcomeRecent[nm] = now;
+          welcomeQueue.push(nm);
+          if (!welcomeShowing) showNextWelcome();
+        }
+        window.chaoPhatTuMoi = function (data) {
+          if (data && typeof data === "object") chaoPhatTuMoi(giftField(data, ["ten", "name", "username", "userName", "nickname", "displayName", "uniqueId"]));
+          else chaoPhatTuMoi(data);
+        };
         // Kênh 2: postMessage từ cửa sổ cầu nối TikTok Live chạy cùng máy
         window.addEventListener("message", function (e) {
           var d = e && e.data;
           if (d && typeof d === "object" && (d.type === "tiktok_gift" || d.type === "gift")) hienLoiChucQuaTang(d);
           if (d && typeof d === "object" && d.type === "merit_board") renderMeritBoard(d);
+          if (d && typeof d === "object" && (d.type === "tiktok_member" || d.type === "tiktok_join" || d.type === "member_join")) chaoPhatTuMoi(giftField(d, ["ten", "name", "username", "userName", "nickname", "displayName", "uniqueId"]));
         });
         // Nút xem thử: để chủ chùa thấy trước cuốn thư trông ra sao
         var btnGiftDemo = document.getElementById("btnGiftDemo");
@@ -3340,6 +3476,12 @@
               note("<strong>" + genderSymbol(rg2) + " " + escapeHtml(u.name) + " — " + genderLabel(rg2) + "</strong> vừa vào chùa.");
               addChatSys(genderSymbol(rg2) + " " + u.name + " — " + genderLabel(rg2) + " vừa vào chùa.");
               updateCount();
+              // Khách từ TikTok Live (định danh / tên có tiền tố tt_): hiện
+              // bảng chào trang trọng trong sảnh + nhân vật cúi chào một cái
+              var ttRawName = String(nu.name || nu.displayName || "");
+              if (String(data.id).indexOf("tt_") === 0 || ttRawName.indexOf("tt_") === 0) {
+                chaoPhatTuMoi(u.name, u);
+              }
             } else if (nu.name || nu.gender) {
               users[data.id].name = nu.name || users[data.id].name;
               users[data.id].gender = normalizeGender(nu.gender || users[data.id].gender);
