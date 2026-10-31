@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-10-31.7" />
+    <meta name="chua-build" content="2026-10-31.8" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1682,6 +1682,52 @@
           if (u.pendingMeditate && u.homeCushion !== null && u.homeCushion !== undefined) return true;
           return headToTikTokSeat(u);
         }
+        /* ---- Vòng quét xếp nệm TOÀN DIỆN cho khách TikTok ----
+           Luật siết chặt: hễ còn nệm trống thì KHÔNG khách TikTok nào
+           được đứng trong sảnh. Quét lại mọi khách chưa ngồi, bất kể
+           khách đang ở trạng thái sót nào:
+           - chưa có nệm nhà → cấp ngay một nệm trống và đi tới ngồi;
+           - đã giữ chỗ nệm nhà (homeCushion) nhưng đang đứng rảnh —
+             ca sót kinh điển: bản chụp current_users lúc khách đang
+             làm lễ chỉ "giữ chỗ" mà không cho khách di chuyển, lễ phía
+             server kết thúc không qua vòng lặp của trang này thì khách
+             đứng mãi — → cho khách đi về đúng nệm nhà ngồi ngay;
+           - đang bước về nệm (pendingMeditate) mà nệm đích đã bị mất /
+             bị người khác ngồi mất → cấp lại nệm trống khác; đích còn
+             đúng thì ghim lại tọa độ đích vào đúng nệm, tránh bị kéo
+             lệch khỏi đường về nệm.
+           Bỏ qua khách đang làm lễ hoặc đang trên đường ra làm lễ
+           (dâng hương / vái lạy / thỉnh chuông): lễ xong vòng lặp chính
+           tự đưa khách về nệm nhà ngồi, vòng quét này là lưới dự phòng
+           nếu đường về đó trục trặc. Hết nệm trống (đủ 32 khách ngồi)
+           thì khách thừa đứng chờ như luật cũ — lần quét sau có nệm
+           trống ra là ngồi vào ngay. */
+        function seatWaitingTikTokGuests() {
+          Object.keys(users).forEach(function (id) {
+            if (id === myId) return;
+            var u = users[id];
+            if (!u || !u.isTikTok) return;
+            if (u.action === "meditating") return; // đã ngồi yên trên nệm
+            if (u.action === "offering" || u.action === "bowing" || u.action === "belling") return; // đang làm lễ
+            if (u.pendingOffer || u.pendingBow || u.pendingBell) return; // đang trên đường ra làm lễ
+            if (u.pendingMeditate) {
+              // Đang bước về nệm: kiểm tra nệm đích còn là của khách không
+              var ci = (u.cushion !== null && u.cushion !== undefined) ? u.cushion : u.homeCushion;
+              if (ci === null || ci === undefined || !CUSHIONS[ci] || cushionTaken(ci, u)) {
+                headToTikTokSeat(u); // mất nệm đích: cấp lại nệm trống khác
+              } else {
+                // Ghim lại đích đến đúng tọa độ nệm nhà của khách
+                if (u.cushion === null || u.cushion === undefined) u.cushion = ci;
+                u.tx = CUSHIONS[ci].x;
+                u.ty = CUSHIONS[ci].y;
+              }
+              return;
+            }
+            // Đang đứng rảnh (có hoặc chưa có nệm nhà): có nệm trống là
+            // đi tới ngồi ngay; hết nệm thì giữ nguyên đứng chờ.
+            headToTikTokSeat(u);
+          });
+        }
         function nearestFreeCushion(u) {
           var best = -1, bestD = Infinity;
           CUSHIONS.forEach(function (c, i) {
@@ -3048,19 +3094,14 @@
             }
           });
 
-          // Khách TikTok đang đứng chờ (lúc vào thì nệm đã kín): hễ có
-          // nệm trống ra — khách khác rời chùa hoặc làm lễ xong đổi chỗ —
-          // thì tự bước tới ngồi, không cần ai nhắc.
+          // Vòng quét xếp nệm mỗi ~1,2 giây: BẤT KỲ khách TikTok nào
+          // chưa ngồi mà còn nệm trống đều được cho đi tới ngồi ngay —
+          // khách mới vào sót xếp chỗ, khách vừa có nệm trống ra vì
+          // khách khác rời chùa, khách có nệm nhà mà đang đứng rảnh,
+          // khách mất nệm đích giữa đường về... không sót một ai.
           if (t - lastSeatCheck > 1.2) {
             lastSeatCheck = t;
-            Object.keys(users).forEach(function (id) {
-              if (id === myId) return;
-              var su = users[id];
-              if (su && su.isTikTok && (su.homeCushion === null || su.homeCushion === undefined) &&
-                  su.action === "walking" && !su.pendingOffer && !su.pendingMeditate && !su.pendingBow && !su.pendingBell) {
-                assignTikTokSeat(su);
-              }
-            });
+            seatWaitingTikTokGuests();
           }
 
           // Gửi vị trí lên server (giới hạn ~8 lần/giây) khi đang đi
@@ -3988,6 +4029,9 @@
           var nm = displayNameOf(u, false);
           var gd = u.gender;
           delete users[id];
+          // Nệm của khách vừa rời lập tức trống ra: xếp NGAY cho khách
+          // TikTok đang đứng chờ vào ngồi, không đợi tới vòng quét định kỳ.
+          seatWaitingTikTokGuests();
           updateCount();
           addChatSys(genderSymbol(gd) + " " + nm + " đã rời chùa.");
           note("<strong>" + genderSymbol(gd) + " " + escapeHtml(nm) + "</strong> đã rời chùa — nhân vật của họ đã biến mất khỏi chánh điện.");
@@ -4205,6 +4249,11 @@
                 else assignTikTokSeat(ru);
               } else if (ru.action === "meditating") sitRemoteOnCushion(ru);
             });
+            // Quét lại toàn diện ngay sau mỗi bản chụp danh sách (kể cả
+            // bản gửi lại khi nối lại kết nối): khách TikTok nào chưa
+            // ngồi mà còn nệm trống thì đi tới ngồi ngay trong bản chụp
+            // này, không chờ vòng quét định kỳ.
+            seatWaitingTikTokGuests();
             updateCount();
           });
 
