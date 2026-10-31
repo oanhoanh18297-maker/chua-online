@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-10-31.9" />
+    <meta name="chua-build" content="2026-10-31.10" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -321,8 +321,31 @@
         display: none;
       }
       .gift-banner .gb-queue.on { display: block; }
+      /* Hạng quà vừa (5–99 xu): khung tri ân lớn và rực hơn, viền dày hơn */
+      .gift-banner.tier-medium {
+        border-width: 3px;
+        padding-top: 3.4cqw; padding-bottom: 3.2cqw;
+        box-shadow: 0 18px 44px rgba(24, 8, 2, 0.65), 0 0 34px rgba(255, 190, 60, 0.35), inset 0 0 0 3px rgba(90, 26, 10, 0.85), inset 0 0 0 6px rgba(217, 164, 65, 0.7);
+      }
+      .gift-banner.tier-medium .gb-thanks { font-size: 3.2cqw; }
+      .gift-banner.tier-medium .gb-who { font-size: 4.1cqw; }
+      .gift-banner.tier-medium .gb-bless { font-size: 4.8cqw; }
+      /* Hạng quà lớn (từ 100 xu) — ĐẠI LỄ: khung vàng rực riêng, nhịp sáng nhẹ */
+      .gift-banner.tier-grand {
+        border: 3px solid #ffd968;
+        background:
+          radial-gradient(180px 40px at 50% 0, rgba(255, 226, 140, 0.55), transparent 70%),
+          linear-gradient(180deg, #b8860b, #8a5a08 45%, #6e2113);
+        box-shadow: 0 22px 54px rgba(24, 8, 2, 0.7), 0 0 54px rgba(255, 200, 60, 0.55), inset 0 0 0 3px rgba(110, 33, 19, 0.8), inset 0 0 0 6px rgba(255, 217, 104, 0.8);
+        animation: grandBannerPulse 1.6s ease-in-out infinite alternate;
+      }
+      .gift-banner.tier-grand .gb-thanks { font-size: 3.6cqw; color: #fff3d6; letter-spacing: 0.5cqw; }
+      .gift-banner.tier-grand .gb-who { font-size: 4.6cqw; }
+      .gift-banner.tier-grand .gb-bless { font-size: 5.2cqw; color: #fff8e1; }
+      @keyframes grandBannerPulse { from { filter: brightness(1); } to { filter: brightness(1.13); } }
       @media (prefers-reduced-motion: reduce) {
         .gift-banner { transition: opacity 0.2s ease; transform: translate(-50%, 0); }
+        .gift-banner.tier-grand { animation: none; }
       }
       @media (max-width: 560px) {
         .gift-banner { padding: 10px 16px 9px; top: 8px; }
@@ -1241,7 +1264,7 @@
             <p class="wb-text" id="welcomeText"></p>
             <p class="wb-sub">Nam mô A Di Đà Phật — chúc Phật tử thân tâm an lạc, vạn sự bình an 🪷</p>
           </div>
-          <div class="live-guide" aria-label="Hướng dẫn cho khách xem live">🙏 Khách trên live gõ <b>!dang huong</b> để dâng hương · <b>!vai lay</b> để vái lạy · <b>!thinh chuong</b> để thỉnh chuông · gõ <b>a di đà phật</b> để niệm Phật · tặng quà để ghi danh <b>Bia Công Đức</b></div>
+          <div class="live-guide" aria-label="Hướng dẫn cho khách xem live">🙏 Khách trên live gõ <b>!dang huong</b> để dâng hương · <b>!vai lay</b> để vái lạy · <b>!thinh chuong</b> để thỉnh chuông · gõ <b>a di đà phật</b> để niệm Phật · ghi <b>lời cầu nguyện</b> để thả đèn hoa đăng · tặng quà để ghi danh <b>Bia Công Đức</b></div>
         </div>
 
         <div class="controls">
@@ -1250,6 +1273,7 @@
           <button class="btn-primary" id="btnMeditate" type="button">🧘 Tọa Thiền</button>
           <button class="btn-bell" id="btnBell" type="button">🔔 Thỉnh Chuông</button>
           <button class="btn-ghost active" id="btnSound" type="button" aria-pressed="true">🎵 Nhạc thiền: Bật</button>
+          <button class="btn-ghost" id="btnVoice" type="button" aria-pressed="false" title="Đọc thành tiếng lời cảm tạ khi tặng quà, lời cầu nguyện và tên quẻ bằng giọng của trình duyệt">🔊 Giọng đọc: Tắt</button>
           <select class="music-select" id="musicMode" aria-label="Chọn kiểu nhạc nền">
             <option value="youtube-sleep" selected>🎧 Pháp thoại trước khi ngủ (YouTube)</option>
             <option value="youtube">🎧 Nhạc thiền An Nhiên (YouTube)</option>
@@ -1294,6 +1318,7 @@
           <input id="serverUrl" type="url" value="http://localhost:3000" aria-label="Địa chỉ server chùa" spellcheck="false" />
           <button class="btn-ghost" id="btnConnect" type="button">Kết nối server</button>
           <button class="btn-ghost" id="btnGiftDemo" type="button">🎁 Xem thử lời chúc tặng quà</button>
+          <button class="btn-ghost" id="btnFxDemo" type="button">🏮 Xem thử Đại Lễ &amp; Đèn Hoa Đăng</button>
           <span class="conn-status" id="connStatus">Chưa kết nối — bạn vẫn vào chánh điện, dâng hương, vái lạy, thiền và thỉnh chuông được một mình.</span>
         </div>
         <p style="margin-top:14px">
@@ -1333,6 +1358,16 @@
           (có số xu thì tính theo xu) và gửi xuống qua sự kiện <em>merit_board</em> với dữ liệu
           <em>{ entries: [{ name, points }] }</em> ngay khi kết nối và mỗi khi điểm thay đổi —
           trang chỉ lắng nghe và vẽ lại bảng xếp hạng tối đa 10 dòng, điểm cao xếp trước, không tự cộng điểm.
+        </p>
+        <p style="margin-top:10px">
+          <strong>Giọng đọc, quà theo hạng xu và đèn hoa đăng:</strong> nút <em>🔊 Giọng đọc</em> ở khu điều khiển bật/tắt giọng đọc của trình duyệt
+          (đọc theo hàng đợi, không đọc chồng; đang đọc thì nhạc nền tự nhỏ xuống) — đọc lời cảm tạ kèm tên khách + tên quà khi có quà tặng,
+          đọc tên khách + lời khấn khi khách gửi <strong>lời cầu nguyện</strong> qua chat, và đọc tên khách + tên quẻ khi có kết quả gieo quẻ;
+          ở màn hình phát <em>?full</em> giọng đọc mặc định bật. Nghi lễ theo số xu của món quà (trường <em>coins/diamond</em> trong gói quà):
+          <strong>1–4 xu</strong> giữ lễ thường; <strong>5–99 xu</strong> thêm tiếng chuông và khung tri ân lớn hơn;
+          <strong>từ 100 xu</strong> mở <strong>Đại Lễ</strong> riêng — mưa cánh sen vàng phủ sảnh, hào quang quanh ban thờ, thỉnh chuông và khung tri ân vàng rực.
+          Khi khách gửi lời cầu nguyện qua chat (dòng có <em>cầu / nguyện / chúc / nam mô</em>, không tính các lệnh <em>!dang huong · !vai lay · !thinh chuong</em>),
+          một <strong>đèn hoa đăng</strong> ghi tên khách và lời khấn rút gọn sẽ bay chậm lên trời từ vị trí nhân vật của khách rồi tan nhẹ.
         </p>
       </section>
 
@@ -1454,6 +1489,7 @@
         var btnMeditate = document.getElementById("btnMeditate");
         var btnBell = document.getElementById("btnBell");
         var btnSound = document.getElementById("btnSound");
+        var btnVoice = document.getElementById("btnVoice");
         var musicModeSel = document.getElementById("musicMode");
         var musicVolEl = document.getElementById("musicVol");
         var musicMode = "youtube-sleep";
@@ -1520,6 +1556,7 @@
             p.musicMode = musicMode;
             p.musicVolume = musicVolume;
             p.soundOn = soundOn;
+            p.voiceOn = voiceOn;
             window.localStorage.setItem(PREFS_KEY, JSON.stringify(p));
           } catch (e) { /* trình duyệt chặn lưu trữ: bỏ qua, trang vẫn chạy như cũ */ }
         }
@@ -1581,6 +1618,13 @@
         var socket = null;
         var connected = false;
         var soundOn = true;
+        var voiceOn = false; // giọng đọc thành tiếng: mặc định BẬT ở ?full, tôn trọng lựa chọn đã lưu (xem restorePrefs)
+        function updateVoiceBtn() {
+          if (!btnVoice) return;
+          btnVoice.textContent = voiceOn ? "🔊 Giọng đọc: Bật" : "🔇 Giọng đọc: Tắt";
+          btnVoice.classList.toggle("active", voiceOn);
+          btnVoice.setAttribute("aria-pressed", voiceOn ? "true" : "false");
+        }
         var meditateSince = null;
         var lastEmit = 0;
         var lastBellAt = 0;
@@ -1847,7 +1891,9 @@
            tên và nhạc thiền vẫn y nguyên, không phải đặt lại. */
         (function restorePrefs() {
           var p = loadPrefs();
-          if (!p) return;
+          if (!p) { if (LIVE_FULL_MODE) { voiceOn = true; updateVoiceBtn(); } return; }
+          if (typeof p.voiceOn === "boolean") { voiceOn = p.voiceOn; updateVoiceBtn(); }
+          else if (LIVE_FULL_MODE) { voiceOn = true; updateVoiceBtn(); }
           if (p.musicMode && musicModeSel && (p.musicMode === "youtube" || p.musicMode === "youtube-sleep" || p.musicMode === "ambient" || p.musicMode === "chant")) {
             musicMode = p.musicMode;
             musicModeSel.value = p.musicMode;
@@ -2348,6 +2394,169 @@
         ["pointerdown", "keydown", "touchstart"].forEach(function (evt) {
           document.addEventListener(evt, function () { if (soundOn) tryStartMusic(); }, { passive: true });
         });
+
+        /* ================= GIỌNG ĐỌC THÀNH TIẾNG (speechSynthesis) =================
+           Đọc theo HÀNG ĐỢI, không bao giờ đọc chồng: (a) lời cảm tạ khi
+           khách tặng quà — kèm tên khách + tên quà; (b) lời cầu nguyện qua
+           chat — kèm tên khách + lời khấn; (c) kết quả gieo quẻ — kèm tên
+           khách + tên quẻ (qua window.chuaSpeakQue). Ưu tiên giọng vi-VN
+           nếu máy có, không có thì giọng mặc định; trình duyệt không hỗ
+           trợ thì bỏ qua êm, không lỗi trang. Đang đọc thì nhạc nền tự
+           nhỏ xuống (ducking), đọc xong trả âm lượng cũ. */
+        var voiceQueue = [];
+        var voiceSpeaking = false;
+        var voiceDucked = false;
+        function duckMusic(on) {
+          if (on === voiceDucked) return;
+          voiceDucked = on;
+          try {
+            if (isYtMode(musicMode) && ytPlayer && ytReady && ytPlayer.setVolume) {
+              ytPlayer.setVolume(Math.max(0, Math.round(ytVolumeValue() * (on ? 0.3 : 1))));
+            }
+          } catch (e) {}
+          try {
+            if (chant && chant.running && chant.master && audioCtx) {
+              var baseVol = musicMode === "ambient" ? (0.14 + musicVolume * 0.5) : 0.5;
+              chant.master.gain.setTargetAtTime(on ? baseVol * 0.3 : baseVol, audioCtx.currentTime, 0.35);
+            }
+          } catch (e2) {}
+        }
+        function pickViVoice() {
+          try {
+            var vs = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+            for (var i = 0; i < vs.length; i++) { if (/^vi([-_]|$)/i.test(vs[i].lang || "")) return vs[i]; }
+            for (var j = 0; j < vs.length; j++) { if ((vs[j].lang || "").toLowerCase().indexOf("vi") !== -1) return vs[j]; }
+          } catch (e) {}
+          return null;
+        }
+        if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+          try { window.speechSynthesis.onvoiceschanged = function () { pickViVoice(); }; } catch (e) {}
+        }
+        function speakNext() {
+          if (voiceSpeaking) return;
+          if (!voiceOn || !window.speechSynthesis || !window.SpeechSynthesisUtterance) { voiceQueue.length = 0; duckMusic(false); return; }
+          var text = voiceQueue.shift();
+          if (!text) { duckMusic(false); return; }
+          voiceSpeaking = true;
+          duckMusic(true);
+          var done = function () {
+            voiceSpeaking = false;
+            if (voiceQueue.length) setTimeout(speakNext, 180);
+            else duckMusic(false);
+          };
+          try {
+            var u = new SpeechSynthesisUtterance(text);
+            u.lang = "vi-VN";
+            var v = pickViVoice();
+            if (v) u.voice = v;
+            u.rate = 0.96;
+            u.pitch = 1;
+            u.volume = 1;
+            u.onend = done;
+            u.onerror = done;
+            window.speechSynthesis.speak(u);
+            // Phòng khi onend không bao giờ về (một số trình duyệt di động):
+            setTimeout(function () { if (voiceSpeaking && !window.speechSynthesis.speaking && !window.speechSynthesis.pending) done(); }, Math.max(6000, text.length * 260));
+          } catch (e) { done(); }
+        }
+        function enqueueSpeak(text) {
+          if (!voiceOn) return;
+          if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+          var clean = String(text == null ? "" : text).replace(/\s+/g, " ").trim().slice(0, 240);
+          if (!clean) return;
+          if (voiceQueue.length > 5) voiceQueue.shift(); // hàng đợi quá dài thì bỏ câu cũ nhất, tránh đọc dồn dập lạc hậu
+          voiceQueue.push(clean);
+          speakNext();
+        }
+        window.chuaDocThanhTieng = enqueueSpeak;
+        window.chuaSpeakQue = function (tenKhach, tenQue) {
+          var nm = String(tenKhach == null ? "" : tenKhach).trim() || "Phật tử";
+          var qn = String(tenQue == null ? "" : tenQue).trim();
+          if (!qn) return;
+          enqueueSpeak("Phật tử " + nm + " vừa gieo được quẻ " + qn + ". Nam mô A Di Đà Phật, chúc Phật tử thân tâm an lạc.");
+        };
+        if (btnVoice) btnVoice.addEventListener("click", function () {
+          voiceOn = !voiceOn;
+          updateVoiceBtn();
+          savePrefs();
+          if (!voiceOn) {
+            voiceQueue.length = 0;
+            try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
+            voiceSpeaking = false;
+            duckMusic(false);
+            note("Đã tắt <strong>giọng đọc thành tiếng</strong>. Lời cảm tạ, lời cầu nguyện và tên quẻ vẫn hiện bằng chữ như thường.");
+          } else {
+            note("Đã bật <strong>giọng đọc thành tiếng</strong> — chùa sẽ đọc lời cảm tạ khi có quà tặng, đọc lời cầu nguyện của khách và đọc tên quẻ khi gieo quẻ (ưu tiên giọng tiếng Việt nếu máy có).");
+            enqueueSpeak("Giọng đọc đã bật. Nam mô A Di Đà Phật.");
+          }
+        });
+        updateVoiceBtn();
+
+        /* ---- Nhận diện LỜI CẦU NGUYỆN trong chat ----
+           Dòng chat là lời cầu nguyện khi có chứa cầu / nguyện / chúc /
+           nam mô (so khớp trên bản bỏ dấu). Các lệnh lễ !dang huong,
+           !vai lay, !thinh chuong KHÔNG phải lời cầu nguyện. */
+        function flatNoAccent(s) {
+          return String(s == null ? "" : s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase();
+        }
+        function isTempleCommand(text) {
+          var t = String(text == null ? "" : text).trim();
+          if (t.charAt(0) === "!") return true;
+          var f = flatNoAccent(t);
+          return /(^|\s)(dang huong|vai lay|thinh chuong)(\s|$)/.test(f) && f.indexOf("!") !== -1;
+        }
+        function isPrayerText(text) {
+          if (!text || isTempleCommand(text)) return false;
+          var f = flatNoAccent(text);
+          if (f.indexOf("nam mo") !== -1 || f.indexOf("nammo") !== -1) return true;
+          if (f.indexOf("cau nguyen") !== -1 || f.indexOf("caunguyen") !== -1) return true;
+          return /(^|[^a-z])(cau|nguyen|chuc)([^a-z]|$)/.test(f);
+        }
+
+        /* ---- ĐÈN HOA ĐĂNG CẦU NGUYỆN + ĐẠI LỄ (trạng thái hiệu ứng) ----
+           Đèn thả từ vị trí nhân vật của khách, bay chậm lên trời, trên
+           đèn hiện tên khách + lời khấn rút gọn; bay hết thì tan nhẹ.
+           Đại lễ (quà từ 100 xu): grandCeremonyUntil mở hào quang quanh
+           ban thờ + mưa cánh sen vàng trong vòng lặp vẽ chính. */
+        var lanterns = [];
+        var pendingLanterns = [];
+        var grandCeremonyUntil = 0;
+        function spawnPrayerLantern(u, name, text) {
+          if (!u) return false;
+          if (lanterns.length >= 6) return true; // quá nhiều đèn cùng lúc: bỏ qua êm, không chồng chất
+          var shortText = String(text == null ? "" : text).replace(/\s+/g, " ").trim();
+          if (shortText.length > 72) shortText = shortText.slice(0, 72).trim() + "…";
+          lanterns.push({
+            x: Math.max(70, Math.min(W - 70, u.x)),
+            y: u.y - 46,
+            baseX: Math.max(70, Math.min(W - 70, u.x)),
+            vy: 26 + Math.random() * 6,
+            sway: Math.random() * 6.28,
+            name: String(name == null ? "" : name).replace(/^tt_/i, "").trim().slice(0, 24) || "Phật tử",
+            text: shortText,
+            born: clockT,
+            life: 16
+          });
+          return true;
+        }
+        function queuePrayerLantern(sid, nm, text) {
+          var u = (typeof findChatUser === "function") ? findChatUser(sid, nm) : null;
+          if (u) { spawnPrayerLantern(u, nm, text); return; }
+          pendingLanterns.push({ sid: sid, nm: nm, text: text, until: Date.now() + 5000 });
+        }
+        window.thuDenHoaDang = function (name, text) { // xem thử thủ công từ console / cầu nối
+          spawnPrayerLantern({ x: 270, y: 700 }, name || "Phật tử", text || "Cầu nguyện bình an cho gia đình");
+        };
+        setInterval(function () {
+          if (!pendingLanterns.length) return;
+          var nowL = Date.now();
+          pendingLanterns = pendingLanterns.filter(function (p) {
+            if (nowL > p.until) return false;
+            var u = (typeof findChatUser === "function") ? findChatUser(p.sid, p.nm) : null;
+            if (u) { spawnPrayerLantern(u, p.nm, p.text); return false; }
+            return true;
+          });
+        }, 400);
 
         /* ---------------- Hiệu ứng cảnh ---------------- */
         var smoke = [], petals = [], rings = [];
@@ -3053,6 +3262,98 @@
           ringVisual(BELL_POS.x, BELL_POS.y);
         }
 
+        /* ---- Vẽ ĐẠI LỄ: hào quang lớn quanh ban thờ (quà từ 100 xu) ---- */
+        function drawGrandCeremony(t) {
+          if (t >= grandCeremonyUntil) return;
+          var remain = grandCeremonyUntil - t;
+          var inten = Math.min(1, remain / 2);
+          var pulse = 0.5 + 0.5 * Math.sin(t * 2.2);
+          var rg = ctx.createRadialGradient(270, 165, 12, 270, 165, 250);
+          rg.addColorStop(0, "rgba(255,214,110," + (0.30 * inten).toFixed(3) + ")");
+          rg.addColorStop(0.55, "rgba(255,190,70," + (0.14 * inten).toFixed(3) + ")");
+          rg.addColorStop(1, "rgba(255,190,70,0)");
+          ctx.fillStyle = rg;
+          ctx.fillRect(10, 0, W - 20, 430);
+          ctx.strokeStyle = "rgba(255,220,130," + (0.45 + 0.3 * pulse * inten).toFixed(3) + ")";
+          ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.arc(270, 152, 88 + pulse * 5, 0, 6.29); ctx.stroke();
+          ctx.lineWidth = 1.6;
+          ctx.beginPath(); ctx.arc(270, 152, 104 + pulse * 6, 0, 6.29); ctx.stroke();
+          ctx.lineWidth = 1;
+          for (var k = 0; k < 3; k++) {
+            var rr2 = 36 + ((t * 46 + k * 72) % 216);
+            ctx.strokeStyle = "rgba(255,210,110," + Math.max(0, (0.34 * (1 - rr2 / 252)) * inten).toFixed(3) + ")";
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(270, 175, rr2, 0, 6.29); ctx.stroke();
+          }
+          ctx.lineWidth = 1;
+        }
+
+        /* ---- Vẽ ĐÈN HOA ĐĂNG: thân đèn giấy phát sáng + bảng nhỏ ghi
+           tên khách và lời khấn rút gọn treo ngay dưới đèn ---- */
+        function drawLanterns(t) {
+          lanterns.forEach(function (L) {
+            var age = t - L.born;
+            var fadeIn = Math.min(1, age / 0.6);
+            var fadeOut = Math.min(1, Math.max(0, (L.life - age) / 2.5), Math.max(0, (L.y - 84) / 80));
+            var a = Math.max(0, Math.min(fadeIn, fadeOut));
+            if (a <= 0) return;
+            ctx.save();
+            ctx.globalAlpha = a;
+            var x = L.x, y = L.y;
+            var glow = ctx.createRadialGradient(x, y, 4, x, y, 54);
+            glow.addColorStop(0, "rgba(255,196,86,0.55)");
+            glow.addColorStop(1, "rgba(255,196,86,0)");
+            ctx.fillStyle = glow;
+            ctx.fillRect(x - 56, y - 56, 112, 112);
+            var bg2 = ctx.createLinearGradient(x - 24, y, x + 24, y);
+            bg2.addColorStop(0, "#e07f35");
+            bg2.addColorStop(0.5, "#ffdc8f");
+            bg2.addColorStop(1, "#e07f35");
+            ctx.fillStyle = bg2;
+            ctx.beginPath(); ctx.ellipse(x, y, 23, 28, 0, 0, 6.29); ctx.fill();
+            ctx.strokeStyle = "rgba(150,84,18,0.55)";
+            ctx.lineWidth = 1;
+            [-13, 0, 13].forEach(function (dx) {
+              ctx.beginPath(); ctx.moveTo(x + dx, y - 25); ctx.quadraticCurveTo(x + dx * 1.25, y, x + dx, y + 25); ctx.stroke();
+            });
+            ctx.beginPath(); ctx.ellipse(x, y, 23, 28, 0, 0, 6.29); ctx.stroke();
+            ctx.fillStyle = "#8a5a10";
+            ctx.fillRect(x - 12, y - 32, 24, 5);
+            ctx.fillRect(x - 12, y + 27, 24, 5);
+            var flick = 0.75 + Math.sin(t * 9 + L.sway * 3) * 0.25;
+            ctx.fillStyle = "rgba(255,150,50," + (0.5 * flick).toFixed(3) + ")";
+            ctx.beginPath(); ctx.arc(x, y + 2, 10, 0, 6.29); ctx.fill();
+            ctx.fillStyle = "#fff3c4";
+            ctx.beginPath(); ctx.arc(x, y + 2, 4.2 * flick + 1.6, 0, 6.29); ctx.fill();
+            // Bảng ghi tên + lời khấn rút gọn
+            ctx.font = "500 10px 'Be Vietnam Pro', sans-serif";
+            var words = String(L.text).split(/\s+/), lines = [], cur = "";
+            words.forEach(function (wd) {
+              var test = cur ? cur + " " + wd : wd;
+              if (ctx.measureText(test).width > 116 && cur) { lines.push(cur); cur = wd; } else cur = test;
+            });
+            if (cur) lines.push(cur);
+            if (lines.length > 3) { lines = lines.slice(0, 3); lines[2] = lines[2] + "…"; }
+            var pw = 136, ph = 20 + lines.length * 13 + 7, py = y + 38;
+            ctx.fillStyle = "rgba(43,26,10,0.9)";
+            ctx.strokeStyle = "rgba(230,180,80,0.9)";
+            ctx.lineWidth = 1.2;
+            rr(x - pw / 2, py, pw, ph, 8); ctx.fill(); ctx.stroke();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "rgba(230,180,80,0.6)";
+            ctx.beginPath(); ctx.moveTo(x, y + 32); ctx.lineTo(x, py); ctx.stroke();
+            ctx.textAlign = "center";
+            ctx.font = "700 11px 'Be Vietnam Pro', sans-serif";
+            ctx.fillStyle = "#ffd968";
+            ctx.fillText("🏮 " + L.name, x, py + 15);
+            ctx.font = "500 10px 'Be Vietnam Pro', sans-serif";
+            ctx.fillStyle = "#ffefd0";
+            lines.forEach(function (ln, li) { ctx.fillText(ln, x, py + 29 + li * 13); });
+            ctx.restore();
+          });
+        }
+
         /* ---------------- Vòng lặp chính ---------------- */
         var lastTs = 0;
         var lastSeatCheck = 0;
@@ -3071,7 +3372,14 @@
             petals.push({ x: 30 + Math.random() * (W - 60), y: 120 + Math.random() * 60, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 1.6, vy: 11 + Math.random() * 9, p: Math.random() * 6, s: 0.7 + Math.random() * 0.7 });
           }
           petals.forEach(function (l) { l.y += l.vy * dt; l.x += Math.sin(t * 1.6 + l.p) * 13 * dt; l.rot += l.vr * dt; });
-          petals = petals.filter(function (l) { return l.y < 486; });
+          petals = petals.filter(function (l) { return l.gold ? l.y < H - 8 : l.y < 486; });
+          // ĐẠI LỄ đang diễn ra: mưa cánh sen VÀNG phủ khắp sảnh
+          if (t < grandCeremonyUntil && Math.random() < dt * 22 && petals.length < 120) {
+            petals.push({ gold: true, x: 24 + Math.random() * (W - 48), y: 60 + Math.random() * 50, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 2.2, vy: 26 + Math.random() * 20, p: Math.random() * 6, s: 0.8 + Math.random() * 0.9 });
+          }
+          // Đèn hoa đăng: bay chậm lên trời, khẽ đu đưa, hết hành trình thì tan
+          lanterns.forEach(function (L) { L.y -= L.vy * dt; L.x = L.baseX + Math.sin(t * 0.9 + L.sway) * 10; });
+          lanterns = lanterns.filter(function (L) { return (t - L.born) < L.life && L.y > 78; });
           // Chuông đu đưa (dao động tắt dần)
           var acc = -38 * bellSwing - 1.4 * bellSwingV;
           bellSwingV += acc * dt; bellSwing += bellSwingV * dt;
@@ -3155,6 +3463,7 @@
           ctx.clearRect(0, 0, W, H);
           drawBackdrop(t);
           drawSideBuddhas(t);
+          drawGrandCeremony(t);
           drawOfferingArea(t);
           drawCushions();
           drawBellStand(t);
@@ -3171,11 +3480,14 @@
             .sort(function (a, b) { return a.u.y - b.u.y; });
           sorted.forEach(function (e) { drawPerson(e.u, e.id === myId, t); });
 
+          // Đèn hoa đăng bay trên sảnh (vẽ sau người để đèn nổi rõ khi bay lên)
+          drawLanterns(t);
+
           // Cánh sen rơi
           petals.forEach(function (l) {
             ctx.save();
             ctx.translate(l.x, l.y); ctx.rotate(l.rot); ctx.scale(l.s, l.s);
-            ctx.fillStyle = "rgba(246,203,214,0.85)";
+            ctx.fillStyle = l.gold ? "rgba(250,205,92,0.92)" : "rgba(246,203,214,0.85)";
             ctx.beginPath(); ctx.ellipse(0, 0, 6, 3, 0, 0, 6.29); ctx.fill();
             ctx.fillStyle = "rgba(255,236,200,0.5)";
             ctx.beginPath(); ctx.ellipse(0, -0.8, 3.4, 1.5, 0, 0, 6.29); ctx.fill();
@@ -3444,6 +3756,7 @@
            và một cuốn thư chúc lành treo giữa chánh điện ~7 giây.
            Nhiều quà đến dồn dập thì xếp hàng, hiện lần lượt từng lời chúc. */
         var giftBanner = document.getElementById("giftBanner");
+        var giftThanksEl = giftBanner ? giftBanner.querySelector(".gb-thanks") : null;
         var giftWhoEl = document.getElementById("giftWho");
         var giftBlessEl = document.getElementById("giftBless");
         var giftQueueEl = document.getElementById("giftQueue");
@@ -3522,15 +3835,38 @@
             return true;
           });
         }, 400);
+        /* ---- QUÀ THEO HẠNG XU ----
+           Số xu lấy từ gói quà của cầu nối/server (coins / diamond…);
+           gói không ghi số xu thì tính là hạng nhỏ như trước.
+           - Nhỏ (1–4 xu): nghi lễ hiện tại.
+           - Vừa (5–99 xu): thỉnh chuông mừng thêm + khung tri ân lớn hơn.
+           - Lớn (từ 100 xu): ĐẠI LỄ riêng — mưa sen vàng + hào quang
+             quanh ban thờ + thỉnh chuông + khung tri ân đặc biệt.
+           Điểm công đức vẫn do server tính như cũ, trang không đổi. */
+        function giftCoinsValue(data, count) {
+          var keys = ["coins", "coin", "totalCoins", "coinAmount", "diamonds", "diamond", "diamondCount", "diamond_count", "xu", "so_xu", "giftCoins", "price"];
+          for (var i = 0; i < keys.length; i++) {
+            var v = parseFloat(data ? data[keys[i]] : NaN);
+            if (isFinite(v) && v > 0) return v;
+          }
+          return 0;
+        }
+        function giftTierOf(coins) { return coins >= 100 ? "grand" : (coins >= 5 ? "medium" : "small"); }
         function showNextGift() {
           if (!giftQueue.length) {
             giftShowing = false;
-            if (giftBanner) { giftBanner.classList.remove("show"); giftBanner.setAttribute("aria-hidden", "true"); }
+            if (giftBanner) { giftBanner.classList.remove("show", "tier-medium", "tier-grand"); giftBanner.setAttribute("aria-hidden", "true"); }
             if (giftTagEl) giftTagEl.classList.remove("show");
             return;
           }
           giftShowing = true;
           var g = giftQueue.shift();
+          var tier = g.tier || "small";
+          if (giftBanner) {
+            giftBanner.classList.toggle("tier-medium", tier === "medium");
+            giftBanner.classList.toggle("tier-grand", tier === "grand");
+          }
+          if (giftThanksEl) giftThanksEl.textContent = tier === "grand" ? "🙏✨ ĐẠI LỄ TRI ÂN ✨🙏" : (tier === "medium" ? "🙏 Tri ân tấm lòng vàng 🙏" : "🙏 Tri ân tấm lòng vàng");
           var bless = GIFT_BLESSINGS[giftBlessIdx % GIFT_BLESSINGS.length].split("{ten}").join(g.name);
           giftBlessIdx++;
           if (giftWhoEl) {
@@ -3560,14 +3896,25 @@
             giftTagEl.textContent = "🪷 Cầu Bình An – " + g.name + " tặng " + g.gift + (g.count > 1 ? " × " + g.count : "");
             giftTagEl.classList.add("show");
           }
-          // Thỉnh chuông mừng + cánh sen vàng rơi khắp chánh điện
+          // Nghi lễ theo hạng xu: nhỏ giữ như cũ; vừa thêm một tiếng
+          // chuông mừng; lớn mở ĐẠI LỄ (hào quang + mưa sen vàng ~9 giây)
           if (soundOn) playBell();
           ringVisual(270, 520);
-          for (var i = 0; i < 14; i++) {
-            petals.push({ x: 60 + Math.random() * (W - 120), y: 90 + Math.random() * 50, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 1.6, vy: 15 + Math.random() * 12, p: Math.random() * 6, s: 0.8 + Math.random() * 0.8 });
+          if (tier === "medium" || tier === "grand") {
+            setTimeout(function () { if (soundOn) playBell(); ringVisual(270, 520); }, 1100);
           }
-          note("<strong>🎁 " + escapeHtml(g.name) + "</strong> vừa tặng <strong>" + escapeHtml(g.gift) + "</strong> trên TikTok Live — lời chúc lành đang hiện trên cuốn thư giữa chánh điện. 🙏");
-          setTimeout(showNextGift, 7000);
+          if (tier === "grand") {
+            setTimeout(function () { if (soundOn) playBell(); ringVisual(270, 520); }, 2300);
+            grandCeremonyUntil = clockT + 9;
+          }
+          var petalN = tier === "grand" ? 34 : (tier === "medium" ? 24 : 14);
+          for (var i = 0; i < petalN; i++) {
+            petals.push({ gold: tier === "grand", x: 60 + Math.random() * (W - 120), y: 90 + Math.random() * 50, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 1.6, vy: 15 + Math.random() * 12, p: Math.random() * 6, s: 0.8 + Math.random() * 0.8 });
+          }
+          // Giọng đọc: đọc lời cảm tạ kèm tên khách + tên quà theo hàng đợi
+          enqueueSpeak((tier === "grand" ? "Đại lễ tri ân. " : "") + "Cảm tạ Phật tử " + g.name + " đã tặng " + g.gift + (g.count > 1 ? " nhân " + g.count : "") + ". " + bless);
+          note("<strong>🎁 " + escapeHtml(g.name) + "</strong> vừa tặng <strong>" + escapeHtml(g.gift) + "</strong>" + (g.coins > 0 ? " (" + g.coins + " xu — " + (tier === "grand" ? "ĐẠI LỄ" : (tier === "medium" ? "lễ tri ân lớn" : "lễ tri ân")) + ")" : "") + " trên TikTok Live — lời chúc lành đang hiện trên cuốn thư giữa chánh điện. 🙏");
+          setTimeout(showNextGift, tier === "grand" ? 9000 : (tier === "medium" ? 8000 : 7000));
         }
         function hienLoiChucQuaTang(data) {
           if (!data || typeof data !== "object") return;
@@ -3575,7 +3922,8 @@
           var gift = giftField(data, ["qua", "gift", "giftName", "gift_name", "ten_qua"]) || "món quà yêu thương";
           var count = parseInt(data.count || data.repeatCount || data.so_luong, 10);
           if (!(count > 0)) count = 1;
-          giftQueue.push({ name: name, gift: gift, count: count });
+          var coins = giftCoinsValue(data, count);
+          giftQueue.push({ name: name, gift: gift, count: count, coins: coins, tier: giftTierOf(coins) });
           // Lạy cảm ơn khi tặng quà: nếu người tặng là khách TikTok đang
           // ngồi nệm trong sảnh, nhân vật của họ đứng dậy ra trước lư
           // hương vái lạy cảm ơn rồi quay về nệm — qua cùng một cửa
@@ -3703,6 +4051,13 @@
         if (btnGiftDemo) btnGiftDemo.addEventListener("click", function () {
           hienLoiChucQuaTang({ ten: "Phật tử Tâm An", qua: "🌹 Hoa Hồng" });
           setTimeout(function () { hienLoiChucQuaTang({ ten: "Phật tử Diệu Hoa", qua: "🪷 Hoa Sen" }); }, 400);
+        });
+        // Nút xem thử Đại Lễ (quà 150 xu) + một đèn hoa đăng cầu nguyện
+        var btnFxDemo = document.getElementById("btnFxDemo");
+        if (btnFxDemo) btnFxDemo.addEventListener("click", function () {
+          hienLoiChucQuaTang({ ten: "Phật tử Tâm An", qua: "🪷 Đài Sen Vàng", coins: 150 });
+          var meDemo = users[myId];
+          if (meDemo) spawnPrayerLantern(meDemo, myDisplayName, "Cầu nguyện cho gia đình bình an, sức khỏe dồi dào");
         });
 
         /* ----- HAI BĂNG CÂU ĐỐI ĐỎ HAI BÊN TƯỢNG PHẬT -----
@@ -3951,6 +4306,9 @@
           chatInput.value = "";
           addChatMsg({ me: true, name: myDisplayName, gender: myGender, text: text });
           setChatBubble(users[myId], text);
+          // Lời cầu nguyện của chính mình cũng thả một đèn hoa đăng từ
+          // vị trí nhân vật của mình bay lên (không đọc lại thành tiếng).
+          if (isPrayerText(text)) spawnPrayerLantern(users[myId], myDisplayName, text);
           if (connected && socket) {
             socket.emit("chat_message", { name: myDisplayName, gender: myGender, text: text });
           }
@@ -4048,6 +4406,15 @@
               var bowUser = findChatUser(sid, nm);
               if (bowUser) remoteBowForUser(bowUser);
             }
+          }
+          // LỜI CẦU NGUYỆN qua chat (có cầu / nguyện / chúc / nam mô,
+          // không phải lệnh lễ): thả một đèn hoa đăng từ vị trí nhân
+          // vật của khách bay lên trời — bong bóng thoại ở trên vẫn giữ
+          // nguyên — và đọc thành tiếng tên khách + lời khấn theo hàng
+          // đợi giọng đọc.
+          if (isPrayerText(text)) {
+            queuePrayerLantern(sid, nm, text);
+            enqueueSpeak("Phật tử " + shownName + " gửi lời cầu nguyện: " + text);
           }
         }
         addChatSys("Chào mừng bạn đến chùa 🙏 Hãy nhắn đôi lời lành cùng mọi người.");
@@ -4566,6 +4933,8 @@
         setTimeout(function(){
           var i; do{i=Math.floor(Math.random()*QUES.length)}while(i===lastQue&&QUES.length>1); lastQue=i; var q=QUES[i];
           box.innerHTML='<span class="badge">Quẻ số '+q.n+' · '+q.hang+'</span><h3 style="margin-top:10px">'+q.ten+'</h3><div class="poem">'+q.tho+'</div><p><strong>Luận giải:</strong> '+q.y+'</p><p><strong>Công việc / Tài lộc:</strong> '+q.vc+'</p><p><strong>Tình duyên / Gia đạo:</strong> '+q.td+'</p><p><strong>Sức khỏe:</strong> '+q.sk+'</p><p style="color:var(--ink-soft)">🙏 Nam Mô A Di Đà Phật — gieo quẻ để nhắc mình sống thiện, không phải để lo sợ. Hãy thắp một nén hương và giữ tâm an.</p>';
+          // Giọng đọc: đọc tên khách + tên quẻ (nếu công tắc giọng đọc đang bật)
+          try { if (window.chuaSpeakQue) { var qnEl=document.getElementById('visitorName'); window.chuaSpeakQue(qnEl&&qnEl.value.trim()?qnEl.value.trim():'Phật tử', q.ten); } } catch(e) {}
           box.scrollIntoView({behavior:'smooth',block:'nearest'});
         },1150);
       }
