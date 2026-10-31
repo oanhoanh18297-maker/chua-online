@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.25" />
+    <meta name="chua-build" content="2026-11-01.28" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1674,21 +1674,22 @@
           <button class="btn-ghost active" id="btnSound" type="button" aria-pressed="true">🎵 Nhạc thiền: Bật</button>
           <button class="btn-ghost" id="btnVoice" type="button" aria-pressed="false" title="Đọc thành tiếng lời cảm tạ khi tặng quà, lời cầu nguyện và tên quẻ bằng giọng của trình duyệt">🔊 Giọng đọc: Tắt</button>
           <select class="music-select" id="musicMode" aria-label="Chọn kiểu nhạc nền">
-            <option value="youtube-sleep" selected>🎧 Pháp thoại trước khi ngủ (YouTube)</option>
-            <option value="youtube">🎧 Nhạc thiền An Nhiên (YouTube)</option>
+            <option value="tonghop" selected>🙏 An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút — mặc định khi vào chùa</option>
+            <option value="chant">🙏 Tụng kinh · gõ mõ · chuông bát — nhạc Phật pháp</option>
             <option value="ambient">🧘 Thiền tịnh tâm · chuông bát &amp; hơi thở</option>
-            <option value="chant">Tụng kinh · gõ mõ</option>
+            <option value="youtube-sleep">🎧 Pháp thoại trước khi ngủ (YouTube)</option>
+            <option value="youtube">🎧 Nhạc thiền An Nhiên (YouTube)</option>
           </select>
           <label class="music-vol" for="musicVol">Âm lượng thiền
-            <input type="range" id="musicVol" min="0" max="100" value="55" aria-label="Âm lượng nhạc thiền" />
+            <input type="range" id="musicVol" min="0" max="100" value="45" aria-label="Âm lượng nhạc thiền" />
           </label>
           <span class="timer" id="medTimer">Đã thiền <strong id="medTime">00:00</strong></span>
-          <p class="music-hint">Nguồn mặc định khi vào chùa là <strong>Pháp thoại trước khi ngủ (YouTube)</strong> — bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ &amp; Chữa Lành Phiền Não | Lời Phật Dạy” của kênh <strong>Gieo Mầm Phước Báu</strong>, phát qua trình phát YouTube chính thức và tự lặp lại; nút bật/tắt và thanh âm lượng ở trên điều khiển luôn nguồn này. Nhạc chỉ bắt đầu sau lần chạm/bấm đầu tiên (quy định của trình duyệt). Nếu video bị chủ kênh chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về kiểu <strong>Thiền tịnh tâm</strong> có sẵn — nền trầm theo nhịp thở khoảng 14 giây, hợp âm trôi chậm và tiếng chuông bát thưa, vang dài rồi tan dần.</p>
+          <p class="music-hint">Nguồn mặc định khi vào chùa là <strong>nhạc nền tổng hợp 🙏 An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút</strong>, chạy theo từng pha xen kẽ: lúc nhạc nền thiền An Nhiên êm nhẹ vang lên (mức nền ~45%) thì tiếng mõ chỉ điểm thưa nhẹ; tới <strong>đợt tụng kinh</strong> thì <strong>nhạc nền tắt hẳn</strong> — chỉ còn tiếng gõ mõ đều chậm và tiếng tụng kinh xa xa, không nhạc nền, không chuông bát chen vào — hết đợt tụng nhạc nền mới nhẹ nhàng trở lại. Cứ đúng <strong>3 phút một lần</strong>, nhạc nền tắt hẳn trước, chỉ còn tiếng mõ, và giọng đọc của chùa đọc <strong>một đoạn pháp ngắn</strong> (kệ Pháp Cú và lời Phật dạy quen thuộc, xoay vòng từng đoạn khác nhau); đọc xong nhạc nền mới trở lại như cũ, và nếu đang có thông báo khác thì chùa chờ thông báo xong mới đọc pháp. Nút bật/tắt và thanh âm lượng ở trên điều khiển luôn khung nhạc tổng hợp này. Ở màn hình live (<strong>?full</strong> / <strong>?daisanh</strong>) toàn bộ khung nhạc tổng hợp <strong>tự khởi động ngay khi trang tải xong</strong>; ở chế độ thường nhạc bắt đầu sau lần chạm/bấm đầu tiên (quy định của trình duyệt). Các bản đơn lẻ — <strong>Tụng kinh Phật pháp</strong>, <strong>Thiền tịnh tâm</strong> thuần nhạc cụ không lời, <strong>Pháp thoại trước khi ngủ (YouTube)</strong> — bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ &amp; Chữa Lành Phiền Não | Lời Phật Dạy” của kênh <strong>Gieo Mầm Phước Báu</strong> — và <strong>Nhạc thiền An Nhiên (YouTube)</strong> — vẫn nằm trong menu chọn nhạc phía trên để ai muốn nghe thì tự chọn; nếu video bị chủ kênh chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về kiểu <strong>Thiền tịnh tâm</strong> có sẵn.</p>
           <p class="yt-status" id="ytStatus" role="status" aria-live="polite" hidden></p>
           <div class="yt-holder" aria-hidden="true"><div id="ytPlayer"></div></div>
         </div>
 
-        <p class="action-note" id="actionNote">Sảnh đường được làm mới theo khung hình live của bộ chùa RPC: nền sảnh là một bức tranh chánh điện gỗ chạm khắc tối màu với <strong>một tượng Phật vàng khổng lồ</strong> ngự giữa trên đài sen hồng nhiều lớp, hào quang vàng chạm trổ tỏa tia sau lưng, hai bình hoa sen hồng lớn hai bên, đèn lồng vàng treo cao và ban thờ có lư hương rồng bốc khói. Hội chúng <strong>ngồi ngay ngắn nhìn từ phía sau</strong> trên từng <strong>bồ đoàn (ghế) cố định</strong> thành hai khối hai bên <strong>thảm đỏ trung tâm hoa văn sen vàng</strong>: người vào chùa xuất hiện ngay tại <strong>CỔNG CỬA VÀO vẽ rõ ở cuối thảm đỏ</strong> (hai trụ sơn son, biển “CỬA VÀO”, cửa gỗ hé mở hắt sáng ấm), mang <strong>biển tên lớn đọc rõ trên đầu suốt quãng đường</strong>, <strong>tự đi bộ dọc lối đi giữa tới hàng của mình, rẽ vào ghế và ngồi xuống</strong> — lưới ghế cố định <strong>đủ 100 ghế</strong> (10 hàng × 10 cột), lấp ghế theo hàng trước trước, từ lối giữa ra hai bên, mỗi người giữ đúng một ghế suốt buổi; kín 100 ghế thì người ngồi lâu nhất, lâu không tương tác và chưa tặng quà sẽ đứng dậy rời chùa nhường ghế cho người mới; hàng trước mang biển tên và huy hiệu hạng, khách TikTok hiện đúng tên của mình vào các ghế này. Khi có lệnh <strong>dâng hương</strong> (nút bấm, sự kiện server hay chat “dâng hương”), <strong>chính nhân vật của khách đó đứng dậy khỏi ghế, đi ra thảm lễ trước lư hương dâng hương, vái đúng 3 vái rồi quay về đúng ghế cũ ngồi xuống</strong>. Giữa hàng trước, <strong>Phật tử trung tâm</strong> mang tên khách đang có sự kiện (vái lạy, thỉnh chuông, tọa thiền, niệm Phật hay tặng quà) bước ra làm lễ thay khách đó, hiện biển lớn có avatar tròn, tên và dòng hành động “Tên — Hành động (+N CĐ)”, cùng bong bóng lời khấn ngay trên sân khấu; nhiều sự kiện thì xếp hàng lần lượt. Mỗi lượt dâng hương cắm thêm ba nén lên lư lớn trước ban thờ và hương tích lũy ở lại trên lư suốt buổi lễ. Trên cùng khung hình là thanh “🟢 LIVE @chuaonline12 • số mắt” và đếm “🔥 tổng hương • ✨ tổng CĐ”; vùng trên–giữa sảnh để trống cho <strong>tượng Phật và vầng hào quang hiện trọn vẹn</strong>: thẻ hướng dẫn thu gọn ở góc trên–trái, hộp <strong>TẤM LÒNG THÀNH</strong> liệt kê top 4 công đức ở <strong>góc trên–phải</strong> ngay dưới thanh LIVE, khung tri ân quà treo ngay dưới ban thờ; đáy sảnh <strong>không còn khung chữ nào</strong> — vùng giữa đáy để trống cho cổng cửa vào và lối đi giữa luôn nhìn thấy rõ; phía trái sảnh, ngay trên trạm Thỉnh Chuông là <strong>trạm 🧧 Hòm Công Đức</strong> nhỏ gọn, chạm vào là phóng to mã QR Timo lên giữa màn hình để quét. Nhạc nền <strong>Pháp thoại trước khi ngủ (YouTube)</strong> sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng). Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và khu <strong>Xem Tử Vi Lý Số · Xem Bói · Xem Ngày Đẹp</strong> (phí tùy tâm, mở khóa một lần xem cả ba). <strong>Luật lối đi giữa (bản .25):</strong> thảm đỏ từ cửa vào lên tới thảm lễ là vùng <strong>chỉ đi qua</strong> — không nhân vật nào dừng lại, đứng yên, ngồi hay xếp hàng chờ trong lối đi ở bất kỳ thời điểm nào; khách chờ lượt dâng hương thì <strong>chờ ngay tại ghế của mình</strong>, chỉ rời ghế khi thảm lễ có chỗ đứng trống và tới lượt; khách mới khi kín 100 ghế mà không ai nhường thì <strong>đứng chờ ở mép cổng ngoài vùng lối đi</strong> tới khi có ghế; nhân vật làm lễ đứng trên <strong>thảm lễ trước lư hương</strong> — khu riêng ở đầu trên của lối đi, không tính là lối đi.</p>
+        <p class="action-note" id="actionNote">Sảnh đường được làm mới theo khung hình live của bộ chùa RPC: nền sảnh là một bức tranh chánh điện gỗ chạm khắc tối màu với <strong>một tượng Phật vàng khổng lồ</strong> ngự giữa trên đài sen hồng nhiều lớp, hào quang vàng chạm trổ tỏa tia sau lưng, hai bình hoa sen hồng lớn hai bên, đèn lồng vàng treo cao và ban thờ có lư hương rồng bốc khói. Hội chúng <strong>ngồi ngay ngắn nhìn từ phía sau</strong> trên từng <strong>bồ đoàn (ghế) cố định</strong> thành hai khối hai bên <strong>thảm đỏ trung tâm hoa văn sen vàng</strong>: người vào chùa xuất hiện ngay tại <strong>CỔNG CỬA VÀO vẽ rõ ở cuối thảm đỏ</strong> (hai trụ sơn son, biển “CỬA VÀO”, cửa gỗ hé mở hắt sáng ấm), mang <strong>biển tên lớn đọc rõ trên đầu suốt quãng đường</strong>, <strong>tự đi bộ dọc lối đi giữa tới hàng của mình, rẽ vào ghế và ngồi xuống</strong> — lưới ghế cố định <strong>đủ 100 ghế</strong> (10 hàng × 10 cột), lấp ghế theo hàng trước trước, từ lối giữa ra hai bên, mỗi người giữ đúng một ghế suốt buổi; kín 100 ghế thì người ngồi lâu nhất, lâu không tương tác và chưa tặng quà sẽ đứng dậy rời chùa nhường ghế cho người mới; hàng trước mang biển tên và huy hiệu hạng, khách TikTok hiện đúng tên của mình vào các ghế này. Khi có lệnh <strong>dâng hương</strong> (nút bấm, sự kiện server hay chat “dâng hương”), <strong>chính nhân vật của khách đó đứng dậy khỏi ghế, đi ra thảm lễ trước lư hương dâng hương, vái đúng 3 vái rồi quay về đúng ghế cũ ngồi xuống</strong>. Giữa hàng trước, <strong>Phật tử trung tâm</strong> mang tên khách đang có sự kiện (vái lạy, thỉnh chuông, tọa thiền, niệm Phật hay tặng quà) bước ra làm lễ thay khách đó, hiện biển lớn có avatar tròn, tên và dòng hành động “Tên — Hành động (+N CĐ)”, cùng bong bóng lời khấn ngay trên sân khấu; nhiều sự kiện thì xếp hàng lần lượt. Mỗi lượt dâng hương cắm thêm ba nén lên lư lớn trước ban thờ và hương tích lũy ở lại trên lư suốt buổi lễ. Trên cùng khung hình là thanh “🟢 LIVE @chuaonline12 • số mắt” và đếm “🔥 tổng hương • ✨ tổng CĐ”; vùng trên–giữa sảnh để trống cho <strong>tượng Phật và vầng hào quang hiện trọn vẹn</strong>: thẻ hướng dẫn thu gọn ở góc trên–trái, hộp <strong>TẤM LÒNG THÀNH</strong> liệt kê top 4 công đức ở <strong>góc trên–phải</strong> ngay dưới thanh LIVE, khung tri ân quà treo ngay dưới ban thờ; đáy sảnh <strong>không còn khung chữ nào</strong> — vùng giữa đáy để trống cho cổng cửa vào và lối đi giữa luôn nhìn thấy rõ; phía trái sảnh, ngay trên trạm Thỉnh Chuông là <strong>trạm 🧧 Hòm Công Đức</strong> nhỏ gọn, chạm vào là phóng to mã QR Timo lên giữa màn hình để quét. Nhạc nền mặc định là <strong>nhạc tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút</strong>: nhạc thiền êm nhẹ làm nền, tới đợt tụng kinh thì nhạc nền tắt hẳn chỉ còn tiếng mõ và tiếng tụng, và cứ 3 phút giọng đọc của chùa lại đọc một đoạn pháp ngắn khi nhạc nền đã tắt hẳn; nhạc sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng); riêng màn hình live toàn bộ khung nhạc tổng hợp tự khởi động ngay khi trang tải xong; các bản tụng kinh Phật pháp, thiền tịnh tâm, pháp thoại trước khi ngủ và nhạc thiền An Nhiên vẫn có trong menu chọn nhạc để ai muốn nghe thì tự chọn. Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và khu <strong>Xem Tử Vi Lý Số · Xem Bói · Xem Ngày Đẹp</strong> (phí tùy tâm, mở khóa một lần xem cả ba). <strong>Luật lối đi giữa (bản .25):</strong> thảm đỏ từ cửa vào lên tới thảm lễ là vùng <strong>chỉ đi qua</strong> — không nhân vật nào dừng lại, đứng yên, ngồi hay xếp hàng chờ trong lối đi ở bất kỳ thời điểm nào; khách chờ lượt dâng hương thì <strong>chờ ngay tại ghế của mình</strong>, chỉ rời ghế khi thảm lễ có chỗ đứng trống và tới lượt; khách mới khi kín 100 ghế mà không ai nhường thì <strong>đứng chờ ở mép cổng ngoài vùng lối đi</strong> tới khi có ghế; nhân vật làm lễ đứng trên <strong>thảm lễ trước lư hương</strong> — khu riêng ở đầu trên của lối đi, không tính là lối đi.</p>
 
         <div class="guide">
           <span><b>Đi dạo:</b> chạm / nhấp vào sàn điện hoặc dùng phím mũi tên — lối đi giữa chỉ để đi qua, không ai dừng lại ở đó; chạm vào lối đi là nhân vật đi tiếp tới ghế của mình</span>
@@ -1725,7 +1726,7 @@
         <section class="rpc-panel" aria-label="Âm thanh chùa và nhạc nền">
           <h3>🎵 Âm Thanh Chùa &amp; Nhạc Nền</h3>
           <p class="rpc-music-status" id="musicStatusSide">Nhạc nền đang sẵn sàng — chạm vào chánh điện hoặc bấm một nút bất kỳ để nhạc bắt đầu.</p>
-          <p class="rpc-note">Nút bật/tắt nhạc, menu chọn bản nhạc (pháp thoại trước khi ngủ · nhạc thiền An Nhiên · thiền tịnh tâm · tụng kinh gõ mõ) và thanh âm lượng nằm ngay dưới chánh điện. Khi có giọng đọc thông báo, nhạc tự nhỏ xuống rồi trở lại như cũ.</p>
+          <p class="rpc-note">Nút bật/tắt nhạc, menu chọn bản nhạc (tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút — mặc định khi vào chùa · tụng kinh Phật pháp · thiền tịnh tâm · pháp thoại trước khi ngủ · nhạc thiền An Nhiên) và thanh âm lượng nằm ngay dưới chánh điện. Khi có giọng đọc thông báo, nhạc tự nhỏ xuống rồi trở lại như cũ; riêng lúc tụng kinh và lúc đọc pháp, nhạc nền tắt hẳn, chỉ còn tiếng mõ.</p>
         </section>
       </aside>
       </div>
@@ -2015,16 +2016,32 @@
         var btnVoice = document.getElementById("btnVoice");
         var musicModeSel = document.getElementById("musicMode");
         var musicVolEl = document.getElementById("musicVol");
-        var musicMode = "youtube-sleep";
-        var musicVolume = 0.55; // âm lượng nhạc thiền: vừa đủ nghe, không át hơi thở
-        /* Hai nguồn phát qua trình phát YouTube chính thức, mỗi lựa chọn
-           trong menu nhạc ứng với một video và phát lặp vô hạn:
-           - "youtube-sleep": “Pháp thoại trước khi ngủ” — MẶC ĐỊNH khi
-             vào chùa (kể cả màn hình phát ?full). Khách đã lưu lựa chọn
-             nhạc riêng trên máy mình thì restorePrefs vẫn tôn trọng
-             lựa chọn đã lưu, mặc định này không ghi đè.
-           - "youtube": “Nhạc thiền An Nhiên” — mặc định cũ, giữ lại
-             trong danh sách để khách tự chọn lại nếu muốn. */
+        var musicMode = "tonghop";
+        /* Cờ phân biệt "khách đã TỰ TAY chọn nhạc trong menu" với "đang
+           dùng bản mặc định của chùa": chỉ khi khách tự chọn thì lựa
+           chọn đó mới được giữ nguyên qua các lần mở sau. Máy nào chưa
+           từng tự chọn (kể cả máy đã lưu tự động các bản mặc định cũ
+           "pháp thoại" / "Thiền tịnh tâm" vào bộ nhớ) sẽ được di trú
+           sang mặc định mới ở restorePrefs bên dưới. */
+        var musicChosenByUser = false;
+        var musicVolume = 0.45; // âm lượng mặc định THẤP (45%) — "một chút nhạc nền" vừa làm nền, không át giọng đọc thông báo
+        /* MẶC ĐỊNH khi vào chùa (kể cả màn hình phát ?full và ?daisanh)
+           là "tonghop" — CHẾ ĐỘ NHẠC NỀN TỔNG HỢP do chủ chùa chốt:
+           nhạc thiền phong cách An Nhiên êm nhẹ làm nền chính (~45%),
+           tiếng gõ mõ + tụng kinh xen theo từng đợt, và giọng đọc của
+           trang đọc một đoạn pháp ngắn mỗi 3 phút. Khung tổng hợp vận
+           hành theo PHA XEN KẼ (quy tắc trộn âm chủ chùa chốt): hễ
+           đang TỤNG/ĐỌC thì lớp nhạc nền thiền TẮT HẲN (về 0) — chỉ
+           còn tiếng mõ và tiếng tụng/giọng đọc, không nhạc nền, không
+           chuông bát chen vào; hết đợt tụng/đọc nhạc nền mới trở lại,
+           mõ vẫn điểm thưa nhẹ trong lúc nhạc nền chạy. Các chế độ đơn
+           lẻ "chant" (tụng kinh Phật pháp), "ambient" (Thiền tịnh tâm)
+           và hai nguồn dưới đây phát qua trình phát YouTube chính thức
+           KHÔNG còn là mặc định, chỉ phát khi khách tự chọn:
+           - "youtube-sleep": “Pháp thoại trước khi ngủ” — giữ nguyên
+             trong danh sách để ai muốn nghe thì tự chọn.
+           - "youtube": “Nhạc thiền An Nhiên” — giữ lại trong danh sách
+             để khách tự chọn lại nếu muốn. */
         var YT_TRACKS = {
           "youtube-sleep": { id: "_GQ_89EqBcs", label: "Pháp thoại trước khi ngủ (YouTube)" },
           "youtube": { id: "XtzgxKhiTHI", label: "Nhạc thiền An Nhiên (YouTube)" }
@@ -2078,6 +2095,7 @@
               p.hasProfile = true;
             }
             p.musicMode = musicMode;
+            p.musicChosen = musicChosenByUser;
             p.musicVolume = musicVolume;
             p.soundOn = soundOn;
             p.voiceOn = voiceOn;
@@ -2670,9 +2688,22 @@
           if (!p) { if (LIVE_FULL_MODE) { voiceOn = true; updateVoiceBtn(); } return; }
           if (typeof p.voiceOn === "boolean") { voiceOn = p.voiceOn; updateVoiceBtn(); }
           else if (LIVE_FULL_MODE) { voiceOn = true; updateVoiceBtn(); }
-          if (p.musicMode && musicModeSel && (p.musicMode === "youtube" || p.musicMode === "youtube-sleep" || p.musicMode === "ambient" || p.musicMode === "chant")) {
+          /* Nhạc nền: chỉ tôn trọng bản nhạc đã lưu khi khách ĐÃ TỰ TAY
+             chọn nó trong menu (cờ musicChosen). Mọi máy đang dùng mặc
+             định — chưa từng tự chọn, kể cả trường hợp các bản mặc định
+             cũ "pháp thoại trước khi ngủ" / "Thiền tịnh tâm" / "tụng
+             kinh Phật pháp" đã được lưu tự động vào bộ nhớ máy từ các
+             bản trang trước — đều di trú sang mặc định mới: NHẠC NỀN
+             TỔNG HỢP "tonghop" (An Nhiên + gõ mõ tụng kinh + đọc pháp
+             mỗi 3 phút). */
+          if (p.musicChosen === true && p.musicMode && musicModeSel && (p.musicMode === "youtube" || p.musicMode === "youtube-sleep" || p.musicMode === "ambient" || p.musicMode === "chant" || p.musicMode === "tonghop")) {
+            musicChosenByUser = true;
             musicMode = p.musicMode;
             musicModeSel.value = p.musicMode;
+          } else {
+            musicChosenByUser = false;
+            musicMode = "tonghop";
+            if (musicModeSel) musicModeSel.value = "tonghop";
           }
           if (typeof p.musicVolume === "number" && isFinite(p.musicVolume)) {
             musicVolume = Math.max(0, Math.min(1, p.musicVolume));
@@ -2768,10 +2799,24 @@
           strike.start(t0); strike.stop(t0 + 0.2);
         }
 
-        /* ----- Nhạc tụng kinh nền + nhịp gõ mõ đều đặn -----
-           Tiếng tụng được tổng hợp: nền drone trầm ấm + giọng tụng trầm
-           lướt theo thang ngũ cung, mõ gõ "cốc" mỗi 2 giây. */
-        var chant = { running: false, master: null, timer: null, nextNoteAt: 0, nextMoAt: 0, nextPadAt: 0, nextBowlAt: 0, padIdx: 0, bowlIdx: 0, noteIdx: 0, moCount: 0 };
+        /* ----- NHẠC PHẬT PHÁP: tụng kinh + gõ mõ + chuông bát -----
+           Đây là bản MẶC ĐỊNH khi vào chùa. Tiếng tụng được tổng hợp:
+           nền drone trầm ấm + giọng tụng trầm nhẹ lướt theo thang ngũ
+           cung, mõ gõ "cốc" đều mỗi 2 giây, chuông bát điểm thưa
+           22–30 giây một tiếng (lên lịch trong startChant). */
+        var chant = { running: false, master: null, timer: null, nextNoteAt: 0, nextMoAt: 0, nextPadAt: 0, nextBowlAt: 0, padIdx: 0, bowlIdx: 0, noteIdx: 0, moCount: 0,
+          /* Ba tuyến gain con của CHẾ ĐỘ TỔNG HỢP (đều nối vào master):
+             padGain = lớp nền thiền An Nhiên; voiceGain = tiếng tụng;
+             moGain = tiếng mõ (chạy xuyên cả hai pha). Ở chế độ đơn lẻ
+             cả ba tuyến để mức 1 như cũ; ở chế độ tổng hợp, pha xen kẽ
+             điều khiển padGain/voiceGain theo luật ở applyMixPhase. */
+          padGain: null, voiceGain: null, moGain: null, phase: "nen", phaseUntil: 0 };
+        /* Hằng số khung tổng hợp: pha nền 34 giây ↔ một vòng câu tụng
+           (~27 giây); mõ thưa mỗi 8 giây trong pha nền, đều mỗi 2 giây
+           trong pha tụng; lớp tụng/mõ thấp hơn lớp nền một chút (0,72 /
+           0,85 so với nền 1,0; mõ trong pha nền nhẹ hơn nữa: 0,45). */
+        var MIX_PAD_LEVEL = 1.0, MIX_VOICE_LEVEL = 0.72, MIX_MO_LEVEL_CHANT = 0.85, MIX_MO_LEVEL_PAD = 0.45;
+        var MIX_PAD_PHASE_SEC = 34;
         var CHANT_SEQ = [
           { f: 220.0, d: 2.6 }, { f: 220.0, d: 2.2 }, { f: 261.6, d: 2.4 }, { f: 293.7, d: 2.8 },
           { f: 261.6, d: 2.2 }, { f: 220.0, d: 3.0 }, { f: 196.0, d: 2.4 }, { f: 220.0, d: 3.2 },
@@ -2795,7 +2840,7 @@
           g.gain.linearRampToValueAtTime(0.16, t0 + 0.45);
           g.gain.setValueAtTime(0.16, t0 + Math.max(0.5, dur - 0.6));
           g.gain.linearRampToValueAtTime(0, t0 + dur);
-          osc.connect(bp); bp.connect(g); g.connect(chant.master);
+          osc.connect(bp); bp.connect(g); g.connect(chant.voiceGain || chant.master);
           osc.start(t0); osc.stop(t0 + dur + 0.1);
           vib.start(t0); vib.stop(t0 + dur + 0.1);
           // Hòa âm nhẹ quãng tám dưới cho tiếng tụng dày, ấm
@@ -2806,7 +2851,7 @@
           sg2.gain.setValueAtTime(0, t0);
           sg2.gain.linearRampToValueAtTime(0.05, t0 + 0.5);
           sg2.gain.linearRampToValueAtTime(0, t0 + dur);
-          sub.connect(sg2); sg2.connect(chant.master);
+          sub.connect(sg2); sg2.connect(chant.voiceGain || chant.master);
           sub.start(t0); sub.stop(t0 + dur + 0.1);
         }
 
@@ -2820,7 +2865,7 @@
           osc.frequency.exponentialRampToValueAtTime(230, t0 + 0.07);
           g.gain.setValueAtTime(accent ? 0.5 : 0.38, t0);
           g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.13);
-          osc.connect(g); g.connect(chant.master);
+          osc.connect(g); g.connect(chant.moGain || chant.master);
           osc.start(t0); osc.stop(t0 + 0.16);
           var len = Math.floor(audioCtx.sampleRate * 0.03);
           var buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
@@ -2832,7 +2877,7 @@
           bp.type = "bandpass"; bp.frequency.value = 1900; bp.Q.value = 1.1;
           var ng = audioCtx.createGain();
           ng.gain.value = 0.16;
-          src.connect(bp); bp.connect(ng); ng.connect(chant.master);
+          src.connect(bp); bp.connect(ng); ng.connect(chant.moGain || chant.master);
           src.start(t0);
         }
 
@@ -2871,7 +2916,7 @@
               g.gain.linearRampToValueAtTime(peak, t0 + 6);
               g.gain.setValueAtTime(peak, t0 + Math.max(7, dur - 6));
               g.gain.linearRampToValueAtTime(0, t0 + dur);
-              o.connect(lp); lp.connect(g); g.connect(chant.master);
+              o.connect(lp); lp.connect(g); g.connect(chant.padGain || chant.master);
               o.start(t0); o.stop(t0 + dur + 0.1);
             });
           });
@@ -2880,6 +2925,10 @@
         var BOWL_SEQ = [293.66, 369.99, 440.0, 329.63, 246.94, 440.0, 293.66, 220.0];
         function bowlTone(t0, freq) {
           if (!chant.master) return;
+          // Chuông bát thuộc LỚP NỀN (tuyến padGain): ở chế độ tổng hợp,
+          // hễ padGain tắt hẳn trong pha tụng/đọc pháp thì chuông bát
+          // cũng im theo — không chen vào khoảnh khắc tụng/đọc.
+          var bowlDest = chant.padGain || chant.master;
           var partials = [
             { m: 1.0, g: 0.075, d: 14 },
             { m: 2.02, g: 0.028, d: 9 },
@@ -2894,7 +2943,7 @@
             g.gain.setValueAtTime(0, t0);
             g.gain.linearRampToValueAtTime(p.g, t0 + 0.015);
             g.gain.exponentialRampToValueAtTime(0.0001, t0 + p.d);
-            o.connect(g); g.connect(chant.master);
+            o.connect(g); g.connect(bowlDest);
             o.start(t0); o.stop(t0 + p.d + 0.1);
           });
           // Tiếng "gõ" đầu bát: click gỗ/kim rất ngắn, tránh cảm giác chuông điện tử.
@@ -2905,14 +2954,16 @@
           var src = audioCtx.createBufferSource(); src.buffer = buf;
           var bp = audioCtx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 2400; bp.Q.value = 1.4;
           var ng = audioCtx.createGain(); ng.gain.value = 0.05;
-          src.connect(bp); bp.connect(ng); ng.connect(chant.master);
+          src.connect(bp); bp.connect(ng); ng.connect(bowlDest);
           src.start(t0);
         }
 
         /* ----- NHẠC / PHÁP THOẠI QUA YOUTUBE -----
            Nhúng trình phát YouTube chính thức (youtube-nocookie); video
-           phát tùy theo lựa chọn đang chọn trong menu nhạc (xem YT_TRACKS):
-           mặc định là "Pháp thoại trước khi ngủ" — _GQ_89EqBcs, bài
+           phát tùy theo lựa chọn đang chọn trong menu nhạc (xem YT_TRACKS)
+           — các nguồn này chỉ phát khi khách TỰ CHỌN, không còn là mặc
+           định khi vào chùa (mặc định mới là nhạc nền tổng hợp "tonghop"):
+           "Pháp thoại trước khi ngủ" — _GQ_89EqBcs, bài
            “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ & Chữa Lành Phiền
            Não | Lời Phật Dạy”, kênh Gieo Mầm Phước Báu; lựa chọn còn lại
            là "Nhạc Thiền Thư Giãn (1 giờ)" — XtzgxKhiTHI, kênh Nhạc Thiền -
@@ -3042,22 +3093,77 @@
           }
         }
 
+        /* ----- PHA XEN KẼ CỦA CHẾ ĐỘ TỔNG HỢP (luật trộn âm) -----
+           Trạng thái pha nằm ở chant.phase: "nen" (nhạc nền thiền đang
+           vang, mõ điểm thưa nhẹ, tiếng tụng im) hoặc "tung" (đợt tụng
+           kinh: nhạc nền TẮT HẲN về 0 — chỉ còn mõ đều + tiếng tụng).
+           Lượt ĐỌC PHÁP dùng cờ riêng dharmaReading (ở khối đọc pháp):
+           khi cờ bật, cả hai lớp nhạc đều về 0, chỉ giữ tuyến mõ.
+           applyMixPhase() là nơi DUY NHẤT đặt mức ba tuyến gain: ngoài
+           chế độ tổng hợp, cả ba tuyến luôn ở mức 1 (hành vi cũ). */
+        var dharmaReading = false;
+        function applyMixPhase(fadeSec) {
+          if (!audioCtx || !chant.padGain || !chant.voiceGain || !chant.moGain) return;
+          var t = audioCtx.currentTime;
+          var tau = Math.max(0.05, (fadeSec || 1.2) / 3);
+          var pad = MIX_PAD_LEVEL, voice = 0, mo = MIX_MO_LEVEL_CHANT;
+          if (musicMode !== "tonghop") { pad = 1; voice = 1; mo = 1; }
+          else if (dharmaReading) { pad = 0; voice = 0; mo = MIX_MO_LEVEL_CHANT; }
+          else if (chant.phase === "tung") { pad = 0; voice = MIX_VOICE_LEVEL; mo = MIX_MO_LEVEL_CHANT; }
+          else { pad = MIX_PAD_LEVEL; voice = 0; mo = MIX_MO_LEVEL_PAD; }
+          chant.padGain.gain.setTargetAtTime(pad, t, tau);
+          chant.voiceGain.gain.setTargetAtTime(voice, t, tau);
+          chant.moGain.gain.setTargetAtTime(mo, t, tau);
+          chant._padLevel = pad; chant._voiceLevel = voice; chant._moLevel = mo;
+        }
+        // Tổng thời lượng một vòng câu tụng (theo lịch cộng dồn của bộ máy).
+        function chantSeqDuration() {
+          var s = 0;
+          for (var i = 0; i < CHANT_SEQ.length; i++) s += CHANT_SEQ[i].d * 0.92;
+          return s;
+        }
+
+        /* Âm lượng tổng (master) suy từ thanh trượt của khách:
+           - "chant" (Nhạc Phật pháp): tỉ lệ thẳng với thanh
+             trượt × 0.95, nên ở mức mặc định 45% cho ≈0.43 — đúng tinh
+             thần "một chút nhạc nền": thấp vừa làm nền, không át giọng
+             đọc thông báo (giọng đọc còn tự duck nhạc xuống nữa).
+           - "ambient" (Thiền tịnh tâm): giữ công thức cũ, êm hơn.
+           - "tonghop" (mặc định mới): như "chant" — thanh trượt 45% cho
+             master ≈0.43, và lớp nền thiền nằm trọn trong master này
+             nên nền chính ở mức ~45% như chủ chùa chốt; lớp tụng/mõ
+             thấp hơn nền một chút qua hai tuyến gain con (0,72 / 0,85). */
+        function musicMasterVolume() {
+          if (musicMode === "ambient") return 0.14 + musicVolume * 0.5;
+          return musicVolume * 0.95;
+        }
+
         function startChant() {
           if (isYtMode(musicMode)) return;
           if (!soundOn || chant.running) return;
           if (!ensureAudio()) return;
           if (audioCtx.state !== "running") return; // chờ lần chạm đầu tiên
           var isAmbient = musicMode === "ambient";
+          var isMix = musicMode === "tonghop";
           var master = audioCtx.createGain();
           master.gain.setValueAtTime(0, audioCtx.currentTime);
-          // Thiền tịnh: mở nhạc thật chậm trong 6 giây và nhỏ hơn hẳn bản cũ;
-          // tụng kinh giữ mức cũ. Thanh trượt âm lượng điều khiển master này.
-          var targetVol = isAmbient ? (0.14 + musicVolume * 0.5) : 0.5;
+          // Thiền tịnh: mở nhạc thật chậm trong 6 giây; tụng kinh Phật
+          // pháp và khung tổng hợp mở trong 2,5 giây. Thanh trượt âm
+          // lượng điều khiển master này qua musicMasterVolume().
+          var targetVol = musicMasterVolume();
           master.gain.linearRampToValueAtTime(targetVol, audioCtx.currentTime + (isAmbient ? 6 : 2.5));
           master.connect(audioCtx.destination);
           chant.master = master;
-          if (isAmbient) {
-            // Nền trầm "hơi thở": gốc Rê + quãng năm, gain thở theo LFO ~14 giây
+          // Ba tuyến gain con nối vào master (xem applyMixPhase): chế độ
+          // đơn lẻ để cả ba ở mức 1; chế độ tổng hợp chạy pha xen kẽ.
+          chant.padGain = audioCtx.createGain(); chant.padGain.gain.value = 1; chant.padGain.connect(master);
+          chant.voiceGain = audioCtx.createGain(); chant.voiceGain.gain.value = 1; chant.voiceGain.connect(master);
+          chant.moGain = audioCtx.createGain(); chant.moGain.gain.value = 1; chant.moGain.connect(master);
+          if (isAmbient || isMix) {
+            // LỚP NỀN CHÍNH của khung tổng hợp chính là bộ máy Thiền tịnh
+            // tâm: nền trầm "hơi thở" gốc Rê + quãng năm, gain thở theo
+            // LFO ~14 giây; toàn bộ lớp này nối vào tuyến padGain nên
+            // pha tụng/đọc pháp tắt hẳn được cả nền trong một nốt nhạc.
             var droneGain = audioCtx.createGain();
             droneGain.gain.value = 0.028;
             var breathLfo = audioCtx.createOscillator();
@@ -3067,7 +3173,7 @@
             breathLfo.connect(breathDepth); breathDepth.connect(droneGain.gain);
             var lpA = audioCtx.createBiquadFilter();
             lpA.type = "lowpass"; lpA.frequency.value = 340;
-            lpA.connect(droneGain); droneGain.connect(master);
+            lpA.connect(droneGain); droneGain.connect(chant.padGain);
             [73.42, 110.0, 146.83].forEach(function (f) {
               var o = audioCtx.createOscillator();
               o.type = "sine"; o.frequency.value = f;
@@ -3087,15 +3193,16 @@
             nLfo.type = "sine"; nLfo.frequency.value = 0.071;
             nDepth.gain.value = 0.004;
             nLfo.connect(nDepth); nDepth.connect(nGain.gain);
-            noise.connect(nBp); nBp.connect(nGain); nGain.connect(master);
+            noise.connect(nBp); nBp.connect(nGain); nGain.connect(chant.padGain);
             noise.start(); nLfo.start();
           } else {
-            // Nền drone trầm của buổi tụng kinh (giữ nguyên như trước)
+            // Nền drone trầm của buổi tụng kinh đơn lẻ: nối vào tuyến
+            // padGain (mức 1 ở chế độ này) như hành vi cũ.
             var droneGain2 = audioCtx.createGain();
             droneGain2.gain.value = 0.055;
             var lp2 = audioCtx.createBiquadFilter();
             lp2.type = "lowpass"; lp2.frequency.value = 420;
-            lp2.connect(droneGain2); droneGain2.connect(master);
+            lp2.connect(droneGain2); droneGain2.connect(chant.padGain);
             [98.0, 146.8, 196.0].forEach(function (f) {
               var o2 = audioCtx.createOscillator();
               o2.type = "sine"; o2.frequency.value = f;
@@ -3108,6 +3215,12 @@
           chant.nextPadAt = now0 + 0.3;
           chant.nextBowlAt = now0 + 3.5; // tiếng bát đầu tiên đến sớm để khách nhận ra kiểu nhạc mới
           chant.noteIdx = 0; chant.moCount = 0; chant.padIdx = 0; chant.bowlIdx = 0;
+          // Khung tổng hợp khởi động ở PHA NỀN; đồng hồ đọc pháp tính từ
+          // lúc khung tổng hợp bắt đầu chạy thật.
+          chant.phase = "nen";
+          chant.phaseUntil = now0 + MIX_PAD_PHASE_SEC;
+          applyMixPhase(1.2);
+          if (isMix) startDharmaClock();
           chant.timer = setInterval(function () {
             if (!chant.running || !audioCtx) return;
             var ahead = audioCtx.currentTime + 1.2;
@@ -3123,6 +3236,68 @@
                 chant.bowlIdx++;
               }
               chant.nextMoAt = audioCtx.currentTime + 1.2;
+            } else if (musicMode === "tonghop") {
+              var nowT = audioCtx.currentTime;
+              // --- Máy pha xen kẽ: nền thiền ↔ đợt tụng chỉ-có-mõ ---
+              // Đang đọc pháp thì giữ nguyên trạng thái tắt hẳn hai lớp
+              // nhạc (applyMixPhase đã lo), không lật pha ở đây.
+              if (!dharmaReading && nowT >= chant.phaseUntil) {
+                if (chant.phase === "nen") {
+                  chant.phase = "tung";
+                  chant.phaseUntil = nowT + chantSeqDuration() + 1.5;
+                  chant.noteIdx = 0;
+                  chant.nextNoteAt = nowT + 1.0; // nhạc nền kịp tắt hẳn (fade ~1,2s) rồi câu tụng mới nổi lên
+                  chant.nextMoAt = nowT + 0.3;
+                } else {
+                  chant.phase = "nen";
+                  chant.phaseUntil = nowT + MIX_PAD_PHASE_SEC;
+                  chant.nextMoAt = nowT + 4; // mõ thưa trở lại khi nền thiền trở lại
+                  chant.nextBowlAt = Math.max(chant.nextBowlAt, nowT + 6);
+                }
+                applyMixPhase(1.2);
+              }
+              // Lớp nền thiền: hợp âm vẫn được lên lịch đều vào tuyến
+              // padGain — pha tụng chỉ tắt tuyến đó về 0, hết pha là
+              // hợp âm đang trôi vang trở lại ngay, không đứt quãng.
+              while (chant.nextPadAt < ahead) {
+                padChord(chant.nextPadAt, PAD_SEQ[chant.padIdx % PAD_SEQ.length], 18);
+                chant.nextPadAt += 14;
+                chant.padIdx++;
+              }
+              // Tiếng tụng: CHỈ lên lịch trong pha tụng (và không bao giờ
+              // trong lúc đọc pháp) — ngoài pha tụng, mốc tụng được đẩy
+              // theo đồng hồ để không dồn câu khi pha tụng bắt đầu.
+              if (chant.phase === "tung" && !dharmaReading) {
+                while (chant.nextNoteAt < ahead) {
+                  var n2 = CHANT_SEQ[chant.noteIdx % CHANT_SEQ.length];
+                  chantNote(chant.nextNoteAt, n2.f, n2.d);
+                  chant.nextNoteAt += n2.d * 0.92;
+                  chant.noteIdx++;
+                }
+              } else {
+                chant.nextNoteAt = Math.max(chant.nextNoteAt, nowT + 0.4);
+              }
+              // Mõ chạy XUYÊN cả hai pha và cả lúc đọc pháp: đều chậm
+              // mỗi 2 giây khi tụng/đọc, thưa nhẹ mỗi 8 giây khi nền
+              // thiền đang vang.
+              var moStep = (chant.phase === "tung" || dharmaReading) ? 2.0 : 8.0;
+              if (chant.nextMoAt < nowT - 1) chant.nextMoAt = nowT + 0.3;
+              while (chant.nextMoAt < ahead) {
+                moKnock(chant.nextMoAt, chant.moCount % 4 === 0);
+                chant.nextMoAt += moStep;
+                chant.moCount++;
+              }
+              // Chuông bát: chỉ điểm trong PHA NỀN (qua tuyến padGain);
+              // mốc nào rơi vào pha tụng/đọc pháp thì dời sang sau pha.
+              if (chant.phase === "nen" && !dharmaReading) {
+                while (chant.nextBowlAt < ahead) {
+                  bowlTone(chant.nextBowlAt, BOWL_SEQ[chant.bowlIdx % BOWL_SEQ.length]);
+                  chant.nextBowlAt += 16 + Math.random() * 8; // thưa trong pha nền: 16–24 giây
+                  chant.bowlIdx++;
+                }
+              } else if (chant.nextBowlAt < ahead) {
+                chant.nextBowlAt = ahead + 4;
+              }
             } else {
               while (chant.nextNoteAt < ahead) {
                 var n = CHANT_SEQ[chant.noteIdx % CHANT_SEQ.length];
@@ -3135,8 +3310,12 @@
                 chant.nextMoAt += 2.0;
                 chant.moCount++;
               }
+              while (chant.nextBowlAt < ahead) {
+                bowlTone(chant.nextBowlAt, BOWL_SEQ[chant.bowlIdx % BOWL_SEQ.length]);
+                chant.nextBowlAt += 22 + Math.random() * 8; // chuông bát điểm THƯA vào buổi tụng: 22–30 giây một tiếng
+                chant.bowlIdx++;
+              }
               chant.nextPadAt = audioCtx.currentTime + 0.3;
-              chant.nextBowlAt = audioCtx.currentTime + 3.5;
             }
           }, 400);
           chant.running = true;
@@ -3144,6 +3323,7 @@
 
         function stopChant() {
           if (chant.timer) { clearInterval(chant.timer); chant.timer = null; }
+          stopDharmaClock();
           if (chant.master && audioCtx) {
             var m = chant.master;
             var fade = musicMode === "ambient" ? 1.8 : 0.6; // nhạc thiền tắt cũng phải tan chậm, không cắt cụt
@@ -3153,6 +3333,9 @@
             setTimeout(function () { try { m.disconnect(); } catch (e) {} }, (fade + 0.3) * 1000);
           }
           chant.master = null;
+          chant.padGain = null;
+          chant.voiceGain = null;
+          chant.moGain = null;
           chant.running = false;
         }
 
@@ -3166,22 +3349,50 @@
         function stopAllMusic() {
           stopChant();
           stopYouTube();
+          dharmaPending = false;
         }
         window.addEventListener("load", tryStartMusic);
         ["pointerdown", "keydown", "touchstart"].forEach(function (evt) {
           document.addEventListener(evt, function () { if (soundOn) tryStartMusic(); }, { passive: true });
         });
+        /* MÀN HÌNH LIVE (?full / ?daisanh): đây là nguồn phát trong
+           LIVE Studio — không có người ngồi trước màn hình để bấm, nên
+           nhạc nền phải TỰ BẮT ĐẦU NGAY KHI TRANG TẢI XONG: chủ động
+           khởi tạo bộ âm thanh và gọi phát ngay từ lúc DOM sẵn sàng,
+           lúc tải xong, và thử lại vài nhịp thưa sau đó để bắt kịp
+           thời điểm trình duyệt cho phép âm thanh chạy. Nếu trình
+           duyệt vẫn chặn vì chưa từng có tương tác (chính sách
+           autoplay), các listener chạm/bấm toàn cục ngay phía trên sẽ
+           phát nhạc ngay ở lần chạm/bấm đầu tiên bất kỳ trên trang.
+           Chế độ thường KHÔNG dùng khối này: vẫn bắt đầu ở lần
+           chạm/bấm đầu tiên như trước. */
+        if (LIVE_FULL_MODE) {
+          var liveAutoplayTry = function () { if (soundOn) tryStartMusic(); };
+          if (document.readyState !== "loading") liveAutoplayTry();
+          document.addEventListener("DOMContentLoaded", liveAutoplayTry);
+          window.addEventListener("load", liveAutoplayTry);
+          [600, 1500, 3000, 6000, 12000].forEach(function (ms) { setTimeout(liveAutoplayTry, ms); });
+        }
 
         /* ================= GIỌNG ĐỌC THÀNH TIẾNG (speechSynthesis) =================
            Đọc theo HÀNG ĐỢI, không bao giờ đọc chồng: (a) lời cảm tạ khi
            khách tặng quà — kèm tên khách + tên quà; (b) lời cầu nguyện qua
            chat — kèm tên khách + lời khấn; (c) kết quả gieo quẻ — kèm tên
-           khách + tên quẻ (qua window.chuaSpeakQue). Ưu tiên giọng vi-VN
-           nếu máy có, không có thì giọng mặc định; trình duyệt không hỗ
-           trợ thì bỏ qua êm, không lỗi trang. Đang đọc thì nhạc nền tự
-           nhỏ xuống (ducking), đọc xong trả âm lượng cũ. */
+           khách + tên quẻ (qua window.chuaSpeakQue); (d) ĐOẠN PHÁP mỗi
+           3 phút của chế độ nhạc tổng hợp (xem khối ĐỌC PHÁP bên dưới).
+           Ưu tiên giọng vi-VN nếu máy có, không có thì giọng mặc định;
+           trình duyệt không hỗ trợ thì bỏ qua êm, không lỗi trang. Đang
+           đọc thông báo thường thì nhạc nền tự nhỏ xuống (ducking), đọc
+           xong trả âm lượng cũ; riêng lượt đọc pháp thì nhạc nền TẮT
+           HẲN trước khi đọc và chỉ mở lại sau khi đọc xong. */
+        /* Hàng đợi giọng đọc: mỗi mục là { text, dharma } — mục thường
+           chỉ đọc khi công tắc giọng đọc đang BẬT; mục PHÁP (dharma)
+           là một phần của chính chế độ nhạc tổng hợp nên đọc theo chu
+           kỳ của chế độ đó. Không bao giờ có hai mục đọc chồng nhau:
+           speakNext chỉ chạy một mục tại một thời điểm. */
         var voiceQueue = [];
         var voiceSpeaking = false;
+        var voiceCurrentDharma = false;
         var voiceDucked = false;
         function duckMusic(on) {
           if (on === voiceDucked) return;
@@ -3193,7 +3404,7 @@
           } catch (e) {}
           try {
             if (chant && chant.running && chant.master && audioCtx) {
-              var baseVol = musicMode === "ambient" ? (0.14 + musicVolume * 0.5) : 0.5;
+              var baseVol = musicMasterVolume();
               chant.master.gain.setTargetAtTime(on ? baseVol * 0.3 : baseVol, audioCtx.currentTime, 0.35);
             }
           } catch (e2) {}
@@ -3211,13 +3422,38 @@
         }
         function speakNext() {
           if (voiceSpeaking) return;
-          if (!voiceOn || !window.speechSynthesis || !window.SpeechSynthesisUtterance) { voiceQueue.length = 0; duckMusic(false); return; }
-          var text = voiceQueue.shift();
-          if (!text) { duckMusic(false); return; }
+          if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) { voiceQueue.length = 0; duckMusic(false); return; }
+          var item = null;
+          while (voiceQueue.length) {
+            var cand = voiceQueue.shift();
+            if (cand.dharma || voiceOn) { item = cand; break; }
+            // Mục thường bị bỏ qua khi công tắc giọng đọc đang tắt.
+          }
+          if (!item) { duckMusic(false); return; }
+          var text = item.text;
           voiceSpeaking = true;
-          duckMusic(true);
+          voiceCurrentDharma = !!item.dharma;
+          if (voiceCurrentDharma) {
+            // LUẬT ĐỌC PHÁP: nhạc nền TẮT HẲN trước khi giọng đọc bắt
+            // đầu — cờ dharmaReading đưa cả lớp nền lẫn tiếng tụng về
+            // 0 qua applyMixPhase, chỉ giữ tuyến mõ; KHÔNG dùng duck
+            // master (nén nhỏ) cho lượt đọc pháp này.
+            dharmaReading = true;
+            applyMixPhase(0.9);
+          } else {
+            duckMusic(true);
+          }
           var done = function () {
+            var wasDharma = voiceCurrentDharma;
             voiceSpeaking = false;
+            voiceCurrentDharma = false;
+            if (wasDharma) {
+              // Đọc xong mới mở lại nhạc theo pha hiện tại. Mốc chu kỳ
+              // 3 phút đã được ghi ngay lúc lượt đọc pháp BẮT ĐẦU (ở
+              // checkDharmaDue) nên các lượt rơi đúng ~3, ~6, ~9 phút.
+              dharmaReading = false;
+              applyMixPhase(1.6);
+            }
             if (voiceQueue.length) setTimeout(speakNext, 180);
             else duckMusic(false);
           };
@@ -3242,10 +3478,85 @@
           var clean = String(text == null ? "" : text).replace(/\s+/g, " ").trim().slice(0, 240);
           if (!clean) return;
           if (voiceQueue.length > 5) voiceQueue.shift(); // hàng đợi quá dài thì bỏ câu cũ nhất, tránh đọc dồn dập lạc hậu
-          voiceQueue.push(clean);
+          voiceQueue.push({ text: clean, dharma: false });
           speakNext();
         }
         window.chuaDocThanhTieng = enqueueSpeak;
+
+        /* ================= ĐỌC PHÁP MỖI 3 PHÚT (lớp 3 của khung tổng hợp) =================
+           Bộ đoạn pháp ngắn quen thuộc — kệ Kinh Pháp Cú và lời Phật
+           dạy phổ biến, mỗi đoạn 1–3 câu — đọc xoay vòng theo thứ tự,
+           không lặp lại đoạn vừa đọc. Chu kỳ đúng 3 phút tính từ lần
+           đọc pháp gần nhất (lúc bắt đầu tính là lúc khung tổng hợp
+           khởi động). Tới hạn mà đang có thông báo khác đang đọc/xếp
+           hàng thì ĐỢI thông báo xong mới đọc (dharmaPending), không
+           bao giờ đọc chồng. */
+        var DHARMA_INTERVAL_MS = 3 * 60 * 1000;
+        var DHARMA_PASSAGES = [
+          "Kinh Pháp Cú dạy: Tâm dẫn đầu các pháp, tâm làm chủ, tâm tạo tác. Nếu với tâm ô nhiễm mà nói hay hành động, khổ não sẽ theo sau như bánh xe theo chân con vật kéo xe.",
+          "Kinh Pháp Cú dạy: Nếu với tâm thanh tịnh mà nói hay hành động, an lạc sẽ theo sau, như bóng không rời hình.",
+          "Kinh Pháp Cú dạy: Hận thù không dập tắt được hận thù. Chỉ có tình thương mới dập tắt được hận thù. Đây là định luật ngàn thu.",
+          "Kinh Pháp Cú dạy: Người trí như người cầm đuốc, tự mình sáng và soi sáng cho người khác cùng đi trong đêm tối.",
+          "Kinh Pháp Cú dạy: Không làm các điều ác, siêng làm các việc lành, giữ tâm ý trong sạch — đó là lời chư Phật dạy.",
+          "Đức Phật dạy: Sức khỏe là món quà lớn nhất, biết đủ là tài sản lớn nhất, và lòng tin cậy là người thân quý nhất.",
+          "Kinh Pháp Cú dạy: Như bông hoa tươi đẹp có sắc mà không hương, lời nói hay mà không thực hành cũng không đem lại kết quả.",
+          "Kinh Pháp Cú dạy: Chiến thắng vạn quân không bằng tự thắng mình. Tự thắng mình mới là chiến công oanh liệt nhất.",
+          "Đức Phật dạy: Quá khứ đã qua, tương lai chưa tới. Chỉ có hiện tại là giây phút nhiệm mầu để ta sống trọn vẹn và an lạc.",
+          "Kinh Pháp Cú dạy: Người ngu lo nghĩ trăm năm, người trí chỉ lo một niệm hiện tại. Một niệm tâm an thì trăm năm đều an.",
+          "Đức Phật dạy: Buông xả không phải là mất đi, mà là nhẹ gánh. Tâm không chấp trước thì đi đâu cũng tự tại.",
+          "Kinh Pháp Cú dạy: Như nước trên lá sen không dính lại, người trí giữa đời mà tâm không nhiễm đời, thong dong như sen nở trong bùn."
+        ];
+        var dharmaIdx = 0;
+        var dharmaLastReadAt = 0; // mốc lần đọc pháp gần nhất (ms tường); 0 = đồng hồ chưa chạy
+        var dharmaTimer = null;
+        var dharmaPending = false;
+        function startDharmaClock() {
+          if (dharmaTimer) return;
+          if (!dharmaLastReadAt) dharmaLastReadAt = Date.now();
+          dharmaTimer = setInterval(checkDharmaDue, 500);
+        }
+        function stopDharmaClock() {
+          if (dharmaTimer) { clearInterval(dharmaTimer); dharmaTimer = null; }
+          dharmaPending = false;
+        }
+        function checkDharmaDue() {
+          if (musicMode !== "tonghop" || !soundOn || !chant.running) return;
+          if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+          if (voiceCurrentDharma) return;
+          var nowD = Date.now();
+          if (!dharmaPending) {
+            if (!dharmaLastReadAt) { dharmaLastReadAt = nowD; return; }
+            if (nowD - dharmaLastReadAt < DHARMA_INTERVAL_MS) return;
+            dharmaPending = true;
+          }
+          // Đang có thông báo khác (đang đọc hoặc đang xếp hàng) thì
+          // chờ cho xong hẳn mới đọc pháp — không đọc chồng.
+          if (voiceSpeaking || voiceQueue.length) return;
+          dharmaPending = false;
+          var text = DHARMA_PASSAGES[dharmaIdx % DHARMA_PASSAGES.length];
+          dharmaIdx++;
+          dharmaLastReadAt = nowD;
+          voiceQueue.push({ text: text, dharma: true });
+          speakNext();
+        }
+        // Tay nắm kiểm tra trạng thái khung tổng hợp (dùng cho tự kiểm
+        // ở mức mã/mô phỏng và chẩn đoán khi cần): pha hiện tại, mức ba
+        // tuyến gain, số đoạn pháp và mốc đọc pháp gần nhất.
+        window.chuaTongHopState = function () {
+          return {
+            mode: musicMode,
+            running: !!(chant && chant.running),
+            phase: chant ? chant.phase : null,
+            padLevel: chant && typeof chant._padLevel === "number" ? chant._padLevel : null,
+            voiceLevel: chant && typeof chant._voiceLevel === "number" ? chant._voiceLevel : null,
+            moLevel: chant && typeof chant._moLevel === "number" ? chant._moLevel : null,
+            dharmaReading: dharmaReading,
+            dharmaPassages: DHARMA_PASSAGES.length,
+            dharmaNextIndex: dharmaIdx % DHARMA_PASSAGES.length,
+            dharmaLastReadAt: dharmaLastReadAt,
+            dharmaIntervalMs: DHARMA_INTERVAL_MS
+          };
+        };
         window.chuaSpeakQue = function (tenKhach, tenQue) {
           var nm = String(tenKhach == null ? "" : tenKhach).trim() || "Phật tử";
           var qn = String(tenQue == null ? "" : tenQue).trim();
@@ -3260,6 +3571,7 @@
             voiceQueue.length = 0;
             try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
             voiceSpeaking = false;
+            if (voiceCurrentDharma) { voiceCurrentDharma = false; dharmaReading = false; applyMixPhase(1.2); }
             duckMusic(false);
             note("Đã tắt <strong>giọng đọc thành tiếng</strong>. Lời cảm tạ, lời cầu nguyện và tên quẻ vẫn hiện bằng chữ như thường.");
           } else {
@@ -6318,7 +6630,7 @@
           }
           // --- Trạng thái nhạc ở cột phải ---
           if (musicStatusSideEl) {
-            var trackLabel = isYtMode(musicMode) ? ytLabel() : (musicMode === "chant" ? "Tụng kinh · gõ mõ" : "Thiền tịnh tâm · chuông bát & hơi thở");
+            var trackLabel = isYtMode(musicMode) ? ytLabel() : (musicMode === "tonghop" ? "Tổng hợp · An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút" + (chant && chant.running && chant.phase === "tung" ? " (đang đợt tụng — nhạc nền tắt hẳn, chỉ còn mõ)" : "") + (dharmaReading ? " (đang đọc pháp — nhạc nền tắt hẳn, chỉ còn mõ)" : "") : (musicMode === "chant" ? "Nhạc Phật pháp · tụng kinh · gõ mõ · chuông bát" : "Thiền tịnh tâm · chuông bát & hơi thở"));
             musicStatusSideEl.textContent = soundOn
               ? "🎵 Nhạc nền: BẬT — " + trackLabel + " · âm lượng " + Math.round(musicVolume * 100) + "%"
               : "🔇 Nhạc nền đang TẮT — bấm nút “🎵 Nhạc thiền: Bật” dưới chánh điện để mở lại.";
@@ -6338,8 +6650,10 @@
               ? "Đã bật <strong>Pháp thoại trước khi ngủ (YouTube)</strong> — bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ & Chữa Lành Phiền Não | Lời Phật Dạy” của kênh Gieo Mầm Phước Báu sẽ phát và tự lặp lại. Dùng thanh âm lượng để chỉnh to nhỏ."
               : musicMode === "youtube"
               ? "Đã bật <strong>Nhạc thiền An Nhiên (YouTube)</strong> — bản nhạc thiền thư giãn 1 giờ sẽ phát và tự lặp lại. Dùng thanh âm lượng để chỉnh to nhỏ."
-              : musicMode === "chant"
-                ? "Đã bật nhạc nền <strong>tụng kinh · gõ mõ</strong>."
+              : musicMode === "tonghop"
+                ? "Đã bật <strong>nhạc nền tổng hợp — An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút</strong>: nền thiền êm nhẹ, tới đợt tụng và lúc đọc pháp thì nhạc nền tắt hẳn, chỉ còn tiếng mõ."
+                : musicMode === "chant"
+                ? "Đã bật <strong>nhạc Phật pháp — tụng kinh · gõ mõ · chuông bát</strong> ở mức nền thấp."
                 : "Đã bật nhạc nền <strong>thiền tịnh tâm</strong> — nền trầm theo nhịp thở, chuông bát thưa và hợp âm trôi chậm.");
           } else {
             stopAllMusic();
@@ -6354,9 +6668,13 @@
           if (isYtMode(musicMode) && ytPlayer && ytReady) {
             try { ytPlayer.setVolume(ytVolumeValue()); } catch (e) {}
           }
-          if (chant.running && chant.master && audioCtx && musicMode === "ambient") {
+          if (chant.running && chant.master && audioCtx && !isYtMode(musicMode)) {
             chant.master.gain.cancelScheduledValues(audioCtx.currentTime);
-            chant.master.gain.setTargetAtTime(0.14 + musicVolume * 0.5, audioCtx.currentTime, 0.4);
+            chant.master.gain.setTargetAtTime(voiceDucked ? musicMasterVolume() * 0.3 : musicMasterVolume(), audioCtx.currentTime, 0.4);
+            // Mức ba tuyến con của khung tổng hợp không đổi theo thanh
+            // trượt (chúng tỉ lệ theo master), nhưng gọi lại cho chắc
+            // pha hiện tại được giữ nguyên sau khi chỉnh âm lượng.
+            applyMixPhase(0.4);
           }
         });
 
@@ -6365,6 +6683,9 @@
           var wasRunning = chant.running || ytPlayWanted;
           var prevMode = musicMode;
           musicMode = musicModeSel.value;
+          // Khách vừa TỰ TAY chọn nhạc: đánh dấu để các lần mở sau giữ
+          // nguyên lựa chọn này, không bị di trú về mặc định nữa.
+          musicChosenByUser = true;
           savePrefs();
           stopAllMusic();
           if (isYtMode(musicMode)) {
@@ -6376,7 +6697,7 @@
             showYtStatus("");
             if (soundOn) startYouTube();
           } else if (soundOn && wasRunning) {
-            setTimeout(function () { tryStartMusic(); }, isYtMode(prevMode) ? 300 : (musicMode === "chant" ? 700 : 1900));
+            setTimeout(function () { tryStartMusic(); }, isYtMode(prevMode) ? 300 : (musicMode === "chant" || musicMode === "tonghop" ? 700 : 1900));
           } else if (soundOn) {
             tryStartMusic();
           }
@@ -6384,9 +6705,11 @@
             ? "<strong>Pháp thoại trước khi ngủ (YouTube):</strong> bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ & Chữa Lành Phiền Não | Lời Phật Dạy” của kênh Gieo Mầm Phước Báu, phát qua trình phát YouTube chính thức và tự lặp lại. Nếu video bị chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về nhạc thiền tịnh tâm có sẵn."
             : musicMode === "youtube"
             ? "<strong>Nhạc thiền An Nhiên (YouTube):</strong> bản “Nhạc Thiền Thư Giãn (1 giờ)” của kênh Nhạc Thiền - An Nhiên Tự Tại, phát qua trình phát YouTube chính thức và tự lặp lại. Nếu video bị chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về nhạc thiền tịnh tâm có sẵn."
-            : musicMode === "ambient"
+            : musicMode === "tonghop"
+              ? "<strong>Nhạc nền tổng hợp — An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút:</strong> nhạc thiền An Nhiên êm nhẹ làm nền chính; tới đợt tụng kinh, nhạc nền tắt hẳn, chỉ còn tiếng gõ mõ đều chậm và tiếng tụng xa xa; cứ 3 phút, nhạc nền lại tắt hẳn để giọng đọc đọc một đoạn pháp ngắn (kệ Pháp Cú, lời Phật dạy) rồi mới trở lại. Đây là bản mặc định khi vào chùa."
+              : musicMode === "ambient"
               ? "<strong>Thiền tịnh tâm:</strong> không lời, không nhịp dồn — nền trầm lên xuống theo nhịp thở ~14 giây, hợp âm ngũ cung trôi 18 giây và chuông bát vang thưa 11–17 giây một tiếng rồi tan. Hãy ngồi xuống đệm, để âm lượng vừa nghe và thở chậm theo nhạc."
-              : "<strong>Tụng kinh · gõ mõ:</strong> tiếng tụng trầm đều kèm nhịp mõ mỗi 2 giây, như đang dự một thời kinh trong điện.");
+              : "<strong>Nhạc Phật pháp — Tụng kinh · gõ mõ · chuông bát:</strong> tiếng tụng kinh nhẹ trầm đều, nhịp mõ mỗi 2 giây và chuông bát điểm thưa, như đang dự một thời kinh trong điện.");
         });
 
         /* ----- Hòm công đức / mã QR ----- */
