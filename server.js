@@ -245,6 +245,12 @@ function handleLiveEvent(evt) {
             } else if (text.includes('toa thien') || text.includes('ngoi thien')) {
                 users[id].action = 'meditating';
                 io.emit('user_meditating', { id });
+            } else if (text === 'nam' || text === 'nu') {
+                // Khach chon nhan vat: go dung "nam" hoac "nu" thi doi hinh nhan vat
+                users[id].gender = text === 'nam' ? 'nam' : 'nu';
+                const prof = { id, user: publicUser(users[id]), name: users[id].name, gender: users[id].gender, color: users[id].color };
+                io.emit('user_profile', prof);
+                io.emit('profile_updated', prof);
             } else {
                 // Binh luan thuong: chua gui lai loi chuc cho khach (chong spam 45s/khach)
                 const nowB = Date.now();
