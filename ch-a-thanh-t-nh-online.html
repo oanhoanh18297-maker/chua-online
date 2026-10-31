@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.32" />
+    <meta name="chua-build" content="2026-11-01.33" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -28,6 +28,12 @@
       try { var _qs0 = new URLSearchParams(window.location.search); if (_qs0.has("full")) document.documentElement.classList.add("live-display"); if (_qs0.has("daisanh")) { document.documentElement.classList.add("live-display"); document.documentElement.classList.add("dai-sanh"); } if (_qs0.get("admin") === "1") document.documentElement.classList.add("admin-mode"); } catch (e) {}
     </script>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+      /* Dự phòng thư viện kết nối (bản .33): CDN chính không tải được thì
+         nạp bản sao từ CDN thứ hai — thiếu thư viện là trang không bao
+         giờ nối được máy chủ chùa mà chỉ chạy một mình lặng lẽ. */
+      (function () { if (typeof io !== "undefined") return; var s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/socket.io-client@4.5.4/dist/socket.io.min.js"; document.head.appendChild(s); })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -133,6 +139,7 @@
         flex: none;
       }
       .dot.live { background: var(--ok); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 22%, transparent); }
+      .dot.warn { background: #d43a2a; box-shadow: 0 0 0 4px rgba(212, 58, 42, 0.22); }
       .stage {
         background: var(--surface);
         border: 1px solid var(--line);
@@ -1349,6 +1356,19 @@
         font-variant-numeric: tabular-nums;
       }
       .stage-topbar .tb-pill b { color: #ffd968; }
+      /* Banner trạng thái kết nối NGAY TRÊN SẢNH (bản .33): mất kết nối
+         máy chủ là phải NHÌN THẤY rõ ngay trong khung sảnh (kể cả chế độ
+         ?full/?daisanh nơi thanh trạng thái trên cùng bị ẩn) — không còn
+         cảnh trang lặng lẽ chạy một mình mà người xem tưởng chùa vắng. */
+      .stage-conn-banner {
+        position: absolute; top: 9cqw; left: 50%; transform: translateX(-50%); z-index: 12;
+        max-width: 92cqw; padding: 1.6cqw 3.4cqw; border-radius: 999px;
+        font-size: 3cqw; font-weight: 700; line-height: 1.35; text-align: center;
+        background: rgba(90, 55, 4, 0.92); color: #ffe9b0; border: 1px solid rgba(217, 164, 65, 0.8);
+        pointer-events: none;
+      }
+      .stage-conn-banner.warn { background: rgba(112, 18, 8, 0.94); color: #ffe1d6; border-color: rgba(255, 120, 90, 0.85); }
+      .stage-conn-banner[hidden] { display: none !important; }
       /* Thẻ hướng dẫn nhỏ góc trên–trái khu vực sảnh (bản .22 — kiểu thẻ
          hướng dẫn của mẫu Chánh Điện Tịnh Tâm): nền tối mờ viền vàng như
          các thẻ trên sảnh, nằm dưới thanh LIVE. Bản .24 THU GỌN thẻ
@@ -1690,6 +1710,7 @@
             <span class="tb-pill">🟢 LIVE @chuaonline12 • <b id="liveEyeCount">0</b> mắt</span>
             <span class="tb-pill">🔥 <b id="liveIncenseTotal">0</b> hương • ✨ <b id="liveMeritTotal">0</b> CĐ</span>
           </div>
+          <div class="stage-conn-banner" id="stageConnBanner" role="status">🟡 Đang kết nối tới máy chủ chùa…</div>
           <div class="stage-guide-card" aria-hidden="true">
             <p>💬 Bình luận bất kỳ để vào chùa ngồi thiền</p>
             <p>👤 Gõ <b>nam</b> · <b>nữ</b> để chọn nhân vật</p>
@@ -2049,7 +2070,7 @@
             <li>Nhấn <strong>Cài đặt</strong> — mở app <strong>Chùa Online</strong> từ màn hình chính như app thường.</li>
           </ol>
         </div>
-        <p class="ig-note">💡 Nếu bạn đang xem chùa qua trang chia sẻ (không phải địa chỉ chùa <strong>chua-online-dk35.onrender.com</strong>), hãy mở đúng địa chỉ chùa đó rồi bấm <strong>Cài App Chùa</strong> lại — app chỉ cài được từ địa chỉ chính của chùa.</p>
+        <p class="ig-note">💡 Nếu bạn đang xem chùa qua trang chia sẻ (không phải địa chỉ chùa <strong>chua-thanh-tinh.onrender.com</strong>), hãy mở đúng địa chỉ chùa đó rồi bấm <strong>Cài App Chùa</strong> lại — app chỉ cài được từ địa chỉ chính của chùa.</p>
         <button class="btn-primary install-guide-close" id="btnInstallGuideClose" type="button">Đã hiểu — đóng lại</button>
       </div>
     </div>
@@ -2083,6 +2104,7 @@
         var connDot = document.getElementById("connDot");
         var connLabel = document.getElementById("connLabel");
         var connStatus = document.getElementById("connStatus");
+        var stageConnBanner = document.getElementById("stageConnBanner");
         var btnOffer = document.getElementById("btnOffer");
         var btnBow = document.getElementById("btnBow");
         var btnMeditate = document.getElementById("btnMeditate");
@@ -8032,10 +8054,21 @@
 
         /* ---------------- Kết nối server Socket.io (đúng giao thức code mẫu + hành động mới) ---------------- */
         function setConnUI(state, label, status) {
-          connDot.className = "dot" + (state === "live" ? " live" : "");
+          connDot.className = "dot" + (state === "live" ? " live" : (state === "warn" ? " warn" : ""));
           connLabel.textContent = label;
           if (status) connStatus.textContent = status;
           btnConnect.textContent = state === "live" ? "Ngắt kết nối" : "Kết nối server";
+          /* Banner trên sảnh (bản .33): đã nối được thì ẩn; chưa nối được
+             thì hiện rõ ngay trong khung sảnh — mất kết nối không bao
+             giờ còn là trạng thái lặng lẽ nữa. */
+          if (stageConnBanner) {
+            if (state === "live") { stageConnBanner.hidden = true; }
+            else {
+              stageConnBanner.hidden = false;
+              stageConnBanner.className = "stage-conn-banner" + (state === "warn" ? " warn" : "");
+              stageConnBanner.textContent = (state === "warn" ? "🔴 " : "🟡 ") + label;
+            }
+          }
         }
 
         /* ---- Tra nhân vật cho các sự kiện hành động từ server ----
@@ -8192,15 +8225,61 @@
 
         function fromServer(sx, sy) { return clampPos(sx / SX, sy / SY); }
 
+        /* ---- Địa chỉ máy chủ chùa (bản .33) ----
+           Bài học đắt giá của bản .32: trang chỉ tự kết nối ở chế độ
+           ?full, nút bấm tay thì nhắm ô nhập mặc định localhost:3000 —
+           còn đường truyền lại để WebSocket đi trước: đường WebSocket
+           tới máy chủ chùa THẬT bị treo không hồi âm (đã đo trực tiếp:
+           polling trả lời ngay, nâng cấp WebSocket im lặng cho tới khi
+           hết giờ chờ), nên trình duyệt thật không bao giờ nối được,
+           thử lại 2 lần rồi bỏ cuộc lặng lẽ — sảnh chỉ còn 1 nhân vật
+           tại chỗ dù máy chủ đang giữ hơn 25 khách.
+           Luật mới:
+           1) Trang đang chạy trên chính tên miền chùa
+              (chua-thanh-tinh.onrender.com) → kết nối CÙNG NGUỒN thắng
+              tuyệt đối, bỏ qua mọi địa chỉ đã nhập/lưu (kể cả
+              localhost:3000 và địa chỉ cũ dk35 đã treo).
+           2) Trang chạy ở bất kỳ tên miền nào khác (trang chia sẻ,
+              bản xem trước…) → kết nối thẳng tới máy chủ chùa thật
+              (máy chủ đã mở CORS cho mọi nguồn — đã kiểm chứng).
+           3) Chỉ khi chạy thử trên localhost/file mới dùng ô nhập tay. */
+        var PROD_SERVER_URL = "https://chua-thanh-tinh.onrender.com";
+        function resolveServerUrl() {
+          var host = "";
+          try { host = String(window.location.hostname || "").toLowerCase(); } catch (e) {}
+          var proto = window.location.protocol;
+          if (proto !== "http:" && proto !== "https:") return (serverUrlInput.value || "http://localhost:3000").trim();
+          if (host === "chua-thanh-tinh.onrender.com") return ""; // cùng nguồn với trang đang chạy
+          if (host === "localhost" || host === "127.0.0.1" || host === "") return (serverUrlInput.value || "http://localhost:3000").trim();
+          return PROD_SERVER_URL;
+        }
+
+        var ioWaitTries = 0;
         function connectServer(url) {
           if (typeof io === "undefined") {
-            setConnUI("off", "Đang tĩnh tâm một mình", "Không tải được thư viện Socket.io — kiểm tra mạng rồi thử lại.");
+            /* Thư viện kết nối chưa tải xong (hoặc đang nạp bản dự
+               phòng từ CDN thứ hai): chờ rồi thử lại, không bỏ cuộc
+               ngay như trước. */
+            ioWaitTries++;
+            if (ioWaitTries <= 15) {
+              setConnUI("off", "Đang tải thư viện kết nối…", "Thư viện Socket.io chưa sẵn sàng — đang chờ và thử lại (" + ioWaitTries + ")…");
+              setTimeout(function () { connectServer(url); }, 700);
+            } else {
+              setConnUI("warn", "Không tải được thư viện kết nối", "Không tải được thư viện Socket.io từ cả hai CDN — kiểm tra mạng rồi tải lại trang.");
+            }
             return;
           }
+          ioWaitTries = 0;
           connWanted = true;
           manualDisconnect = false;
           var urlLabel = url || "máy chủ chùa tại chính địa chỉ trang đang mở";
-          socket = io(url ? url : undefined, { transports: ["websocket", "polling"], timeout: 6000, reconnectionAttempts: 2 });
+          if (socket) { try { socket.disconnect(); } catch (e) {} socket = null; }
+          /* POLLING ĐI TRƯỚC (bản .33): polling là đường đã kiểm chứng
+             sống trên máy chủ thật; WebSocket chỉ là đường nâng cấp sau
+             khi đã nối được. Kèm kiên nhẫn nối lại dài hơi (máy chủ
+             miễn phí ngủ dậy chậm) thay cho 2 lần thử rồi bỏ của trước
+             đây. */
+          socket = io(url ? url : undefined, { transports: ["polling", "websocket"], timeout: 20000, reconnection: true, reconnectionAttempts: 60, reconnectionDelay: 1500, reconnectionDelayMax: 8000 });
 
           socket.on("connect", function () {
             connected = true;
@@ -8572,15 +8651,24 @@
             connected = false;
             if (!manualDisconnect && everConnected && !outageSince) outageSince = Date.now();
             clearRemoteUsers(); // mất kết nối: các Phật tử khác cũng rời khỏi màn hình của mình, chỉ còn lại mình
-            addChatSys("Đã ngắt kết nối khỏi chùa chung — bạn đang ở chùa một mình.");
             updateChatHint();
-            setConnUI("off", "Đang tĩnh tâm một mình", "Đã ngắt kết nối khỏi server — bạn vẫn ở lại chánh điện một mình.");
+            if (manualDisconnect) {
+              addChatSys("Đã ngắt kết nối khỏi chùa chung — bạn đang ở chùa một mình.");
+              setConnUI("off", "Đang tĩnh tâm một mình", "Đã ngắt kết nối khỏi server — bạn vẫn ở lại chánh điện một mình.");
+            } else {
+              /* Rớt kết nối ngoài ý muốn: báo rõ là MẤT KẾT NỐI và đang
+                 tự nối lại (bản .33), không giả vờ “tĩnh tâm một mình”. */
+              addChatSys("Mất kết nối máy chủ chùa — trang đang tự kết nối lại…");
+              setConnUI("warn", "Mất kết nối máy chủ chùa — đang tự kết nối lại", "Kết nối tới máy chủ chùa vừa rớt. Khách TikTok sẽ hiện lại ngay khi nối lại được.");
+            }
           });
 
           socket.on("connect_error", function () {
-            if (LIVE_FULL_MODE && connWanted && !connected && !outageSince) outageSince = Date.now();
+            if (connWanted && !connected && !outageSince) outageSince = Date.now();
             if (!connected) {
-              setConnUI("off", "Đang tĩnh tâm một mình", "Chưa gặp được server tại " + urlLabel + " — hãy chắc chắn server Node.js đang chạy ở địa chỉ đó, rồi kết nối lại.");
+              /* Nói thẳng là MẤT KẾT NỐI (bản .33) — không còn mượn câu
+                 “đang tĩnh tâm một mình” để che lỗi kết nối nữa. */
+              setConnUI("warn", "Mất kết nối máy chủ chùa — đang tự kết nối lại", "Chưa gặp được máy chủ tại " + urlLabel + ". Khách TikTok và các Phật tử khác sẽ chưa hiện lên sảnh cho tới khi nối lại được — trang đang tự thử lại liên tục.");
             }
           });
         }
@@ -8607,21 +8695,25 @@
             updateCount();
             return;
           }
-          var url = (serverUrlInput.value || "http://localhost:3000").trim();
-          setConnUI("off", "Đang kết nối…", "Đang tìm server tại " + url + " …");
+          var url = resolveServerUrl(); // bản .33: cùng nguồn/tên miền chùa thắng ô nhập tay (localhost:3000 không còn chặn được đường nối trên live)
+          setConnUI("off", "Đang kết nối…", "Đang tìm máy chủ chùa tại " + (url || "chính địa chỉ trang đang mở") + " …");
           connectServer(url);
         });
 
-        /* Chế độ phát live "?full": tự nối vào server chùa tại chính địa
-           chỉ đang mở (nếu chưa có kết nối nào). Bản chùa chạy trên
-           server thật thường đã có sẵn bước tự kết nối khi mở trang —
-           kiểm tra biến socket trước để không kết nối trùng hai lần. */
-        if (LIVE_FULL_MODE && (location.protocol === "https:" || location.protocol === "http:")) {
+        /* Tự kết nối máy chủ chùa mỗi khi trang mở qua http/https
+           (bản .33): KHÔNG còn giới hạn ở chế độ "?full" nữa — trước
+           đây mở đúng địa chỉ chùa mà không có ?full (hoặc nguồn live
+           nạp lại mất tham số) là trang không bao giờ tự nối, sảnh chỉ
+           có 1 nhân vật tại chỗ suốt buổi live. Địa chỉ đích do
+           resolveServerUrl() quyết (cùng nguồn trên tên miền chùa,
+           máy chủ thật trên mọi tên miền khác). Người dùng đã chủ động
+           bấm ngắt kết nối thì tôn trọng, không tự nối lại. */
+        if (location.protocol === "https:" || location.protocol === "http:") {
           setTimeout(function () {
-            if (!connected && !socket) {
-              connectServer("");
+            if (!connected && !socket && !manualDisconnect) {
+              connectServer(resolveServerUrl());
             }
-          }, 1600);
+          }, LIVE_FULL_MODE ? 900 : 1400);
         }
 
         /* Mất kết nối máy chủ kéo dài quá 60 giây mà không nối lại được
