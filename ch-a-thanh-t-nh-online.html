@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-10-31.2" />
+    <meta name="chua-build" content="2026-10-31.3" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1253,7 +1253,9 @@
           <strong>Chào khách TikTok mới vào sảnh:</strong> khi server đưa một khách từ phòng live vào chùa qua sự kiện
           <em>new_user</em> với định danh hoặc tên mang tiền tố <em>tt_</em> (nhân vật khách TikTok), trang sẽ hiện trong sảnh một bảng chào trang trọng
           <strong>“🙏 {Tên khách} đã vào sảnh chùa”</strong> trong ít giây — nhiều khách vào cùng lúc thì xếp hàng hiện lần lượt,
-          khách vào quá đông sẽ gộp chung một lời chào — và <strong>nhân vật của khách cúi chào một cái</strong> ngay khi xuất hiện.
+          khách vào quá đông sẽ gộp chung một lời chào — và <strong>nhân vật của khách tự đi tới một nệm thiền còn trống trong khu nệm đã trải sẵn và ngồi xuống</strong>:
+          mỗi nệm chỉ một khách, khách rời chùa thì nệm trống lại cho khách sau, nệm kín hết thì khách mới đứng ở sảnh như trước.
+          Khi khách đang ngồi nhận lệnh <em>dâng hương / vái lạy / thỉnh chuông</em> qua TikTok, nhân vật <strong>đứng dậy ra khu lư hương (hoặc giá chuông) làm lễ như thường lệ, xong quay về đúng nệm của mình ngồi lại</strong> — nệm được giữ chỗ suốt lúc khách làm lễ.
           Cầu nối cũng có thể gọi trực tiếp <em>window.chaoPhatTuMoi({ ten: "Tên khách" })</em> hoặc <em>postMessage</em> một gói
           <em>{ type: "tiktok_member", name }</em>. Ở sát đáy khung sảnh luôn có sẵn <strong>dòng hướng dẫn cố định cho khách xem live</strong>:
           gõ <em>!dang huong</em> để dâng hương · <em>!vai lay</em> để vái lạy · <em>!thinh chuong</em> để thỉnh chuông · tặng quà để ghi danh Bia Công Đức —
@@ -1470,6 +1472,12 @@
           if (g === "nu" || g === "nữ" || g === "Nữ" || g === "female" || g === "Female" || g === "F") return "nu";
           return "nam";
         }
+        /* An toàn hiển thị: MỌI chuỗi từ xa (tên khách TikTok, tên người
+           tặng quà, tin nhắn chat, tên Phật tử khác) chỉ được đưa lên
+           trang qua textContent hoặc qua escapeHtml() dưới đây khi buộc
+           phải ghép vào HTML — không có ngoại lệ. Trang cũng không chứa
+           bất kỳ khóa cầu nối/khóa bí mật nào: khóa TikTok chỉ nằm phía
+           server/cầu nối, không bao giờ xuất hiện trong mã phía khách. */
         function escapeHtml(s) {
           return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
             return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
@@ -1529,7 +1537,7 @@
         function offerSpotTaken(idx, exceptUser) {
           return Object.keys(users).some(function (id) {
             var u = users[id];
-            return u !== exceptUser && u.offerSpot === idx && (u.pendingOffer || u.action === "offering");
+            return u !== exceptUser && u.offerSpot === idx && (u.pendingOffer || u.pendingBow || u.action === "offering");
           });
         }
 
@@ -1546,8 +1554,67 @@
         function cushionTaken(idx, exceptUser) {
           return Object.keys(users).some(function (id) {
             var u = users[id];
-            return u !== exceptUser && u.cushion === idx && (u.action === "meditating" || u.pendingMeditate);
+            if (u === exceptUser) return false;
+            // Nệm đang có người ngồi / đang bước tới ngồi
+            if (u.cushion === idx && (u.action === "meditating" || u.pendingMeditate)) return true;
+            // Nệm "nhà" của một khách TikTok: khách đang ra trước lư hương
+            // làm lễ (dâng hương / vái lạy / thỉnh chuông) thì nệm vẫn được
+            // giữ chỗ cho đúng khách đó, không ai khác ngồi vào được.
+            if (u.homeCushion === idx) return true;
+            return false;
           });
+        }
+        /* ---- Khách TikTok tự ngồi nệm ----
+           Nhận diện khách TikTok: định danh hoặc tên mang tiền tố tt_
+           (đúng quy ước cầu nối/server đang dùng). Khách web vào trực
+           tiếp không có tiền tố này nên giữ nguyên hành vi cũ. */
+        function markTikTok(u, id, rawName) {
+          if (!u) return false;
+          var isTt = !!u.isTikTok
+            || (id != null && String(id).indexOf("tt_") === 0)
+            || (rawName != null && String(rawName).indexOf("tt_") === 0)
+            || (u.name && String(u.name).indexOf("tt_") === 0);
+          if (isTt) u.isTikTok = true;
+          return u.isTikTok;
+        }
+        // Giữ chỗ một nệm trống cho khách TikTok mà chưa di chuyển —
+        // dùng khi khách đang làm lễ lúc trang (tải lại) nhận danh sách.
+        function reserveTikTokSeat(u) {
+          if (!u || !u.isTikTok) return false;
+          if (u.homeCushion !== null && u.homeCushion !== undefined && CUSHIONS[u.homeCushion] && !cushionTaken(u.homeCushion, u)) return true;
+          var idx = nearestFreeCushion(u);
+          if (idx < 0) { u.homeCushion = null; return false; }
+          u.homeCushion = idx;
+          return true;
+        }
+        // Cho khách TikTok bước tới đúng nệm nhà của mình và ngồi xuống.
+        function headToTikTokSeat(u) {
+          if (!u || !u.isTikTok) return false;
+          if (!reserveTikTokSeat(u)) return false;
+          var idx = u.homeCushion;
+          u.cushion = idx;
+          u.pendingMeditate = true;
+          u.pendingOffer = false;
+          u.pendingBow = false;
+          u.pendingBell = false;
+          u.offerSpot = null;
+          u.incenseSlot = null;
+          u.action = "walking";
+          u.tx = CUSHIONS[idx].x;
+          u.ty = CUSHIONS[idx].y;
+          return true;
+        }
+        // Khách TikTok vừa xuất hiện trong sảnh: tự đi tới một nệm trống
+        // và ngồi thiền trên nệm. Hết nệm thì đứng ở sảnh như hành vi cũ
+        // (trang sẽ tự thử xếp chỗ lại mỗi khi có nệm trống ra).
+        function assignTikTokSeat(u) {
+          if (!u || !u.isTikTok) return false;
+          if (u.action === "meditating" && u.cushion !== null && u.cushion !== undefined) {
+            u.homeCushion = u.cushion;
+            return true;
+          }
+          if (u.pendingMeditate && u.homeCushion !== null && u.homeCushion !== undefined) return true;
+          return headToTikTokSeat(u);
         }
         function nearestFreeCushion(u) {
           var best = -1, bestD = Infinity;
@@ -1572,7 +1639,7 @@
             var s = c.s;
             var occupied = Object.keys(users).some(function (id) {
               var u = users[id];
-              return u.cushion === i && (u.action === "meditating" || u.pendingMeditate);
+              return (u.cushion === i && (u.action === "meditating" || u.pendingMeditate)) || u.homeCushion === i;
             });
             if (occupied) {
               var og = ctx.createRadialGradient(c.x, c.y, 2, c.x, c.y, 40 * s);
@@ -1615,7 +1682,7 @@
 
         function makeUser(x, y, color, name, gender) {
           var g = normalizeGender(gender);
-          return { x: x, y: y, tx: x, ty: y, color: color || colorForGender(g, 0), gender: g, action: "walking", phase: Math.random() * 6.28, name: String(name || "").slice(0, 24), actionT0: 0, pendingOffer: false, pendingMeditate: false, cushion: null, offerSpot: null, incenseSlot: null };
+          return { x: x, y: y, tx: x, ty: y, color: color || colorForGender(g, 0), gender: g, action: "walking", phase: Math.random() * 6.28, name: String(name || "").slice(0, 24), actionT0: 0, pendingOffer: false, pendingMeditate: false, pendingBow: false, pendingBell: false, cushion: null, offerSpot: null, incenseSlot: null, isTikTok: false, homeCushion: null };
         }
         users[myId] = makeUser(270, 918, colorForGender("nam", 0), "Bạn", "nam");
 
@@ -2667,6 +2734,7 @@
           if (u.action === "meditating") actLabel = " · đang thiền";
           else if (u.action === "offering") actLabel = " · dâng hương";
           else if (u.action === "bowing") actLabel = " · vái lạy";
+          else if (u.action === "belling") actLabel = " · thỉnh chuông";
           var label = genderSymbol(u.gender) + " " + displayNameOf(u, isMe) + " — " + genderLabel(u.gender) + actLabel;
           ctx.font = "700 11px 'Be Vietnam Pro', sans-serif";
           var w = ctx.measureText(label).width + 16;
@@ -2731,6 +2799,9 @@
 
         function beginOffer(u) {
           u.pendingOffer = false;
+          u.pendingMeditate = false;
+          u.pendingBow = false;
+          u.pendingBell = false;
           u.action = "offering";
           u.actionT0 = clockT;
           u.tx = u.x; u.ty = u.y;
@@ -2740,20 +2811,58 @@
         function requestOffer(u) {
           var spot = allocateOfferSpot(u);
           u.pendingOffer = true;
+          u.pendingMeditate = false;
+          u.pendingBow = false;
+          u.pendingBell = false;
           u.action = "walking";
           u.tx = spot.x; u.ty = spot.y;
         }
         function beginBow(u) {
           u.pendingOffer = false;
+          u.pendingMeditate = false;
+          u.pendingBow = false;
+          u.pendingBell = false;
           u.offerSpot = null;
           u.incenseSlot = null;
           u.action = "bowing";
           u.actionT0 = clockT;
           u.tx = u.x; u.ty = u.y;
         }
+        // Khách TikTok đang ngồi nhận lệnh vái lạy: đứng dậy, bước ra một
+        // chỗ đứng trong hàng lễ trước lư hương rồi mới vái lạy tại đó.
+        function requestBow(u) {
+          var spot = allocateOfferSpot(u);
+          u.pendingBow = true;
+          u.pendingOffer = false;
+          u.pendingMeditate = false;
+          u.pendingBell = false;
+          u.action = "walking";
+          u.tx = spot.x; u.ty = spot.y;
+        }
+        // Khách TikTok đang ngồi nhận lệnh thỉnh chuông: đứng dậy, bước
+        // tới trước giá chuông ở góc trái chánh điện và thỉnh chuông.
+        var BELL_VISIT_SPOT = { x: 112, y: 562 };
+        function requestBellVisit(u) {
+          u.pendingBell = true;
+          u.pendingOffer = false;
+          u.pendingBow = false;
+          u.pendingMeditate = false;
+          u.offerSpot = null;
+          u.incenseSlot = null;
+          u.action = "walking";
+          u.tx = BELL_VISIT_SPOT.x; u.ty = BELL_VISIT_SPOT.y;
+        }
+        function beginBellVisit(u) {
+          u.pendingBell = false;
+          u.action = "belling";
+          u.actionT0 = clockT;
+          u.tx = u.x; u.ty = u.y;
+          ringVisual(BELL_POS.x, BELL_POS.y);
+        }
 
         /* ---------------- Vòng lặp chính ---------------- */
         var lastTs = 0;
+        var lastSeatCheck = 0;
         function frame(ts) {
           var dt = Math.min(0.05, (ts - lastTs) / 1000 || 0.016);
           lastTs = ts;
@@ -2779,8 +2888,8 @@
           // Cập nhật mọi người
           Object.keys(users).forEach(function (id) {
             var u = users[id];
-            if (u.action === "offering" || u.action === "bowing") {
-              var dur = u.action === "offering" ? OFFER_DUR : BOW_DUR;
+            if (u.action === "offering" || u.action === "bowing" || u.action === "belling") {
+              var dur = u.action === "offering" ? OFFER_DUR : (u.action === "bowing" ? BOW_DUR : 2.4);
               // Khói bốc lên từ đúng ô hương Phật tử này vừa cắm trên miệng lư
               if (u.action === "offering" && Math.random() < dt * 9) {
                 if (u.incenseSlot !== null && u.incenseSlot !== undefined && INCENSE_SLOTS[u.incenseSlot]) {
@@ -2798,6 +2907,9 @@
                   btnOffer.classList.remove("active");
                   btnBow.classList.remove("active");
                 }
+                // Khách TikTok làm lễ xong: quay về đúng nệm nhà của mình
+                // ngồi lại (nệm vẫn được giữ chỗ suốt lúc khách làm lễ).
+                if (u.isTikTok) headToTikTokSeat(u);
               }
               return;
             }
@@ -2812,10 +2924,29 @@
               u.phase += dt * 9;
             } else if (u.pendingOffer) {
               beginOffer(u);
+            } else if (u.pendingBow) {
+              beginBow(u);
+            } else if (u.pendingBell) {
+              beginBellVisit(u);
             } else if (u.pendingMeditate) {
               beginMeditate(u);
             }
           });
+
+          // Khách TikTok đang đứng chờ (lúc vào thì nệm đã kín): hễ có
+          // nệm trống ra — khách khác rời chùa hoặc làm lễ xong đổi chỗ —
+          // thì tự bước tới ngồi, không cần ai nhắc.
+          if (t - lastSeatCheck > 1.2) {
+            lastSeatCheck = t;
+            Object.keys(users).forEach(function (id) {
+              if (id === myId) return;
+              var su = users[id];
+              if (su && su.isTikTok && (su.homeCushion === null || su.homeCushion === undefined) &&
+                  su.action === "walking" && !su.pendingOffer && !su.pendingMeditate && !su.pendingBow && !su.pendingBell) {
+                assignTikTokSeat(su);
+              }
+            });
+          }
 
           // Gửi vị trí lên server (giới hạn ~8 lần/giây) khi đang đi
           var me = users[myId];
@@ -3004,6 +3135,8 @@
           u.cushion = idx;
           u.pendingMeditate = true;
           u.pendingOffer = false;
+          u.pendingBow = false;
+          u.pendingBell = false;
           u.action = "walking";
           u.tx = CUSHIONS[idx].x;
           u.ty = CUSHIONS[idx].y;
@@ -3018,12 +3151,18 @@
           }
           u.pendingMeditate = false;
           u.pendingOffer = false;
+          u.pendingBow = false;
+          u.pendingBell = false;
           u.action = "meditating";
+          if (u.isTikTok && u.cushion !== null && u.cushion !== undefined) u.homeCushion = u.cushion;
         }
         function beginMeditate(u) {
           u.pendingMeditate = false;
+          u.pendingBow = false;
+          u.pendingBell = false;
           u.offerSpot = null;
           u.incenseSlot = null;
+          if (u.isTikTok && u.cushion !== null && u.cushion !== undefined) u.homeCushion = u.cushion;
           if (u.cushion !== null && u.cushion !== undefined && CUSHIONS[u.cushion]) {
             u.x = CUSHIONS[u.cushion].x;
             u.y = CUSHIONS[u.cushion].y;
@@ -3244,10 +3383,12 @@
         function chaoPhatTuMoi(name, userObj) {
           var nm = String(name == null ? "" : name).replace(/^tt_/i, "").trim().slice(0, 40);
           if (!nm) nm = "Phật tử";
-          // Nhân vật của khách cúi chào một cái khi vừa xuất hiện trong sảnh
-          if (userObj) {
+          // Nhân vật của khách cúi chào một cái khi vừa xuất hiện trong sảnh.
+          // Riêng khách TikTok đã được xếp nệm: bỏ cúi chào này để khách đi
+          // thẳng tới nệm của mình ngồi — chào nhau bằng bảng chào là đủ.
+          if (userObj && !(userObj.isTikTok && userObj.homeCushion !== null && userObj.homeCushion !== undefined)) {
             var target = userObj;
-            setTimeout(function () { if (target.action === "walking") beginBow(target); }, 450);
+            setTimeout(function () { if (target.action === "walking" && !target.pendingMeditate) beginBow(target); }, 450);
           }
           var now = Date.now();
           if (welcomeRecent[nm] && now - welcomeRecent[nm] < 6000) return; // vừa chào khách này rồi — không lặp bảng chào
@@ -3578,13 +3719,33 @@
         function remoteOffer(id) {
           var u = users[id];
           if (!u || id === myId) return;
+          // Khách TikTok đang ngồi nệm: đứng dậy đi dâng hương — nệm nhà
+          // vẫn giữ chỗ (homeCushion), lễ xong vòng lặp chính tự đưa
+          // khách quay về đúng nệm đó ngồi lại.
           u.action = "walking";
           requestOffer(u);
         }
         function remoteBow(id) {
           var u = users[id];
           if (!u || id === myId) return;
+          if (u.isTikTok && u.homeCushion !== null && u.homeCushion !== undefined) {
+            // Khách TikTok đang ngồi: bước ra hàng lễ trước lư hương rồi
+            // mới vái lạy, xong quay về nệm nhà ngồi lại.
+            if (u.action === "offering" || u.action === "bowing" || u.action === "belling" || u.pendingOffer || u.pendingBell) return;
+            requestBow(u);
+            return;
+          }
           beginBow(u);
+        }
+        function remoteBellVisit(id) {
+          var u = users[id];
+          if (!u || id === myId || !u.isTikTok) return;
+          // Chỉ áp dụng cho khách TikTok đã có nệm và đang rảnh (đang
+          // ngồi hoặc đang về nệm): đứng dậy tới trước giá chuông thỉnh
+          // chuông, xong vòng lặp chính đưa khách về nệm nhà ngồi lại.
+          if (u.homeCushion === null || u.homeCushion === undefined) return;
+          if (u.action === "offering" || u.action === "bowing" || u.action === "belling" || u.pendingOffer || u.pendingBow || u.pendingBell) return;
+          requestBellVisit(u);
         }
 
         function fromServer(sx, sy) { return clampPos(sx / SX, sy / SY); }
@@ -3639,13 +3800,24 @@
                 // Nếu server chưa kịp gửi giới tính, vẫn tôn trọng màu áo server; nếu có giới tính thì màu theo giới tính cho dễ phân biệt
                 if (su.gender || su.sex) u.color = colorForGender(rg, idx + 1);
                 u.action = su.action || "walking";
+                markTikTok(u, id, su.name || su.displayName);
                 merged[id] = u;
               }
             });
             if (!merged[myId]) merged[myId] = selfState || makeUser(270, 918, colorForGender(myGender, 0), myDisplayName, myGender);
             users = merged;
             Object.keys(users).forEach(function (id) {
-              if (id !== myId && users[id].action === "meditating") sitRemoteOnCushion(users[id]);
+              if (id === myId) return;
+              var ru = users[id];
+              if (ru.isTikTok) {
+                // Khách TikTok đã có mặt từ trước (kể cả khi trang vừa tự
+                // tải lại): xếp nệm lại từ đầu cho ngay ngắn — đang làm lễ
+                // thì chỉ giữ chỗ nệm, lễ xong khách tự về ngồi; đang
+                // thiền thì ngồi xuống nệm như cũ; còn lại tự đi tới nệm.
+                if (ru.action === "offering" || ru.action === "bowing") reserveTikTokSeat(ru);
+                else if (ru.action === "meditating") sitRemoteOnCushion(ru);
+                else assignTikTokSeat(ru);
+              } else if (ru.action === "meditating") sitRemoteOnCushion(ru);
             });
             updateCount();
           });
@@ -3662,15 +3834,25 @@
               addChatSys(genderSymbol(rg2) + " " + u.name + " — " + genderLabel(rg2) + " vừa vào chùa.");
               updateCount();
               // Khách từ TikTok Live (định danh / tên có tiền tố tt_): hiện
-              // bảng chào trang trọng trong sảnh + nhân vật cúi chào một cái
+              // bảng chào trang trọng trong sảnh, đồng thời nhân vật TỰ ĐI
+              // TỚI một nệm thiền còn trống trong khu nệm và ngồi xuống —
+              // mỗi nệm một khách, nệm kín hết thì khách đứng ở sảnh như cũ.
               var ttRawName = String(nu.name || nu.displayName || "");
-              if (String(data.id).indexOf("tt_") === 0 || ttRawName.indexOf("tt_") === 0) {
+              if (markTikTok(u, data.id, ttRawName)) {
+                if (u.action !== "offering" && u.action !== "bowing") assignTikTokSeat(u);
+                else reserveTikTokSeat(u);
                 chaoPhatTuMoi(u.name, u);
               }
             } else if (nu.name || nu.gender) {
               users[data.id].name = nu.name || users[data.id].name;
               users[data.id].gender = normalizeGender(nu.gender || users[data.id].gender);
               users[data.id].color = colorForGender(users[data.id].gender, 2);
+              // Hồ sơ cập nhật muộn mới lộ tiền tố tt_: nếu là khách TikTok
+              // đang đứng rảnh chưa có nệm thì xếp nệm cho khách luôn.
+              if (markTikTok(users[data.id], data.id, users[data.id].name)) {
+                var eu = users[data.id];
+                if ((eu.homeCushion === null || eu.homeCushion === undefined) && eu.action === "walking" && !eu.pendingOffer && !eu.pendingMeditate && !eu.pendingBow && !eu.pendingBell) assignTikTokSeat(eu);
+              }
             }
           });
 
@@ -3695,6 +3877,10 @@
             if (data.name) u.name = data.name;
             if (data.gender || data.sex) { u.gender = normalizeGender(data.gender || data.sex); u.color = colorForGender(u.gender, 1); }
             if (u.action === "meditating") return; // đang ngồi yên trên đệm thiền thì không di chuyển
+            // Khách TikTok đang tự đi về nệm / đang ra làm lễ theo lệnh:
+            // trang tự lái nhân vật theo nệm nhà và hàng lễ, không để các
+            // gói di chuyển của server kéo khách khỏi nệm hay khỏi lễ.
+            if (u.isTikTok && (u.pendingMeditate || u.pendingOffer || u.pendingBow || u.pendingBell || u.action === "offering" || u.action === "bowing" || u.action === "belling")) return;
             var p = fromServer(data.x, data.y);
             u.tx = p.x; u.ty = p.y;
             if (u.action !== "offering" && u.action !== "bowing") u.action = "walking";
@@ -3720,7 +3906,14 @@
             if (!data) return;
             if (data.action === "offer_incense" || data.action === "offering") remoteOffer(data.id);
             else if (data.action === "bow" || data.action === "bowing") remoteBow(data.id);
+            else if (data.action === "ring_bell" || data.action === "bell" || data.action === "thinh_chuong") remoteBellVisit(data.id);
           });
+          // Lệnh thỉnh chuông cho riêng một Phật tử (tên sự kiện server có
+          // thể khác nhau) — khách TikTok đang ngồi sẽ tới giá chuông.
+          socket.on("user_bell", function (data) { remoteBellVisit(data && data.id); });
+          socket.on("user_ring_bell", function (data) { remoteBellVisit(data && data.id); });
+          socket.on("user_ringing_bell", function (data) { remoteBellVisit(data && data.id); });
+          socket.on("user_thinh_chuong", function (data) { remoteBellVisit(data && data.id); });
 
           // Người nào rời đi thì nhân vật của họ biến mất khỏi chánh điện ngay —
           // nghe mọi tên sự kiện mà server có thể dùng để báo một người ra đi
@@ -3739,6 +3932,9 @@
             playBell();
             var u = data && users[data.id];
             ringVisual(u ? u.x : undefined, u ? u.y : undefined);
+            // Tiếng chuông do một khách TikTok đang ngồi thỉnh: khách đó
+            // đứng dậy tới trước giá chuông, xong quay về nệm ngồi lại.
+            if (u && data.id !== myId) remoteBellVisit(data.id);
           });
 
           // Kênh 1: quà tặng từ TikTok Live do cầu nối / server chuyển vào —
