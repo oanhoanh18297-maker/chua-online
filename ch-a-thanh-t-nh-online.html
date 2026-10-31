@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-10-31.8" />
+    <meta name="chua-build" content="2026-10-31.9" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1251,7 +1251,8 @@
           <button class="btn-bell" id="btnBell" type="button">🔔 Thỉnh Chuông</button>
           <button class="btn-ghost active" id="btnSound" type="button" aria-pressed="true">🎵 Nhạc thiền: Bật</button>
           <select class="music-select" id="musicMode" aria-label="Chọn kiểu nhạc nền">
-            <option value="youtube" selected>🎧 Nhạc thiền An Nhiên (YouTube)</option>
+            <option value="youtube-sleep" selected>🎧 Pháp thoại trước khi ngủ (YouTube)</option>
+            <option value="youtube">🎧 Nhạc thiền An Nhiên (YouTube)</option>
             <option value="ambient">🧘 Thiền tịnh tâm · chuông bát &amp; hơi thở</option>
             <option value="chant">Tụng kinh · gõ mõ</option>
           </select>
@@ -1259,12 +1260,12 @@
             <input type="range" id="musicVol" min="0" max="100" value="55" aria-label="Âm lượng nhạc thiền" />
           </label>
           <span class="timer" id="medTimer">Đã thiền <strong id="medTime">00:00</strong></span>
-          <p class="music-hint">Nguồn đang chọn khi vào chùa là <strong>Nhạc thiền An Nhiên (YouTube)</strong> — bản “Nhạc Thiền Thư Giãn (1 giờ)” của kênh <strong>Nhạc Thiền - An Nhiên Tự Tại</strong>, phát qua trình phát YouTube chính thức và tự lặp lại; nút bật/tắt và thanh âm lượng ở trên điều khiển luôn nguồn này. Nhạc chỉ bắt đầu sau lần chạm/bấm đầu tiên (quy định của trình duyệt). Nếu video bị chủ kênh chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về kiểu <strong>Thiền tịnh tâm</strong> có sẵn — nền trầm theo nhịp thở khoảng 14 giây, hợp âm trôi chậm và tiếng chuông bát thưa, vang dài rồi tan dần.</p>
+          <p class="music-hint">Nguồn mặc định khi vào chùa là <strong>Pháp thoại trước khi ngủ (YouTube)</strong> — bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ &amp; Chữa Lành Phiền Não | Lời Phật Dạy” của kênh <strong>Gieo Mầm Phước Báu</strong>, phát qua trình phát YouTube chính thức và tự lặp lại; nút bật/tắt và thanh âm lượng ở trên điều khiển luôn nguồn này. Nhạc chỉ bắt đầu sau lần chạm/bấm đầu tiên (quy định của trình duyệt). Nếu video bị chủ kênh chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về kiểu <strong>Thiền tịnh tâm</strong> có sẵn — nền trầm theo nhịp thở khoảng 14 giây, hợp âm trôi chậm và tiếng chuông bát thưa, vang dài rồi tan dần.</p>
           <p class="yt-status" id="ytStatus" role="status" aria-live="polite" hidden></p>
           <div class="yt-holder" aria-hidden="true"><div id="ytPlayer"></div></div>
         </div>
 
-        <p class="action-note" id="actionNote">Không gian lễ Phật trước bàn thờ đã được mở rộng: trên bệ thờ là ba tượng trang trọng thẳng hàng: tượng Phật lớn ở chính giữa giữ nguyên; bên trái là <strong>tượng Phật Bà Quan Âm</strong> bằng đồng dát vàng — dung mạo hiền từ, đội vương miện, tay cầm cành dương liễu, ngự trên đài sen; bên phải là <strong>tượng Phật Di Lặc</strong> bằng đồng dát vàng — nụ cười phúc hậu, bụng tròn to, tay cầm chuỗi tràng hạt, ngự trên đài sen; hai tượng bên là ảnh tượng thật, cùng cỡ vừa và nhỏ hơn rõ so với tượng lớn ở giữa, chân tượng cùng hàng trên bệ thờ; khu dâng hương ở giữa sảnh nay rộng và thoáng hơn, lư hương lớn đặt trên bệ đá giữa thảm lễ rộng, đủ chỗ cho nhiều Phật tử cùng đứng thành hàng cắm hương ngay ngắn quanh lư; sàn điện trải sẵn 32 đệm thiền (bồ đoàn) thành hai dãy, tám hàng hai bên lối đi giữa ở nửa dưới sảnh, đủ chỗ cho đông Phật tử cùng quỳ lạy, tọa thiền và đứng lễ. Nhạc nền <strong>Nhạc thiền An Nhiên (YouTube)</strong> sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng). Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và <strong>Xem Bát Tự · Tử Vi</strong>.</p>
+        <p class="action-note" id="actionNote">Không gian lễ Phật trước bàn thờ đã được mở rộng: trên bệ thờ là ba tượng trang trọng thẳng hàng: tượng Phật lớn ở chính giữa giữ nguyên; bên trái là <strong>tượng Phật Bà Quan Âm</strong> bằng đồng dát vàng — dung mạo hiền từ, đội vương miện, tay cầm cành dương liễu, ngự trên đài sen; bên phải là <strong>tượng Phật Di Lặc</strong> bằng đồng dát vàng — nụ cười phúc hậu, bụng tròn to, tay cầm chuỗi tràng hạt, ngự trên đài sen; hai tượng bên là ảnh tượng thật, cùng cỡ vừa và nhỏ hơn rõ so với tượng lớn ở giữa, chân tượng cùng hàng trên bệ thờ; khu dâng hương ở giữa sảnh nay rộng và thoáng hơn, lư hương lớn đặt trên bệ đá giữa thảm lễ rộng, đủ chỗ cho nhiều Phật tử cùng đứng thành hàng cắm hương ngay ngắn quanh lư; sàn điện trải sẵn 32 đệm thiền (bồ đoàn) thành hai dãy, tám hàng hai bên lối đi giữa ở nửa dưới sảnh, đủ chỗ cho đông Phật tử cùng quỳ lạy, tọa thiền và đứng lễ. Nhạc nền <strong>Pháp thoại trước khi ngủ (YouTube)</strong> sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng). Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và <strong>Xem Bát Tự · Tử Vi</strong>.</p>
 
         <div class="guide">
           <span><b>Đi dạo:</b> chạm / nhấp vào lối đi giữa điện, hoặc dùng phím mũi tên</span>
@@ -1455,8 +1456,23 @@
         var btnSound = document.getElementById("btnSound");
         var musicModeSel = document.getElementById("musicMode");
         var musicVolEl = document.getElementById("musicVol");
-        var musicMode = "youtube";
+        var musicMode = "youtube-sleep";
         var musicVolume = 0.55; // âm lượng nhạc thiền: vừa đủ nghe, không át hơi thở
+        /* Hai nguồn phát qua trình phát YouTube chính thức, mỗi lựa chọn
+           trong menu nhạc ứng với một video và phát lặp vô hạn:
+           - "youtube-sleep": “Pháp thoại trước khi ngủ” — MẶC ĐỊNH khi
+             vào chùa (kể cả màn hình phát ?full). Khách đã lưu lựa chọn
+             nhạc riêng trên máy mình thì restorePrefs vẫn tôn trọng
+             lựa chọn đã lưu, mặc định này không ghi đè.
+           - "youtube": “Nhạc thiền An Nhiên” — mặc định cũ, giữ lại
+             trong danh sách để khách tự chọn lại nếu muốn. */
+        var YT_TRACKS = {
+          "youtube-sleep": { id: "_GQ_89EqBcs", label: "Pháp thoại trước khi ngủ (YouTube)" },
+          "youtube": { id: "XtzgxKhiTHI", label: "Nhạc thiền An Nhiên (YouTube)" }
+        };
+        function isYtMode(m) { return Object.prototype.hasOwnProperty.call(YT_TRACKS, m); }
+        function ytVideoId() { var t = YT_TRACKS[musicMode]; return t ? t.id : "_GQ_89EqBcs"; }
+        function ytLabel() { var t = YT_TRACKS[musicMode]; return t ? t.label : "Nhạc YouTube"; }
         var btnConnect = document.getElementById("btnConnect");
         var serverUrlInput = document.getElementById("serverUrl");
         var medTimer = document.getElementById("medTimer");
@@ -1832,7 +1848,7 @@
         (function restorePrefs() {
           var p = loadPrefs();
           if (!p) return;
-          if (p.musicMode && musicModeSel && (p.musicMode === "youtube" || p.musicMode === "ambient" || p.musicMode === "chant")) {
+          if (p.musicMode && musicModeSel && (p.musicMode === "youtube" || p.musicMode === "youtube-sleep" || p.musicMode === "ambient" || p.musicMode === "chant")) {
             musicMode = p.musicMode;
             musicModeSel.value = p.musicMode;
           }
@@ -1887,7 +1903,7 @@
             if (AC) audioCtx = new AC();
           }
           if (audioCtx && audioCtx.state === "suspended") {
-            audioCtx.resume().then(function () { if (soundOn && musicMode !== "youtube" && typeof chant !== "undefined") startChant(); });
+            audioCtx.resume().then(function () { if (soundOn && !isYtMode(musicMode) && typeof chant !== "undefined") startChant(); });
           }
           return audioCtx;
         }
@@ -2070,15 +2086,21 @@
           src.start(t0);
         }
 
-        /* ----- NHẠC THIỀN AN NHIÊN (YOUTUBE) -----
-           Nhúng trình phát YouTube chính thức (youtube-nocookie) của video
-           "Nhạc Thiền Thư Giãn (1 giờ)" — XtzgxKhiTHI, kênh Nhạc Thiền -
+        /* ----- NHẠC / PHÁP THOẠI QUA YOUTUBE -----
+           Nhúng trình phát YouTube chính thức (youtube-nocookie); video
+           phát tùy theo lựa chọn đang chọn trong menu nhạc (xem YT_TRACKS):
+           mặc định là "Pháp thoại trước khi ngủ" — _GQ_89EqBcs, bài
+           “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ & Chữa Lành Phiền
+           Não | Lời Phật Dạy”, kênh Gieo Mầm Phước Báu; lựa chọn còn lại
+           là "Nhạc Thiền Thư Giãn (1 giờ)" — XtzgxKhiTHI, kênh Nhạc Thiền -
            An Nhiên Tự Tại. Không tải/chiết xuất audio của kênh; phát, dừng
-           và âm lượng đi qua YT IFrame API, lặp vô hạn bằng loop + playlist.
-           Nếu API/video bị chặn nhúng hoặc lỗi tải -> tự quay về nhạc thiền
-           tịnh tâm tạo sẵn (ambient) và báo nhẹ trong giao diện. */
+           và âm lượng đi qua YT IFrame API, lặp vô hạn bằng loop + playlist
+           (đổi bài thì nạp video mới vào cùng trình phát). Nếu API/video
+           bị chặn nhúng hoặc lỗi tải -> tự quay về nhạc thiền tịnh tâm
+           tạo sẵn (ambient) và báo nhẹ trong giao diện. */
         var ytPlayer = null;
         var ytReady = false;
+        var ytCurrentId = null;
         var ytFailed = false;
         var ytPlayWanted = false;
         var ytLoadTimer = null;
@@ -2095,22 +2117,38 @@
           ytPlayWanted = false;
           if (ytLoadTimer) { clearTimeout(ytLoadTimer); ytLoadTimer = null; }
           try { if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo(); } catch (e) {}
-          if (musicMode === "youtube") {
+          if (isYtMode(musicMode)) {
+            var failedLabel = ytLabel();
             musicMode = "ambient";
             if (musicModeSel) musicModeSel.value = "ambient";
-            showYtStatus("Nhạc thiền An Nhiên (YouTube) chưa phát được (" + msg + "). Chùa đã tự chuyển về nhạc thiền tịnh tâm có sẵn — bạn vẫn nghe nhạc thiền như thường, và có thể thử chọn lại nguồn YouTube sau.");
-            note("<strong>Nhạc thiền An Nhiên (YouTube) chưa phát được:</strong> " + escapeHtml(msg) + " Chùa đã tự chuyển về <strong>nhạc thiền tịnh tâm</strong> có sẵn.");
+            showYtStatus(failedLabel + " chưa phát được (" + msg + "). Chùa đã tự chuyển về nhạc thiền tịnh tâm có sẵn — bạn vẫn nghe nhạc thiền như thường, và có thể thử chọn lại nguồn YouTube sau.");
+            note("<strong>" + escapeHtml(failedLabel) + " chưa phát được:</strong> " + escapeHtml(msg) + " Chùa đã tự chuyển về <strong>nhạc thiền tịnh tâm</strong> có sẵn.");
             if (soundOn) tryStartMusic();
           }
+        }
+        function ytLoadCurrent() {
+          // Nạp đúng video của lựa chọn YouTube đang chọn vào trình phát
+          // (khi khách đổi giữa hai bài YouTube) rồi phát; bài đã nạp sẵn
+          // thì chỉ cần phát tiếp.
+          if (!ytPlayer || !ytReady) return;
+          var id = ytVideoId();
+          try { ytPlayer.setVolume(ytVolumeValue()); } catch (e) {}
+          if (ytCurrentId === id) {
+            try { ytPlayer.playVideo(); } catch (e2) {}
+            return;
+          }
+          ytCurrentId = id;
+          try { ytPlayer.loadVideoById({ videoId: id, startSeconds: 0 }); } catch (e3) {}
         }
         function createYtPlayer() {
           if (ytPlayer || ytFailed) return;
           if (!(window.YT && YT.Player)) return;
           try {
+            ytCurrentId = ytVideoId();
             ytPlayer = new YT.Player("ytPlayer", {
               width: "200",
               height: "113",
-              videoId: "XtzgxKhiTHI",
+              videoId: ytCurrentId,
               host: "https://www.youtube-nocookie.com",
               playerVars: {
                 autoplay: 0,
@@ -2121,7 +2159,7 @@
                 playsinline: 1,
                 rel: 0,
                 loop: 1,
-                playlist: "XtzgxKhiTHI",
+                playlist: ytCurrentId,
                 iv_load_policy: 3
               },
               events: {
@@ -2129,8 +2167,8 @@
                   ytReady = true;
                   if (ytLoadTimer) { clearTimeout(ytLoadTimer); ytLoadTimer = null; }
                   try { e.target.setVolume(ytVolumeValue()); } catch (err) {}
-                  if (soundOn && musicMode === "youtube" && ytPlayWanted) {
-                    try { e.target.playVideo(); } catch (err2) {}
+                  if (soundOn && isYtMode(musicMode) && ytPlayWanted) {
+                    ytLoadCurrent();
                   }
                 },
                 onError: function (e) {
@@ -2171,7 +2209,7 @@
           if (ytFailed) return; // đã tự quay về nhạc có sẵn khi lỗi xảy ra
           loadYouTubeApi();
           if (ytReady && ytPlayer) {
-            try { ytPlayer.setVolume(ytVolumeValue()); ytPlayer.playVideo(); } catch (e) {}
+            ytLoadCurrent();
           }
         }
         function stopYouTube() {
@@ -2182,7 +2220,7 @@
         }
 
         function startChant() {
-          if (musicMode === "youtube") return;
+          if (isYtMode(musicMode)) return;
           if (!soundOn || chant.running) return;
           if (!ensureAudio()) return;
           if (audioCtx.state !== "running") return; // chờ lần chạm đầu tiên
@@ -2298,7 +2336,7 @@
         // Tự phát khi vào trang; nếu trình duyệt chặn, bắt đầu ngay ở lần chạm/bấm đầu tiên
         function tryStartMusic() {
           if (!soundOn) return;
-          if (musicMode === "youtube") { startYouTube(); return; }
+          if (isYtMode(musicMode)) { startYouTube(); return; }
           ensureAudio();
           if (audioCtx && audioCtx.state === "running") startChant();
         }
@@ -3764,7 +3802,9 @@
           btnSound.setAttribute("aria-pressed", soundOn ? "true" : "false");
           if (soundOn) {
             tryStartMusic();
-            note(musicMode === "youtube"
+            note(musicMode === "youtube-sleep"
+              ? "Đã bật <strong>Pháp thoại trước khi ngủ (YouTube)</strong> — bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ & Chữa Lành Phiền Não | Lời Phật Dạy” của kênh Gieo Mầm Phước Báu sẽ phát và tự lặp lại. Dùng thanh âm lượng để chỉnh to nhỏ."
+              : musicMode === "youtube"
               ? "Đã bật <strong>Nhạc thiền An Nhiên (YouTube)</strong> — bản nhạc thiền thư giãn 1 giờ sẽ phát và tự lặp lại. Dùng thanh âm lượng để chỉnh to nhỏ."
               : musicMode === "chant"
                 ? "Đã bật nhạc nền <strong>tụng kinh · gõ mõ</strong>."
@@ -3779,7 +3819,7 @@
         if (musicVolEl) musicVolEl.addEventListener("input", function () {
           musicVolume = (parseInt(musicVolEl.value, 10) || 0) / 100;
           savePrefs();
-          if (musicMode === "youtube" && ytPlayer && ytReady) {
+          if (isYtMode(musicMode) && ytPlayer && ytReady) {
             try { ytPlayer.setVolume(ytVolumeValue()); } catch (e) {}
           }
           if (chant.running && chant.master && audioCtx && musicMode === "ambient") {
@@ -3795,19 +3835,22 @@
           musicMode = musicModeSel.value;
           savePrefs();
           stopAllMusic();
-          if (musicMode === "youtube") {
-            // Người dùng chủ động chọn lại YouTube: cho phép thử phát lại từ đầu,
-            // kể cả lần trước đã lỗi và tự quay về nhạc có sẵn.
+          if (isYtMode(musicMode)) {
+            // Người dùng chủ động chọn lại một nguồn YouTube: cho phép thử
+            // phát lại từ đầu, kể cả lần trước đã lỗi và tự quay về nhạc
+            // có sẵn; startYouTube nạp đúng video của lựa chọn vừa chọn.
             ytFailed = false;
             if (ytLoadTimer) { clearTimeout(ytLoadTimer); ytLoadTimer = null; }
             showYtStatus("");
             if (soundOn) startYouTube();
           } else if (soundOn && wasRunning) {
-            setTimeout(function () { tryStartMusic(); }, prevMode === "youtube" ? 300 : (musicMode === "chant" ? 700 : 1900));
+            setTimeout(function () { tryStartMusic(); }, isYtMode(prevMode) ? 300 : (musicMode === "chant" ? 700 : 1900));
           } else if (soundOn) {
             tryStartMusic();
           }
-          note(musicMode === "youtube"
+          note(musicMode === "youtube-sleep"
+            ? "<strong>Pháp thoại trước khi ngủ (YouTube):</strong> bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ & Chữa Lành Phiền Não | Lời Phật Dạy” của kênh Gieo Mầm Phước Báu, phát qua trình phát YouTube chính thức và tự lặp lại. Nếu video bị chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về nhạc thiền tịnh tâm có sẵn."
+            : musicMode === "youtube"
             ? "<strong>Nhạc thiền An Nhiên (YouTube):</strong> bản “Nhạc Thiền Thư Giãn (1 giờ)” của kênh Nhạc Thiền - An Nhiên Tự Tại, phát qua trình phát YouTube chính thức và tự lặp lại. Nếu video bị chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về nhạc thiền tịnh tâm có sẵn."
             : musicMode === "ambient"
               ? "<strong>Thiền tịnh tâm:</strong> không lời, không nhịp dồn — nền trầm lên xuống theo nhịp thở ~14 giây, hợp âm ngũ cung trôi 18 giây và chuông bát vang thưa 11–17 giây một tiếng rồi tan. Hãy ngồi xuống đệm, để âm lượng vừa nghe và thở chậm theo nhạc."
