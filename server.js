@@ -47,7 +47,8 @@ app.all('/tf', (req, res) => {
         nickname: String(q.n || q.nickname || ''),
         text: String(q.text || ''),
         giftName: String(q.gift || ''),
-        giftCount: parseInt(q.count, 10) || 1
+        giftCount: parseInt(q.count, 10) || 1,
+        coins: parseInt(q.coins, 10) || 0
     };
     // Lenh rut gon cho cac su kien lenh chat cua TikFinity: act -> cau chat co dinh
     if (evt.type === 'act') {
@@ -132,6 +133,26 @@ function ttWander(id) {
     io.emit('user_moved', { id, x: u.x, y: u.y, name: u.name, gender: u.gender });
 }
 
+// ---------- BANG CONG DUC (xep hang diem cong duc cua khach TikTok) ----------
+// Diem cong tu qua tang: moi mon qua +1 diem (nhan so luong); neu su kien co
+// kem so xu (coins) thi tinh theo so xu. Bang chi nam trong bo nho server.
+const merit = {}; // username (chu thuong) -> { name, points }
+function meritEntries() {
+    return Object.values(merit).sort((a, b) => b.points - a.points).slice(0, 10)
+        .map(e => ({ name: e.name, points: e.points }));
+}
+function broadcastMerit() { io.emit('merit_board', { entries: meritEntries() }); }
+function addMerit(evt, giftCount) {
+    const key = String(evt.user || '').toLowerCase();
+    if (!key) return;
+    const coins = parseInt(evt.coins, 10) || 0;
+    const add = coins > 0 ? coins : Math.max(1, giftCount || 1);
+    if (!merit[key]) merit[key] = { name: String(evt.nickname || evt.user).slice(0, 24), points: 0 };
+    merit[key].name = String(evt.nickname || evt.user).slice(0, 24);
+    merit[key].points += add;
+    broadcastMerit();
+}
+
 function handleLiveEvent(evt) {
     if (!evt || typeof evt !== 'object') return;
     const type = evt.type;
@@ -149,6 +170,7 @@ function handleLiveEvent(evt) {
                 giftName: String(evt.giftName || 'quà tặng').slice(0, 40),
                 giftCount: Math.max(1, parseInt(evt.giftCount, 10) || 1)
             };
+            addMerit(evt, giftPayload.giftCount);
             io.emit('gift_announcement', giftPayload);
             // Trang chua lang nghe loi chuc qua tang qua cac ten su kien nay
             io.emit('tiktok_gift', Object.assign({}, giftPayload, { ten: giftPayload.name, qua: giftPayload.giftName, nickname: giftPayload.name, gift: giftPayload.giftName }));
@@ -187,6 +209,8 @@ setInterval(() => {
 }, 30000);
 
 io.on('connection', (socket) => {
+    // Gui bang cong duc hien tai cho nguoi vua ket noi
+    socket.emit('merit_board', { entries: meritEntries() });
     // Cau noi TikTok xac thuc bang khoa rieng; khan gia web binh thuong khong can
     const isBridge = !!BRIDGE_KEY && socket.handshake.auth && socket.handshake.auth.key === BRIDGE_KEY;
     if (isBridge) {

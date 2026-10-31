@@ -319,6 +319,9 @@
       .music-vol { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); white-space: nowrap; }
       .music-vol input[type="range"] { width: 96px; accent-color: var(--gold); cursor: pointer; }
       .music-hint { flex-basis: 100%; margin: 2px 0 0; font-size: 13px; line-height: 1.55; color: var(--ink-soft); }
+      .yt-holder { position: absolute; width: 200px; height: 113px; left: -9999px; top: 0; overflow: hidden; opacity: 0; pointer-events: none; }
+      .yt-status { flex-basis: 100%; margin: 0; font-size: 13px; line-height: 1.55; color: var(--ink-soft); background: color-mix(in srgb, var(--gold-soft) 35%, transparent); border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); border-radius: 10px; padding: 8px 12px; }
+      .yt-status[hidden] { display: none; }
       .timer {
         margin-left: auto;
         font-size: 14px;
@@ -623,6 +626,241 @@
         .merit-box .mb-label { font-size: 10.5px; }
         .merit-box .mb-hint { display: none; }
       }
+      /* ---- Theo mẫu live "Chùa Online": dòng Cầu Bình An, hai băng câu đối đỏ
+         lớn treo hai bên chính diện và BIA CÔNG ĐỨC ở góc phải chánh điện,
+         đối diện với chuông ở góc trái ---- */
+      .altar-head {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(540px, 60%);
+        text-align: center;
+        z-index: 4;
+        pointer-events: none;
+        line-height: 1.3;
+      }
+      .altar-head .ah-title {
+        font-family: "Playfair Display", serif;
+        font-weight: 700;
+        font-size: clamp(20px, 3.2vw, 31px);
+        letter-spacing: 2px;
+        color: #ffe9a8;
+        text-shadow: 0 2px 10px rgba(20, 8, 0, 0.85), 0 0 26px rgba(120, 60, 0, 0.55);
+        margin: 0;
+      }
+      .altar-head .ah-title::before, .altar-head .ah-title::after {
+        content: "❖";
+        font-size: 0.5em;
+        color: #f0b64a;
+        vertical-align: 0.4em;
+        margin: 0 10px;
+      }
+      .altar-head .ah-hint {
+        margin: 3px 0 0;
+        font-size: 12px;
+        font-weight: 500;
+        color: #fdf3dd;
+        text-shadow: 0 1px 6px rgba(20, 8, 0, 0.92), 0 0 14px rgba(20, 8, 0, 0.6);
+      }
+      .couplet {
+        position: absolute;
+        top: 12%;
+        z-index: 3;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1px;
+        padding: 16px 11px 14px;
+        background: linear-gradient(180deg, #a23420, #7c2110 60%, #671b0d);
+        border: 2px solid #d9a441;
+        border-radius: 7px;
+        box-shadow: 0 12px 28px rgba(24, 8, 2, 0.55), inset 0 0 0 3px rgba(90, 26, 10, 0.8);
+        color: #ffd977;
+        font-family: "Playfair Display", serif;
+        font-weight: 700;
+        font-size: clamp(14px, 2.3vw, 22px);
+        line-height: 1.28;
+        letter-spacing: 0.4px;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+      .couplet.left { left: 30.5%; }
+      .couplet.right { left: 69.5%; }
+      .couplet::before {
+        content: "";
+        width: 30px;
+        height: 4px;
+        border-radius: 2px;
+        background: #d9a441;
+        margin-bottom: 6px;
+        flex: none;
+      }
+      .couplet.fade { opacity: 0; }
+      .couplet span { white-space: nowrap; }
+      @media (prefers-reduced-motion: reduce) {
+        .couplet { transition: none; }
+      }
+      /* Bia công đức: tấm bia đá đứng ở góc phải chánh điện, đối diện với
+         chuông ở góc trái — hai bên cân xứng như một cặp. Chữ vàng khắc
+         trên nền đá tối, danh sách xếp hạng nằm ngay trên mặt bia. */
+      .merit-board {
+        position: absolute;
+        right: 1.6%;
+        bottom: 6.5%;
+        z-index: 7;
+        width: 20.5%;
+        min-width: 190px;
+        background: linear-gradient(165deg, #4b453b, #2d2a24 55%, #201e19);
+        border: 2px solid #97814c;
+        border-radius: 12px 12px 7px 7px;
+        padding: 16px 12px 12px;
+        color: #ecd28e;
+        box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.35), inset 0 0 26px rgba(0, 0, 0, 0.5), 0 16px 32px rgba(15, 8, 2, 0.55);
+        line-height: 1.4;
+        pointer-events: none;
+      }
+      .merit-board::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: -15px;
+        transform: translateX(-50%);
+        width: 56%;
+        height: 30px;
+        background: linear-gradient(180deg, #57503f, #3a362c);
+        border: 2px solid #97814c;
+        border-bottom: none;
+        border-radius: 999px 999px 0 0;
+      }
+      .merit-board::after {
+        content: "";
+        position: absolute;
+        left: -5%;
+        bottom: -11px;
+        width: 110%;
+        height: 12px;
+        background: linear-gradient(180deg, #3d392f, #24221c);
+        border: 1.5px solid #7d6a3e;
+        border-radius: 4px;
+        box-shadow: 0 8px 14px rgba(15, 8, 2, 0.45);
+      }
+      .merit-board .stele-cap {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 17px;
+        line-height: 1;
+        filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
+      }
+      .merit-board h3 {
+        margin: 0 0 8px;
+        font-family: "Playfair Display", serif;
+        font-size: 15.5px;
+        letter-spacing: 1.4px;
+        color: #ffd968;
+        text-align: center;
+        text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 230, 160, 0.22);
+        border-bottom: 1px solid rgba(217, 164, 65, 0.4);
+        padding-bottom: 6px;
+      }
+      .merit-board ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .merit-board li {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12.4px;
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: rgba(255, 214, 120, 0.05);
+      }
+      .merit-board li.top1 { background: rgba(255, 190, 60, 0.16); font-weight: 700; }
+      .merit-board .mb-rank {
+        flex: none;
+        width: 19px; height: 19px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(217, 164, 65, 0.5);
+        color: #ffd977;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .merit-board li.top1 .mb-rank { background: #d9a441; color: #3a2404; }
+      .merit-board .mb-name {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .merit-board .mb-points { flex: none; font-weight: 700; color: #ffce54; font-variant-numeric: tabular-nums; }
+      .merit-board .mb-empty {
+        margin: 0;
+        font-size: 12px;
+        font-style: italic;
+        color: rgba(236, 210, 142, 0.82);
+        text-align: center;
+        line-height: 1.55;
+      }
+      /* Nhãn nhỏ trong sân chùa khi có quà tặng, đi cùng banner lời chúc */
+      .gift-tag {
+        position: absolute;
+        left: 50%;
+        bottom: 56px;
+        transform: translate(-50%, 8px);
+        z-index: 6;
+        max-width: min(560px, 58%);
+        background: rgba(30, 17, 8, 0.86);
+        border: 1px solid rgba(217, 164, 65, 0.8);
+        color: #ffe9b0;
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-size: 12.5px;
+        font-weight: 600;
+        line-height: 1.35;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease, transform 0.4s ease;
+      }
+      .gift-tag.show { opacity: 1; transform: translate(-50%, 0); }
+      /* Hòm công đức dời sang phía trái tượng Phật để khoảng giữa chánh
+         điện thoáng cho dòng Cầu Bình An và băng câu đối lớn bên trái */
+      .merit-box { left: max(8px, calc(50% - 352px)); top: 104px; }
+      @media (max-width: 560px) {
+        .altar-head { top: 6px; width: 54%; }
+        .altar-head .ah-title { font-size: 17px; letter-spacing: 1px; }
+        .altar-head .ah-title::before, .altar-head .ah-title::after { margin: 0 5px; }
+        .altar-head .ah-hint { font-size: 9.8px; line-height: 1.4; }
+        .merit-board { top: auto; right: 1.5%; bottom: 5%; width: 31%; min-width: 0; padding: 10px 7px 8px; }
+        .merit-board::before { top: -9px; height: 18px; }
+        .merit-board::after { bottom: -7px; height: 8px; }
+        .merit-board .stele-cap { top: -18px; font-size: 12px; }
+        .merit-board h3 { font-size: 10.5px; margin-bottom: 5px; letter-spacing: 0.6px; padding-bottom: 4px; }
+        .merit-board li { font-size: 9.3px; padding: 1.5px 4px; gap: 4px; }
+        .merit-board .mb-rank { width: 14px; height: 14px; font-size: 8.5px; }
+        .merit-board .mb-empty { font-size: 9.5px; }
+        .couplet { top: 25%; padding: 10px 6px 9px; font-size: 12px; }
+        .couplet.left { left: 24%; }
+        .couplet.right { left: 60.5%; }
+        .merit-box { left: 8px; right: auto; top: auto; bottom: 8px; }
+        .gift-tag { bottom: 52px; font-size: 11px; padding: 5px 11px; max-width: 56%; }
+      }
     </style>
   </head>
   <body>
@@ -669,6 +907,19 @@
             <p class="gb-bless" id="giftBless"></p>
             <p class="gb-queue" id="giftQueue"></p>
           </div>
+          <div class="altar-head" aria-hidden="true">
+            <p class="ah-title">Cầu Bình An</p>
+            <p class="ah-hint">Khách trên live TikTok bình luận để vào lễ Phật cùng mọi người</p>
+          </div>
+          <div class="couplet left" id="coupletLeft" aria-hidden="true"><span>Gieo</span><span>hạt</span><span>thiện</span><span>lành</span></div>
+          <div class="couplet right" id="coupletRight" aria-hidden="true"><span>Gặt</span><span>quả</span><span>bình</span><span>an</span></div>
+          <aside class="merit-board" id="meritBoard" aria-label="Bia công đức — bảng xếp hạng công đức">
+            <div class="stele-cap" aria-hidden="true">🪷</div>
+            <h3>BIA CÔNG ĐỨC</h3>
+            <ol id="meritBoardList"></ol>
+            <p class="mb-empty" id="meritBoardEmpty">Chưa có công đức — tặng quà trên live TikTok để ghi danh</p>
+          </aside>
+          <div class="gift-tag" id="giftTag" role="status" aria-live="polite"></div>
         </div>
 
         <div class="controls">
@@ -676,23 +927,26 @@
           <button class="btn-action" id="btnBow" type="button">🙏 Vái Lạy</button>
           <button class="btn-primary" id="btnMeditate" type="button">🧘 Tọa Thiền</button>
           <button class="btn-bell" id="btnBell" type="button">🔔 Thỉnh Chuông</button>
-          <button class="btn-ghost active" id="btnSound" type="button" aria-pressed="true">🎵 Nhạc thiền tịnh tâm: Bật</button>
+          <button class="btn-ghost active" id="btnSound" type="button" aria-pressed="true">🎵 Nhạc thiền: Bật</button>
           <select class="music-select" id="musicMode" aria-label="Chọn kiểu nhạc nền">
-            <option value="ambient" selected>🧘 Thiền tịnh tâm · chuông bát &amp; hơi thở</option>
+            <option value="youtube" selected>🎧 Nhạc thiền An Nhiên (YouTube)</option>
+            <option value="ambient">🧘 Thiền tịnh tâm · chuông bát &amp; hơi thở</option>
             <option value="chant">Tụng kinh · gõ mõ</option>
           </select>
           <label class="music-vol" for="musicVol">Âm lượng thiền
             <input type="range" id="musicVol" min="0" max="100" value="55" aria-label="Âm lượng nhạc thiền" />
           </label>
           <span class="timer" id="medTimer">Đã thiền <strong id="medTime">00:00</strong></span>
-          <p class="music-hint">Kiểu <strong>Thiền tịnh tâm</strong> là nhạc chính khi vào chùa: không lời, không nhịp gõ dồn — chỉ có nền trầm rất nhẹ lên xuống theo nhịp thở khoảng 14 giây, hợp âm trôi chậm 18 giây và tiếng <strong>chuông bát (singing bowl)</strong> thưa, vang dài rồi tan dần. Hãy để âm lượng vừa đủ nghe, ngồi xuống đệm và thở theo nhạc.</p>
+          <p class="music-hint">Nguồn đang chọn khi vào chùa là <strong>Nhạc thiền An Nhiên (YouTube)</strong> — bản “Nhạc Thiền Thư Giãn (1 giờ)” của kênh <strong>Nhạc Thiền - An Nhiên Tự Tại</strong>, phát qua trình phát YouTube chính thức và tự lặp lại; nút bật/tắt và thanh âm lượng ở trên điều khiển luôn nguồn này. Nhạc chỉ bắt đầu sau lần chạm/bấm đầu tiên (quy định của trình duyệt). Nếu video bị chủ kênh chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về kiểu <strong>Thiền tịnh tâm</strong> có sẵn — nền trầm theo nhịp thở khoảng 14 giây, hợp âm trôi chậm và tiếng chuông bát thưa, vang dài rồi tan dần.</p>
+          <p class="yt-status" id="ytStatus" role="status" aria-live="polite" hidden></p>
+          <div class="yt-holder" aria-hidden="true"><div id="ytPlayer"></div></div>
         </div>
 
-        <p class="action-note" id="actionNote">Sàn điện đã trải sẵn đệm thiền (bồ đoàn) thành hai dãy hai bên lối đi giữa. Nhạc nền <strong>thiền tịnh tâm</strong> sẽ tự phát khi vào chùa — nếu trình duyệt chặn, chỉ cần chạm vào chánh điện là nhạc bắt đầu. Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và <strong>Xem Bát Tự · Tử Vi</strong>.</p>
+        <p class="action-note" id="actionNote">Không gian lễ Phật trước bàn thờ đã được mở rộng: sàn điện trải sẵn 32 đệm thiền (bồ đoàn) thành hai dãy, bốn hàng hai bên lối đi giữa, đủ chỗ cho đông Phật tử cùng quỳ lạy, tọa thiền và đứng lễ. Nhạc nền <strong>Nhạc thiền An Nhiên (YouTube)</strong> sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng). Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và <strong>Xem Bát Tự · Tử Vi</strong>.</p>
 
         <div class="guide">
           <span><b>Đi dạo:</b> chạm / nhấp vào lối đi giữa điện, hoặc dùng phím mũi tên</span>
-          <span><b>Đệm thiền:</b> các bồ đoàn tròn trên tọa cụ, chia hai dãy trái — phải trước bàn thờ; chạm vào một đệm trống để tới ngồi thiền</span>
+          <span><b>Đệm thiền:</b> các bồ đoàn tròn trên tọa cụ, chia hai dãy trái — phải, bốn hàng trong khu lễ rộng trước bàn thờ; chạm vào một đệm trống để tới ngồi thiền</span>
           <span><b>Dâng hương:</b> bước tới trước lư hương, nâng hương và khói bay lên bàn thờ</span>
           <span><b>Vái lạy:</b> quỳ xuống, cúi mình lạy ba lạy trước Phật</span>
           <span><b>Tọa thiền:</b> bước tới đệm thiền trống gần nhất, ngồi yên tỏa hào quang vàng</span>
@@ -726,6 +980,13 @@
           hoặc <em>postMessage</em> một gói <em>{ type: "tiktok_gift", name, gift }</em> vào trang —
           một <strong>cuốn thư chúc lành sẽ hiện ngay giữa chánh điện</strong> kèm tiếng chuông, ghi rõ tên người tặng và món quà,
           để cả phòng live cùng đọc được. Nhiều quà đến cùng lúc sẽ hiện lần lượt, không mất lời chúc nào.
+          Kèm theo đó, một nhãn nhỏ <strong>“Cầu Bình An – {tên} tặng {quà}”</strong> hiện trong sân chùa ngay dưới chánh điện.
+        </p>
+        <p style="margin-top:10px">
+          <strong>Bia công đức (tấm bia đá ở góc phải chánh điện, đối diện với chuông ở góc trái):</strong> server tính điểm từ quà tặng trên TikTok Live
+          (có số xu thì tính theo xu) và gửi xuống qua sự kiện <em>merit_board</em> với dữ liệu
+          <em>{ entries: [{ name, points }] }</em> ngay khi kết nối và mỗi khi điểm thay đổi —
+          trang chỉ lắng nghe và vẽ lại bảng xếp hạng tối đa 10 dòng, điểm cao xếp trước, không tự cộng điểm.
         </p>
       </section>
 
@@ -822,7 +1083,7 @@
         var btnSound = document.getElementById("btnSound");
         var musicModeSel = document.getElementById("musicMode");
         var musicVolEl = document.getElementById("musicVol");
-        var musicMode = "ambient";
+        var musicMode = "youtube";
         var musicVolume = 0.55; // âm lượng nhạc thiền: vừa đủ nghe, không át hơi thở
         var btnConnect = document.getElementById("btnConnect");
         var serverUrlInput = document.getElementById("serverUrl");
@@ -882,8 +1143,8 @@
         /* ---- Khu đệm thiền: bồ đoàn chia hai dãy trái — phải, lối đi giữa dẫn tới lư hương (như ảnh mẫu) ---- */
         var CUSHIONS = [];
         (function () {
-          var rows = [{ y: 508, s: 0.8 }, { y: 536, s: 0.93 }, { y: 564, s: 1.06 }];
-          var cols = [272, 330, 388, 572, 630, 688]; // 3 cột mỗi dãy, chừa lối đi giữa x 415–545
+          var rows = [{ y: 482, s: 0.69 }, { y: 508, s: 0.8 }, { y: 536, s: 0.93 }, { y: 564, s: 1.06 }];
+          var cols = [214, 272, 330, 388, 572, 630, 688, 738]; // 4 cột mỗi dãy, chừa lối đi giữa x 415–545 — khu đệm mở rộng thành 32 đệm cho đông Phật tử cùng tọa thiền
           rows.forEach(function (r) {
             cols.forEach(function (cx) { CUSHIONS.push({ x: cx, y: r.y, s: r.s }); });
           });
@@ -997,8 +1258,10 @@
         if (visitorGenderSel) visitorGenderSel.addEventListener("change", function () { applyIdentity(true); });
 
         function clampPos(x, y) {
-          // Chỉ đi lại trên lối đi giữa điện, trước bàn thờ
-          return { x: Math.max(238, Math.min(W - 238, x)), y: Math.max(458, Math.min(H - 18, y)) };
+          // Khu lễ trước bàn thờ đã mở rộng: đi lại thoải mái gần khắp chiều
+          // ngang sàn điện (từ sát giá chuông bên trái tới gần bia công đức
+          // bên phải) và tiến sát hơn về phía bàn thờ, cho đông người cùng lễ
+          return { x: Math.max(168, Math.min(W - 168, x)), y: Math.max(446, Math.min(H - 14, y)) };
         }
         function updateCount() { onlineCountEl.textContent = String(Object.keys(users).length); }
         function note(html) { actionNote.innerHTML = html; }
@@ -1011,7 +1274,7 @@
             if (AC) audioCtx = new AC();
           }
           if (audioCtx && audioCtx.state === "suspended") {
-            audioCtx.resume().then(function () { if (soundOn && typeof chant !== "undefined") startChant(); });
+            audioCtx.resume().then(function () { if (soundOn && musicMode !== "youtube" && typeof chant !== "undefined") startChant(); });
           }
           return audioCtx;
         }
@@ -1194,7 +1457,119 @@
           src.start(t0);
         }
 
+        /* ----- NHẠC THIỀN AN NHIÊN (YOUTUBE) -----
+           Nhúng trình phát YouTube chính thức (youtube-nocookie) của video
+           "Nhạc Thiền Thư Giãn (1 giờ)" — XtzgxKhiTHI, kênh Nhạc Thiền -
+           An Nhiên Tự Tại. Không tải/chiết xuất audio của kênh; phát, dừng
+           và âm lượng đi qua YT IFrame API, lặp vô hạn bằng loop + playlist.
+           Nếu API/video bị chặn nhúng hoặc lỗi tải -> tự quay về nhạc thiền
+           tịnh tâm tạo sẵn (ambient) và báo nhẹ trong giao diện. */
+        var ytPlayer = null;
+        var ytReady = false;
+        var ytFailed = false;
+        var ytPlayWanted = false;
+        var ytLoadTimer = null;
+        var ytStatusEl = document.getElementById("ytStatus");
+        function showYtStatus(text) {
+          if (!ytStatusEl) return;
+          ytStatusEl.textContent = text || "";
+          ytStatusEl.hidden = !text;
+        }
+        function ytVolumeValue() { return Math.max(0, Math.min(100, Math.round(musicVolume * 100))); }
+        function handleYtFailure(msg) {
+          if (ytFailed) return;
+          ytFailed = true;
+          ytPlayWanted = false;
+          if (ytLoadTimer) { clearTimeout(ytLoadTimer); ytLoadTimer = null; }
+          try { if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo(); } catch (e) {}
+          if (musicMode === "youtube") {
+            musicMode = "ambient";
+            if (musicModeSel) musicModeSel.value = "ambient";
+            showYtStatus("Nhạc thiền An Nhiên (YouTube) chưa phát được (" + msg + "). Chùa đã tự chuyển về nhạc thiền tịnh tâm có sẵn — bạn vẫn nghe nhạc thiền như thường, và có thể thử chọn lại nguồn YouTube sau.");
+            note("<strong>Nhạc thiền An Nhiên (YouTube) chưa phát được:</strong> " + escapeHtml(msg) + " Chùa đã tự chuyển về <strong>nhạc thiền tịnh tâm</strong> có sẵn.");
+            if (soundOn) tryStartMusic();
+          }
+        }
+        function createYtPlayer() {
+          if (ytPlayer || ytFailed) return;
+          if (!(window.YT && YT.Player)) return;
+          try {
+            ytPlayer = new YT.Player("ytPlayer", {
+              width: "200",
+              height: "113",
+              videoId: "XtzgxKhiTHI",
+              host: "https://www.youtube-nocookie.com",
+              playerVars: {
+                autoplay: 0,
+                controls: 0,
+                disablekb: 1,
+                fs: 0,
+                modestbranding: 1,
+                playsinline: 1,
+                rel: 0,
+                loop: 1,
+                playlist: "XtzgxKhiTHI",
+                iv_load_policy: 3
+              },
+              events: {
+                onReady: function (e) {
+                  ytReady = true;
+                  if (ytLoadTimer) { clearTimeout(ytLoadTimer); ytLoadTimer = null; }
+                  try { e.target.setVolume(ytVolumeValue()); } catch (err) {}
+                  if (soundOn && musicMode === "youtube" && ytPlayWanted) {
+                    try { e.target.playVideo(); } catch (err2) {}
+                  }
+                },
+                onError: function (e) {
+                  var code = e && e.data != null ? String(e.data) : "không rõ";
+                  handleYtFailure("YouTube báo lỗi " + code + (code === "101" || code === "150" ? " — video không cho phép phát nhúng" : "") + ".");
+                },
+                onStateChange: function (e) {
+                  if (window.YT && e && e.data === YT.PlayerState.ENDED) {
+                    try { e.target.playVideo(); } catch (err) {}
+                  }
+                }
+              }
+            });
+          } catch (e) {
+            handleYtFailure("Không khởi tạo được trình phát YouTube.");
+          }
+        }
+        window.onYouTubeIframeAPIReady = function () { createYtPlayer(); };
+        function loadYouTubeApi() {
+          if (ytFailed) return;
+          if (window.YT && YT.Player) { createYtPlayer(); return; }
+          if (!document.querySelector('script[data-yt-api="1"]')) {
+            var tag = document.createElement("script");
+            tag.src = "https://www.youtube.com/iframe_api";
+            tag.setAttribute("data-yt-api", "1");
+            tag.onerror = function () { handleYtFailure("Không tải được thư viện trình phát YouTube — có thể mạng đang chặn youtube.com."); };
+            document.head.appendChild(tag);
+          }
+          if (!ytLoadTimer) {
+            ytLoadTimer = setTimeout(function () {
+              if (!ytReady) handleYtFailure("Trình phát YouTube tải quá lâu hoặc bị chặn.");
+            }, 12000);
+          }
+        }
+        function startYouTube() {
+          if (!soundOn) return;
+          ytPlayWanted = true;
+          if (ytFailed) return; // đã tự quay về nhạc có sẵn khi lỗi xảy ra
+          loadYouTubeApi();
+          if (ytReady && ytPlayer) {
+            try { ytPlayer.setVolume(ytVolumeValue()); ytPlayer.playVideo(); } catch (e) {}
+          }
+        }
+        function stopYouTube() {
+          ytPlayWanted = false;
+          if (ytPlayer && ytReady) {
+            try { ytPlayer.pauseVideo(); } catch (e) {}
+          }
+        }
+
         function startChant() {
+          if (musicMode === "youtube") return;
           if (!soundOn || chant.running) return;
           if (!ensureAudio()) return;
           if (audioCtx.state !== "running") return; // chờ lần chạm đầu tiên
@@ -1309,8 +1684,14 @@
 
         // Tự phát khi vào trang; nếu trình duyệt chặn, bắt đầu ngay ở lần chạm/bấm đầu tiên
         function tryStartMusic() {
+          if (!soundOn) return;
+          if (musicMode === "youtube") { startYouTube(); return; }
           ensureAudio();
           if (audioCtx && audioCtx.state === "running") startChant();
+        }
+        function stopAllMusic() {
+          stopChant();
+          stopYouTube();
         }
         window.addEventListener("load", tryStartMusic);
         ["pointerdown", "keydown", "touchstart"].forEach(function (evt) {
@@ -2049,6 +2430,7 @@
         var giftWhoEl = document.getElementById("giftWho");
         var giftBlessEl = document.getElementById("giftBless");
         var giftQueueEl = document.getElementById("giftQueue");
+        var giftTagEl = document.getElementById("giftTag");
         var GIFT_BLESSINGS = [
           "Nguyện chúc {ten} thân tâm an lạc, vạn sự hanh thông, phúc lộc đầy nhà!",
           "Cảm tạ tấm lòng của {ten} — chúc gia đạo bình an, sức khỏe dồi dào, tài lộc như nước.",
@@ -2071,6 +2453,7 @@
           if (!giftQueue.length) {
             giftShowing = false;
             if (giftBanner) { giftBanner.classList.remove("show"); giftBanner.setAttribute("aria-hidden", "true"); }
+            if (giftTagEl) giftTagEl.classList.remove("show");
             return;
           }
           giftShowing = true;
@@ -2086,6 +2469,10 @@
             } else giftQueueEl.classList.remove("on");
           }
           if (giftBanner) { giftBanner.classList.add("show"); giftBanner.setAttribute("aria-hidden", "false"); }
+          if (giftTagEl) {
+            giftTagEl.textContent = "🪷 Cầu Bình An – " + g.name + " tặng " + g.gift + (g.count > 1 ? " × " + g.count : "");
+            giftTagEl.classList.add("show");
+          }
           // Thỉnh chuông mừng + cánh sen vàng rơi khắp chánh điện
           if (soundOn) playBell();
           ringVisual(480, 470);
@@ -2114,6 +2501,7 @@
         window.addEventListener("message", function (e) {
           var d = e && e.data;
           if (d && typeof d === "object" && (d.type === "tiktok_gift" || d.type === "gift")) hienLoiChucQuaTang(d);
+          if (d && typeof d === "object" && d.type === "merit_board") renderMeritBoard(d);
         });
         // Nút xem thử: để chủ chùa thấy trước cuốn thư trông ra sao
         var btnGiftDemo = document.getElementById("btnGiftDemo");
@@ -2122,19 +2510,119 @@
           setTimeout(function () { hienLoiChucQuaTang({ ten: "Phật tử Diệu Hoa", qua: "🪷 Hoa Sen" }); }, 400);
         });
 
+        /* ----- HAI BĂNG CÂU ĐỐI ĐỎ HAI BÊN TƯỢNG PHẬT -----
+           Ba cặp câu đối viết theo tinh thần mẫu live, tự xoay vòng mỗi
+           ~8 giây: chữ vàng trên nền đỏ sơn son, treo dọc hai bên Phật. */
+        var COUPLETS = [
+          ["Gieo hạt thiện lành", "Gặt quả bình an"],
+          ["Tâm an vạn sự an", "Lòng tĩnh phúc tự đến"],
+          ["Một câu niệm Phật", "Một phút an nhiên"]
+        ];
+        var coupletLeftEl = document.getElementById("coupletLeft");
+        var coupletRightEl = document.getElementById("coupletRight");
+        var coupletIdx = 0;
+        function fillCouplet(el, text) {
+          if (!el) return;
+          el.innerHTML = "";
+          String(text).split(/\s+/).forEach(function (w) {
+            var s = document.createElement("span");
+            s.textContent = w;
+            el.appendChild(s);
+          });
+        }
+        if (coupletLeftEl && coupletRightEl) {
+          fillCouplet(coupletLeftEl, COUPLETS[0][0]);
+          fillCouplet(coupletRightEl, COUPLETS[0][1]);
+          setInterval(function () {
+            coupletIdx = (coupletIdx + 1) % COUPLETS.length;
+            coupletLeftEl.classList.add("fade");
+            coupletRightEl.classList.add("fade");
+            setTimeout(function () {
+              fillCouplet(coupletLeftEl, COUPLETS[coupletIdx][0]);
+              fillCouplet(coupletRightEl, COUPLETS[coupletIdx][1]);
+              coupletLeftEl.classList.remove("fade");
+              coupletRightEl.classList.remove("fade");
+            }, 380);
+          }, 8000);
+        }
+
+        /* ----- BIA CÔNG ĐỨC (bia đá góc phải chánh điện, đối diện chuông) -----
+           Điểm do SERVER tính từ quà tặng trên TikTok Live và gửi xuống qua
+           sự kiện Socket.io "merit_board" với dữ liệu {entries:[{name, points}]}
+           — gửi ngay khi kết nối và mỗi khi điểm thay đổi. Trang chỉ lắng
+           nghe và vẽ lại bảng (tối đa 10 dòng, điểm cao xếp trước), TUYỆT
+           ĐỐI không tự cộng điểm ở phía trang. Chưa có dữ liệu thì bảng
+           hiện dòng mời ghi danh. Cầu nối cũng có thể gọi
+           window.capNhatBangCongDuc({entries:[...]}) hoặc postMessage
+           {type:"merit_board", entries:[...]}. */
+        var meritListEl = document.getElementById("meritBoardList");
+        var meritEmptyEl = document.getElementById("meritBoardEmpty");
+        function renderMeritBoard(data) {
+          if (!meritListEl) return;
+          var entries = [];
+          if (Array.isArray(data)) entries = data;
+          else if (data && typeof data === "object") entries = data.entries || data.board || data.list || data.rankings || [];
+          if (!Array.isArray(entries)) entries = [];
+          var clean = [];
+          entries.forEach(function (e) {
+            if (!e || typeof e !== "object") return;
+            var nm = e.name || e.ten || e.username || e.displayName || "";
+            var pts = parseFloat(e.points != null ? e.points : (e.score != null ? e.score : (e.diem != null ? e.diem : e.merit)));
+            nm = String(nm || "").trim().slice(0, 40);
+            if (!nm || isNaN(pts)) return;
+            clean.push({ name: nm, points: pts });
+          });
+          clean.sort(function (a, b) { return b.points - a.points; });
+          clean = clean.slice(0, 10);
+          meritListEl.innerHTML = "";
+          clean.forEach(function (e, i) {
+            var li = document.createElement("li");
+            if (i === 0) li.className = "top1";
+            var rk = document.createElement("span");
+            rk.className = "mb-rank";
+            rk.textContent = String(i + 1);
+            var nmEl = document.createElement("span");
+            nmEl.className = "mb-name";
+            nmEl.textContent = e.name;
+            nmEl.title = e.name;
+            var pt = document.createElement("span");
+            pt.className = "mb-points";
+            pt.textContent = (Math.round(e.points * 10) / 10).toLocaleString("vi-VN") + " điểm";
+            li.appendChild(rk);
+            li.appendChild(nmEl);
+            li.appendChild(pt);
+            meritListEl.appendChild(li);
+          });
+          if (meritEmptyEl) meritEmptyEl.style.display = clean.length ? "none" : "block";
+        }
+        window.capNhatBangCongDuc = renderMeritBoard;
+        renderMeritBoard(null);
+
         /* ----- Nút bật/tắt âm thanh (nhạc thiền + tụng kinh + chuông) ----- */
         btnSound.addEventListener("click", function () {
           soundOn = !soundOn;
-          btnSound.textContent = soundOn ? "🎵 Nhạc thiền tịnh tâm: Bật" : "🔇 Nhạc thiền tịnh tâm: Tắt";
+          btnSound.textContent = soundOn ? "🎵 Nhạc thiền: Bật" : "🔇 Nhạc thiền: Tắt";
           btnSound.classList.toggle("active", soundOn);
           btnSound.setAttribute("aria-pressed", soundOn ? "true" : "false");
-          if (soundOn) { tryStartMusic(); note("Đã bật nhạc nền <strong>thiền tịnh tâm</strong> — nền trầm theo nhịp thở, chuông bát thưa và hợp âm trôi chậm."); }
-          else { stopChant(); note("Đã tắt nhạc nền và tiếng chuông. Bấm nút âm thanh để bật lại."); }
+          if (soundOn) {
+            tryStartMusic();
+            note(musicMode === "youtube"
+              ? "Đã bật <strong>Nhạc thiền An Nhiên (YouTube)</strong> — bản nhạc thiền thư giãn 1 giờ sẽ phát và tự lặp lại. Dùng thanh âm lượng để chỉnh to nhỏ."
+              : musicMode === "chant"
+                ? "Đã bật nhạc nền <strong>tụng kinh · gõ mõ</strong>."
+                : "Đã bật nhạc nền <strong>thiền tịnh tâm</strong> — nền trầm theo nhịp thở, chuông bát thưa và hợp âm trôi chậm.");
+          } else {
+            stopAllMusic();
+            note("Đã tắt nhạc nền và tiếng chuông. Bấm nút âm thanh để bật lại.");
+          }
         });
 
         /* ----- Âm lượng riêng cho nhạc thiền: chỉnh trực tiếp lên master gain ----- */
         if (musicVolEl) musicVolEl.addEventListener("input", function () {
           musicVolume = (parseInt(musicVolEl.value, 10) || 0) / 100;
+          if (musicMode === "youtube" && ytPlayer && ytReady) {
+            try { ytPlayer.setVolume(ytVolumeValue()); } catch (e) {}
+          }
           if (chant.running && chant.master && audioCtx && musicMode === "ambient") {
             chant.master.gain.cancelScheduledValues(audioCtx.currentTime);
             chant.master.gain.setTargetAtTime(0.14 + musicVolume * 0.5, audioCtx.currentTime, 0.4);
@@ -2143,13 +2631,27 @@
 
         /* ----- Chọn kiểu nhạc nền: thiền tịnh tâm (chính) / tụng kinh + gõ mõ ----- */
         musicModeSel.addEventListener("change", function () {
-          var wasRunning = chant.running;
+          var wasRunning = chant.running || ytPlayWanted;
+          var prevMode = musicMode;
           musicMode = musicModeSel.value;
-          if (soundOn && wasRunning) { stopChant(); setTimeout(function () { startChant(); }, musicMode === "chant" ? 700 : 1900); }
-          else if (soundOn) { tryStartMusic(); }
-          note(musicMode === "ambient"
-            ? "<strong>Thiền tịnh tâm:</strong> không lời, không nhịp dồn — nền trầm lên xuống theo nhịp thở ~14 giây, hợp âm ngũ cung trôi 18 giây và chuông bát vang thưa 11–17 giây một tiếng rồi tan. Hãy ngồi xuống đệm, để âm lượng vừa nghe và thở chậm theo nhạc."
-            : "<strong>Tụng kinh · gõ mõ:</strong> tiếng tụng trầm đều kèm nhịp mõ mỗi 2 giây, như đang dự một thời kinh trong điện.");
+          stopAllMusic();
+          if (musicMode === "youtube") {
+            // Người dùng chủ động chọn lại YouTube: cho phép thử phát lại từ đầu,
+            // kể cả lần trước đã lỗi và tự quay về nhạc có sẵn.
+            ytFailed = false;
+            if (ytLoadTimer) { clearTimeout(ytLoadTimer); ytLoadTimer = null; }
+            showYtStatus("");
+            if (soundOn) startYouTube();
+          } else if (soundOn && wasRunning) {
+            setTimeout(function () { tryStartMusic(); }, prevMode === "youtube" ? 300 : (musicMode === "chant" ? 700 : 1900));
+          } else if (soundOn) {
+            tryStartMusic();
+          }
+          note(musicMode === "youtube"
+            ? "<strong>Nhạc thiền An Nhiên (YouTube):</strong> bản “Nhạc Thiền Thư Giãn (1 giờ)” của kênh Nhạc Thiền - An Nhiên Tự Tại, phát qua trình phát YouTube chính thức và tự lặp lại. Nếu video bị chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về nhạc thiền tịnh tâm có sẵn."
+            : musicMode === "ambient"
+              ? "<strong>Thiền tịnh tâm:</strong> không lời, không nhịp dồn — nền trầm lên xuống theo nhịp thở ~14 giây, hợp âm ngũ cung trôi 18 giây và chuông bát vang thưa 11–17 giây một tiếng rồi tan. Hãy ngồi xuống đệm, để âm lượng vừa nghe và thở chậm theo nhạc."
+              : "<strong>Tụng kinh · gõ mõ:</strong> tiếng tụng trầm đều kèm nhịp mõ mỗi 2 giây, như đang dự một thời kinh trong điện.");
         });
 
         /* ----- Hòm công đức / mã QR ----- */
@@ -2465,6 +2967,10 @@
           // Kênh 1: quà tặng từ TikTok Live do cầu nối / server chuyển vào —
           // hiện cuốn thư lời chúc giữa chánh điện cho cả phòng live cùng thấy
           socket.on("tiktok_gift", hienLoiChucQuaTang);
+
+          // Bảng công đức: server gửi bảng xếp hạng ngay khi kết nối và
+          // mỗi khi điểm thay đổi — trang chỉ vẽ lại, không tự cộng điểm
+          socket.on("merit_board", renderMeritBoard);
           socket.on("gift", hienLoiChucQuaTang);
           socket.on("user_gift", hienLoiChucQuaTang);
           socket.on("tiktok_event", function (data) {
