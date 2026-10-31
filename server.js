@@ -52,7 +52,7 @@ app.all('/tf', (req, res) => {
     };
     // Lenh rut gon cho cac su kien lenh chat cua TikFinity: act -> cau chat co dinh
     if (evt.type === 'act') {
-        const acts = { incense: 'dang huong', bow: 'vai lay', bell: 'thinh chuong', meditate: 'toa thien' };
+        const acts = { incense: 'dang huong', bow: 'vai lay', bell: 'thinh chuong', meditate: 'toa thien', chant: 'nam mo a di da phat' };
         evt.type = 'chat';
         evt.text = acts[String(q.act || '')] || '';
     }
@@ -179,7 +179,11 @@ function handleLiveEvent(evt) {
         }
         if (type === 'chat') {
             const text = stripAccents(evt.text);
-            if (text.includes('dang huong') || text.includes('thap huong') || text.includes('thap nhang')) {
+            if (text.includes('a di da phat') || text.includes('adidaphat') || text.includes('nam mo a di da')) {
+                // Khach niem Phat: nhan vat tu chat lai cau niem + vai lay
+                io.emit('chat_message', { id, name: users[id].name, gender: users[id].gender, text: 'Nam mô A Di Đà Phật 🙏' });
+                io.emit('user_bowing', { id });
+            } else if (text.includes('dang huong') || text.includes('thap huong') || text.includes('thap nhang')) {
                 io.emit('user_offering_incense', { id });
             } else if (text.includes('vai lay') || text.includes('lay phat') || text.includes('nam mo')) {
                 io.emit('user_bowing', { id });
