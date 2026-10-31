@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-10-31.13" />
+    <meta name="chua-build" content="2026-10-31.14" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -2562,7 +2562,7 @@
             sway: Math.random() * 6.28,
             name: String(name == null ? "" : name).replace(/^tt_/i, "").trim().slice(0, 24) || "Phật tử",
             text: shortText,
-            born: clockT,
+            bornAt: Date.now(), // mốc sinh của CHÍNH chiếc đèn này theo đồng hồ tường — tuổi và vòng đời của đèn chỉ tính từ đây, không mượn đồng hồ vòng lặp vẽ (vốn tính từ lúc tải trang)
             life: 16.5 // 9,5 giây bay lên + 5 giây lơ lửng ở đỉnh + 2 giây mờ dần
           });
           return true;
@@ -3379,7 +3379,7 @@
            tương phản, chữ đủ lớn để đọc được trên nền sảnh ---- */
         function drawLanterns(t) {
           lanterns.forEach(function (L) {
-            var age = t - L.born;
+            var age = (Date.now() - L.bornAt) / 1000; // tuổi của đèn tính từ mốc sinh của chính nó (đồng hồ tường), cùng một gốc với bornAt
             var fadeIn = Math.min(1, age / 0.6);
             var fadeOut = Math.min(1, Math.max(0, (L.life - age) / (L.fadeT || 2)));
             var a = Math.max(0, Math.min(fadeIn, fadeOut));
@@ -3478,12 +3478,24 @@
           petals.forEach(function (l) { l.y += l.vy * dt; l.x += Math.sin(t * 1.6 + l.p) * 13 * dt; l.rot += l.vr * dt; });
           petals = petals.filter(function (l) { return l.gold ? l.y < H - 8 : l.y < 486; });
           // ĐẠI LỄ đang diễn ra: mưa cánh sen VÀNG DÀY phủ TOÀN SẢNH —
-          // cánh lớn, vàng đậm, sinh liên tục từ đỉnh sảnh và rơi xuống
-          // tận khu nệm ở nửa dưới, duy trì suốt thời gian Đại Lễ
+          // cánh lớn, vàng đậm, rơi xuống tận khu nệm ở nửa dưới, duy
+          // trì suốt ~20 giây của Đại Lễ. Cách sinh theo kiểu "bù đủ
+          // số cánh": mỗi khung hình đếm số cánh vàng đang có, thiếu
+          // dưới ngưỡng thì bù thêm cánh mới rải khắp 62% chiều cao
+          // phía trên sảnh. Bản trước chỉ sinh cánh ở đỉnh sảnh kèm
+          // một đợt 80 cánh rải sẵn lúc mở lễ — đợt rải sẵn đó rơi
+          // hết sau ~9 giây là nửa dưới sảnh thưa hẳn dù Đại Lễ còn
+          // đang chạy; kiểu bù đủ này giữ mật độ mưa đều từ giây đầu
+          // tới giây cuối của Đại Lễ.
           if (t < grandCeremonyUntil) {
-            var spawnN = Math.random() < dt * 55 ? 1 + (Math.random() < 0.45 ? 1 : 0) : 0;
-            for (var gi = 0; gi < spawnN && petals.length < 340; gi++) {
-              petals.push({ gold: true, x: 14 + Math.random() * (W - 28), y: -14 + Math.random() * 40, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 2.4, vy: 52 + Math.random() * 34, p: Math.random() * 6, s: 1.35 + Math.random() * 0.95 });
+            var goldN = 0;
+            for (var gc = 0; gc < petals.length; gc++) { if (petals[gc].gold) goldN++; }
+            var wantGold = 185;
+            if (goldN < wantGold && petals.length < 340) {
+              var addN = Math.min(5, wantGold - goldN, 340 - petals.length);
+              for (var gi = 0; gi < addN; gi++) {
+                petals.push({ gold: true, x: 14 + Math.random() * (W - 28), y: -16 + Math.random() * (H * 0.62), rot: Math.random() * 6, vr: (Math.random() - 0.5) * 2.4, vy: 52 + Math.random() * 34, p: Math.random() * 6, s: 1.35 + Math.random() * 0.95 });
+              }
             }
           }
           // Đèn hoa đăng: bay lên CHẬM theo hành trình ~9,5 giây tới gần
@@ -3491,14 +3503,19 @@
           // trình bay được kẹp ở 1 khi tới đỉnh nên thân đèn và biển
           // nhãn DỪNG LƠ LỬNG ở đó trong holdT (~5 giây), sau đó hàm
           // vẽ mới cho mờ dần trong fadeT (~2 giây cuối của life)
+          var nowLan = Date.now();
           lanterns.forEach(function (L) {
-            var ageL = t - L.born;
+            var ageL = (nowLan - L.bornAt) / 1000;
             var pr = Math.min(1, Math.max(0, ageL / L.riseT));
             var ez = 1 - (1 - pr) * (1 - pr);
             L.y = L.startY + (L.topY - L.startY) * ez;
             L.x = L.baseX + Math.sin(t * 0.9 + L.sway) * 10;
           });
-          lanterns = lanterns.filter(function (L) { return (t - L.born) < L.life; });
+          // Đèn chỉ bị dọn khi tuổi của CHÍNH nó — tính từ bornAt của
+          // nó, cùng một đồng hồ tường — vượt quá vòng đời 16,5 giây
+          // của nó. Không một đồng hồ canh hay vòng quét nào khác được
+          // quyền dọn đèn sớm hơn mốc đó.
+          lanterns = lanterns.filter(function (L) { return (nowLan - L.bornAt) < L.life * 1000; });
           // Chuông đu đưa (dao động tắt dần)
           var acc = -38 * bellSwing - 1.4 * bellSwingV;
           bellSwingV += acc * dt; bellSwing += bellSwingV * dt;
@@ -3909,8 +3926,20 @@
         var giftQueue = [];
         var giftShowing = false;
         var giftBlessIdx = 0;
-        var giftGen = 0;    // mã lượt hiện khung tri ân: mỗi lượt hiện tăng một — hẹn giờ sót của lượt cũ mang mã cũ, không cắt được lượt đang hiện
-        var giftHideAt = 0; // mốc đồng hồ tường (Date.now) mà khung ĐANG HIỆN được phép mờ — luôn tính từ lúc khung thật sự xuất hiện
+        /* Vòng đời của khung tri ân thuộc về DUY NHẤT lượt đang hiện:
+           mỗi lượt hiện mang một mã riêng (giftToken), một mốc mờ
+           riêng (giftHideAt) tính từ khoảnh khắc khung thật sự xuất
+           hiện, và một hẹn giờ riêng (giftTimer). Chỉ hai đường được
+           phép kết thúc một lượt: hẹn giờ của chính lượt đó, hoặc
+           đồng hồ canh đọc lại đúng mốc mờ + đúng mã của chính lượt
+           đó. Bản trước còn để bộ đếm thế hệ bị cộng dồn ngay trong
+           nhánh ẩn khung và một đồng hồ canh dùng chung đọc trạng
+           thái toàn cục — tức khung không có chủ sở hữu vòng đời duy
+           nhất, một lần xoay hàng chờ chen vào là có thể kết thúc
+           lượt đang hiện sớm hơn mốc của nó. */
+        var giftToken = 0;  // mã của lượt khung đang hiện
+        var giftHideAt = 0; // mốc mờ của CHÍNH lượt đang hiện (Date.now), tính từ lúc khung thật sự xuất hiện
+        var giftTimer = null; // hẹn giờ của CHÍNH lượt đang hiện
         // Tên khách có thể đã tự chứa sẵn danh xưng "Phật tử" (như tên
         // xem thử "Phật tử Tâm An" hoặc tên hiển thị của khách thật).
         // Mọi mẫu câu tri ân bên dưới đều đi qua hàm này trước khi ghép
@@ -4006,7 +4035,8 @@
           if (!giftQueue.length) {
             giftShowing = false;
             giftHideAt = 0;
-            giftGen++;
+            giftToken++; // vô hiệu hoá mọi hẹn giờ còn sót của lượt vừa kết thúc
+            if (giftTimer) { clearTimeout(giftTimer); giftTimer = null; }
             if (giftBanner) { giftBanner.classList.remove("show", "tier-medium", "tier-grand"); giftBanner.setAttribute("aria-hidden", "true"); }
             if (giftTagEl) giftTagEl.classList.remove("show");
             return;
@@ -4081,20 +4111,27 @@
           // quà được xếp vào hàng chờ): hạng Đại Lễ đủ ~10 giây, hạng
           // vừa ~8 giây, hạng nhỏ ~7 giây — hiệu ứng Đại Lễ trên sảnh
           // vẫn chạy tiếp ~20 giây. Hẹn giờ của lượt này mang mã lượt
-          // riêng (myGen): nếu một hẹn giờ sót của lượt TRƯỚC còn tồn
-          // tại, nó mang mã cũ và bị vô hiệu, không thể chen cắt khung
-          // đang hiện sớm như lỗi đã quan sát. Đồng hồ canh bên dưới
-          // hàm này cũng chỉ chuyển lượt khi đã quá giftHideAt của
-          // đúng lượt đang hiện.
+          // riêng (myToken) và được giữ trong giftTimer của chính
+          // lượt: hẹn giờ sót của lượt trước — nếu còn — mang mã cũ,
+          // bị kiểm tra mã chặn lại, đồng thời bị xoá thẳng khi lượt
+          // mới bắt đầu; không gì chen cắt được khung đang hiện sớm
+          // hơn mốc của chính nó.
           var giftDur = tier === "grand" ? 10000 : (tier === "medium" ? 8000 : 7000);
           giftHideAt = Date.now() + giftDur;
-          var myGen = ++giftGen;
-          setTimeout(function () { if (myGen === giftGen) showNextGift(); }, giftDur);
+          var myToken = ++giftToken;
+          if (giftTimer) { clearTimeout(giftTimer); giftTimer = null; }
+          giftTimer = setTimeout(function () {
+            if (myToken !== giftToken) return; // hẹn giờ của một lượt khác: không được chạm vào lượt đang hiện
+            giftTimer = null;
+            showNextGift();
+          }, giftDur);
         }
         // Đồng hồ canh khung tri ân (dự phòng khi hẹn giờ bị trình
         // duyệt bóp nghẹt, ví dụ nguồn live trong LIVE Studio bị che
-        // khuất): chỉ chuyển lượt khi khung đang hiện đã quá mốc mờ
-        // của chính nó — không bao giờ chuyển sớm hơn mốc.
+        // khuất): nó chỉ đọc mốc mờ giftHideAt của CHÍNH lượt đang
+        // hiện — mốc đó chỉ được ghi tại khoảnh khắc lượt đó xuất
+        // hiện và bị xoá ngay khi lượt kết thúc — nên đồng hồ canh
+        // không bao giờ chuyển lượt sớm hơn mốc của chính lượt đó.
         setInterval(function () {
           if (giftShowing && giftHideAt && Date.now() >= giftHideAt) showNextGift();
         }, 300);
@@ -4239,7 +4276,20 @@
         // thân đèn to và sáng, bay chậm ~9,5 giây tới đỉnh, lơ lửng ở
         // đỉnh ~5 giây cùng biển nhãn lớn rõ chữ rồi mới mờ dần
         var btnFxDemo = document.getElementById("btnFxDemo");
+        var fxDemoLastAt = 0;
         if (btnFxDemo) btnFxDemo.addEventListener("click", function () {
+          // Mỗi lần bấm CHỈ phát đúng một sự kiện Đại Lễ + một đèn
+          // hoa đăng, không kèm sự kiện nối tiếp nào. Bấm lại (kể cả
+          // bấm đúp) trong lúc Đại Lễ xem thử còn đang diễn ra thì bỏ
+          // qua hẳn: một sự kiện Đại Lễ thứ hai sẽ xếp thêm vào hàng
+          // chờ khung và làm hàng chờ xoay — đúng dạng sự kiện chen
+          // vào có thể cắt ngắn khung và đèn đang hiện.
+          var nowFx = Date.now();
+          if (nowFx - fxDemoLastAt < 20000) {
+            note("<strong>Đại Lễ xem thử đang diễn ra</strong> — khung tri ân, mưa sen vàng, hào quang và đèn hoa đăng đang hiện; đợi Đại Lễ này khép lại rồi bấm xem thử tiếp.");
+            return;
+          }
+          fxDemoLastAt = nowFx;
           hienLoiChucQuaTang({ ten: "Phật tử Tâm An", qua: "🪷 Đài Sen Vàng", coins: 150 });
           // Đèn xem thử sinh tại ĐIỂM NEO CỐ ĐỊNH giữa lối đi chính
           // của sảnh (270, 700) — vùng luôn nằm trong tầm mắt ở cả
