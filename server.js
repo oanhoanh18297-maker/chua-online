@@ -52,7 +52,8 @@ app.all('/tf', (req, res) => {
     };
     // Lenh rut gon cho cac su kien lenh chat cua TikFinity: act -> cau chat co dinh
     if (evt.type === 'act') {
-        const acts = { incense: 'dang huong', bow: 'vai lay', bell: 'thinh chuong', meditate: 'toa thien', chant: 'nam mo a di da phat' };
+        const acts = { incense: 'dang huong', bow: 'vai lay', bell: 'thinh chuong', meditate: 'toa thien', chant: 'nam mo a di da phat', pray: 'cau phuc', fortune: 'xin que', lotus: 'hoa sen', lantern: 'tha hoa dang' };
+        evt.rawText = evt.text;
         evt.type = 'chat';
         evt.text = acts[String(q.act || '')] || '';
     }
@@ -152,6 +153,26 @@ function addMerit(evt, giftCount) {
     merit[key].points += add;
     broadcastMerit();
 }
+function addMeritFixed(evt, points) {
+    const key = String(evt.user || '').toLowerCase();
+    if (!key || !points) return;
+    if (!merit[key]) merit[key] = { name: String(evt.nickname || evt.user).slice(0, 24), points: 0 };
+    merit[key].name = String(evt.nickname || evt.user).slice(0, 24);
+    merit[key].points += points;
+    broadcastMerit();
+}
+
+// ---------- BO QUE XIN XAM CHO KHACH TIKTOK (lenh chat xin que / xin xam) ----------
+const FORTUNES = [
+    { hang: 'Thượng Thượng Cát', tho: 'Sen nở giữa hồ trong, phúc lộc tự nhiên đầy.', giai: 'Rất tốt: mọi việc hanh thông, cầu được ước thấy.' },
+    { hang: 'Thượng Cát', tho: 'Nắng ấm sau mưa rào, đường đi dần sáng tỏ.', giai: 'Tốt: kiên nhẫn thêm chút nữa, tin vui đang tới.' },
+    { hang: 'Trung Thượng', tho: 'Thuyền qua bến nước êm, chớ vội cũng đừng lo.', giai: 'Khá: giữ nhịp đều đặn, việc nhỏ thành trước.' },
+    { hang: 'Trung Bình', tho: 'Trăng khi mờ khi tỏ, lòng an là phúc nhà.', giai: 'Bình: giữ tâm an, tránh quyết định lúc nóng vội.' },
+    { hang: 'Trung Bình', tho: 'Gieo hạt đúng mùa xuân, đợi ngày cây trổ lá.', giai: 'Bình: việc đang gieo chưa tới ngày gặt, cứ chăm đều.' },
+    { hang: 'Hạ Bình', tho: 'Mây che đỉnh núi cao, nghỉ chân rồi hãy bước.', giai: 'Hơi chậm: nên dừng lại xem xét, chớ vội đầu tư lớn.' },
+    { hang: 'Thượng Cát', tho: 'Chuông chùa vang buổi sớm, tin lành đến tận nhà.', giai: 'Tốt: có quý nhân phù trợ, mạnh dạn tiến bước.' },
+    { hang: 'Trung Thượng', tho: 'Nước nguồn trong lại ngọt, ơn trên độ trì nhiều.', giai: 'Khá tốt: gia đạo bình yên, sức khỏe là trên hết.' }
+];
 
 function handleLiveEvent(evt) {
     if (!evt || typeof evt !== 'object') return;
@@ -183,9 +204,27 @@ function handleLiveEvent(evt) {
                 // Khach niem Phat: nhan vat tu chat lai cau niem + vai lay
                 io.emit('chat_message', { id, name: users[id].name, gender: users[id].gender, text: 'Nam mô A Di Đà Phật 🙏' });
                 io.emit('user_bowing', { id });
+            } else if (text.includes('xin que') || text.includes('xin xam') || text.includes('gieo que') || text.includes('gieo xam')) {
+                // Khach xin que: boc que + phat ket qua de trang hien vien chu giua sanh + doc thanh tieng
+                const so = Math.floor(Math.random() * 24) + 1;
+                const f = FORTUNES[(so - 1) % FORTUNES.length];
+                io.emit('fortune_result', { id, name: users[id].name, so, hang: f.hang, tho: f.tho, giai: f.giai });
+                io.emit('user_bowing', { id });
+            } else if (text.includes('tha hoa dang') || text.includes('hoa dang') || text.includes('tha den')) {
+                // Khach tha hoa dang: trang tha den mang ten + loi khan cua khach
+                io.emit('user_lantern', { id, name: users[id].name, wish: String(evt.rawText || evt.text || '').slice(0, 80) });
+            } else if (text.includes('hoa sen') || text.includes('dang hoa')) {
+                // Khach dang hoa sen: +10 cong duc, trang hien hoa sen tai ban tho + khach vai lay
+                addMeritFixed(evt, 10);
+                io.emit('user_lotus', { id, name: users[id].name });
+                io.emit('user_bowing', { id });
+            } else if (text.includes('cau phuc') || text.includes('cau nguyen') || text.includes('cau binh an') || text.includes('cau an') || text.includes('cau cho')) {
+                // Khach cau phuc: +10 cong duc, trang hien loi khan + nhan vat trung tam cau nguyen
+                addMeritFixed(evt, 10);
+                io.emit('user_praying', { id, name: users[id].name, text: String(evt.rawText || evt.text || '').slice(0, 80) });
             } else if (text.includes('dang huong') || text.includes('thap huong') || text.includes('thap nhang')) {
                 io.emit('user_offering_incense', { id });
-            } else if (text.includes('vai lay') || text.includes('lay phat') || text.includes('nam mo')) {
+            } else if (text.includes('vai lay') || text.includes('lay phat') || text.includes('bai phat') || text.includes('nam mo')) {
                 io.emit('user_bowing', { id });
             } else if (text.includes('thinh chuong') || text.includes('go chuong') || text.includes('danh chuong')) {
                 io.emit('play_bell_sound', { id });
