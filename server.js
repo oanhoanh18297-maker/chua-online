@@ -234,6 +234,22 @@ io.on('connection', (socket) => {
         }
     });
 
+    // CHAT GIUA CAC PHAT TU TRONG CHUA (trang gui 'chat_message')
+    const relayChat = (data) => {
+        if (!users[socket.id] || !data) return;
+        const text = String(data.text || data.message || '').trim().slice(0, 300);
+        if (!text) return;
+        io.emit('chat_message', {
+            id: socket.id,
+            name: users[socket.id].name,
+            gender: users[socket.id].gender,
+            text
+        });
+    };
+    socket.on('chat_message', relayChat);
+    socket.on('chat', relayChat);
+    socket.on('message', relayChat);
+
     // NGOI THIEN
     socket.on('meditate', () => {
         if (users[socket.id]) {

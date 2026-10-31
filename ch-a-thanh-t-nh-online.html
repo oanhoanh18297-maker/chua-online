@@ -406,6 +406,122 @@
         margin: 0 0 4px;
       }
       footer p { margin: 0; }
+      /* ---- Nút chat + khung trò chuyện trong chùa ---- */
+      .chat-fab {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 45;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--accent);
+        color: #fff7ea;
+        border: 1px solid color-mix(in srgb, var(--accent-strong) 70%, transparent);
+        border-radius: 999px;
+        padding: 12px 18px;
+        font-size: 15px;
+        box-shadow: 0 10px 26px rgba(30, 12, 4, 0.35);
+      }
+      .chat-fab:hover { background: var(--accent-strong); }
+      .chat-badge {
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: var(--gold);
+        color: #3a2a10;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .chat-badge[hidden] { display: none; }
+      .chat-panel {
+        position: fixed;
+        right: 16px;
+        bottom: 74px;
+        z-index: 45;
+        width: min(360px, calc(100vw - 24px));
+        max-height: min(520px, calc(100dvh - 110px));
+        display: none;
+        flex-direction: column;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .chat-panel.open { display: flex; }
+      .chat-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+        font-size: 15px;
+      }
+      .chat-close {
+        background: transparent;
+        border: none;
+        color: var(--ink-soft);
+        padding: 4px 8px;
+        font-size: 15px;
+        border-radius: 8px;
+      }
+      .chat-close:hover { color: var(--accent); }
+      .chat-msgs {
+        overflow-y: auto;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 120px;
+      }
+      .chat-msg { max-width: 88%; align-self: flex-start; }
+      .chat-msg .chat-who { font-size: 12px; font-weight: 700; color: var(--ink-soft); margin-bottom: 2px; }
+      .chat-msg .chat-text {
+        background: var(--bg-soft);
+        border: 1px solid var(--line);
+        border-radius: 4px 12px 12px 12px;
+        padding: 8px 11px;
+        font-size: 14px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+      }
+      .chat-msg.me { align-self: flex-end; }
+      .chat-msg.me .chat-who { text-align: right; color: var(--accent); }
+      .chat-msg.me .chat-text { background: color-mix(in srgb, var(--gold-soft) 55%, var(--surface)); border-radius: 12px 4px 12px 12px; }
+      .chat-msg.sys {
+        align-self: center;
+        max-width: 100%;
+        text-align: center;
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        font-style: italic;
+      }
+      .chat-form { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--line); }
+      .chat-form input {
+        flex: 1 1 auto;
+        min-width: 0;
+        font: inherit;
+        font-size: 14.5px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+      }
+      .chat-form input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+      .chat-send { padding: 10px 16px; flex: none; }
+      .chat-hint { margin: 0; padding: 0 14px 12px; font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); }
+      @media (max-width: 560px) {
+        .chat-fab { right: 12px; bottom: 12px; }
+        .chat-panel { right: 12px; bottom: 70px; }
+      }
       /* ---- Cửa sổ mã QR công đức ---- */
       .qr-overlay {
         position: fixed;
@@ -593,6 +709,9 @@
           di chuyển, dâng hương, vái lạy, tọa thiền và nghe chuông trong thời gian thực.
           Khi kết nối, trang gửi kèm <strong>tên và giới tính bạn đã đặt ở cổng vào</strong> (sự kiện <em>set_profile</em> và trong mỗi lần <em>move</em>),
           đồng thời đọc tên/giới tính từ <em>current_users</em>, <em>new_user</em> và <em>user_moved</em> — nên bảng tên trên đầu và màu áo nam/nữ của mỗi Phật tử đều hiện đúng cho cả chùa.
+          Nút <strong>💬 Trò chuyện</strong> ở góc dưới bên phải mở khung chat: tin nhắn gửi qua sự kiện <em>chat_message</em> kèm tên và giới tính của người gửi,
+          hiện trong khung chat và thành <strong>bong bóng thoại trên đầu nhân vật</strong>. Khi một Phật tử rời đi (sự kiện <em>user_left</em>),
+          <strong>nhân vật của họ biến mất khỏi chánh điện ngay</strong> và số người đang ở chùa giảm xuống tương ứng.
         </p>
         <div class="connect-row">
           <input id="serverUrl" type="url" value="http://localhost:3000" aria-label="Địa chỉ server chùa" spellcheck="false" />
@@ -650,6 +769,23 @@
         <p>Chùa Thanh Tịnh Online — mở cửa mọi lúc, cho mọi người.</p>
       </footer>
     </div>
+
+    <!-- Nút chat + khung trò chuyện -->
+    <button class="chat-fab" id="chatFab" type="button" aria-label="Mở khung trò chuyện trong chùa" aria-expanded="false">
+      💬 Trò chuyện <span class="chat-badge" id="chatBadge" hidden>0</span>
+    </button>
+    <section class="chat-panel" id="chatPanel" aria-label="Khung trò chuyện trong chùa">
+      <div class="chat-head">
+        <strong>💬 Trò chuyện trong chùa</strong>
+        <button class="chat-close" id="chatClose" type="button" aria-label="Đóng khung trò chuyện">✕</button>
+      </div>
+      <div class="chat-msgs" id="chatMsgs" aria-live="polite"></div>
+      <form class="chat-form" id="chatForm">
+        <input id="chatInput" type="text" maxlength="200" placeholder="Nhắn đôi lời lành cùng mọi người…" autocomplete="off" aria-label="Nội dung tin nhắn" />
+        <button class="btn-primary chat-send" type="submit">Gửi</button>
+      </form>
+      <p class="chat-hint" id="chatHint"></p>
+    </section>
 
     <!-- Cửa sổ hòm công đức -->
     <div class="qr-overlay" id="qrOverlay" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
@@ -1498,6 +1634,34 @@
           ctx.fillStyle = "#fff7e0";
           ctx.textAlign = "center";
           ctx.fillText(label, x, plateY + 13.5);
+
+          // BONG BÓNG THOẠI: lời chat gần nhất hiện trên đầu nhân vật vài giây
+          if (u.chatText && t < u.chatUntil) {
+            ctx.font = "500 11px 'Be Vietnam Pro', sans-serif";
+            var maxBW = 148, chatWords = String(u.chatText).split(/\s+/), chatLines = [], curLine = "";
+            chatWords.forEach(function (wd) {
+              var testLine = curLine ? curLine + " " + wd : wd;
+              if (ctx.measureText(testLine).width > maxBW && curLine) { chatLines.push(curLine); curLine = wd; }
+              else curLine = testLine;
+            });
+            if (curLine) chatLines.push(curLine);
+            if (chatLines.length > 3) { chatLines = chatLines.slice(0, 3); chatLines[2] = chatLines[2].replace(/…$/, "") + "…"; }
+            var bubbleW = 0;
+            chatLines.forEach(function (ln) { bubbleW = Math.max(bubbleW, ctx.measureText(ln).width); });
+            bubbleW += 16;
+            var bubbleH = chatLines.length * 14 + 10;
+            var bubbleX = Math.max(6, Math.min(W - bubbleW - 6, x - bubbleW / 2));
+            var bubbleY = plateY - bubbleH - 9;
+            ctx.fillStyle = "rgba(255,251,240,0.96)";
+            ctx.strokeStyle = "rgba(140,100,40,0.6)"; ctx.lineWidth = 1;
+            rr(bubbleX, bubbleY, bubbleW, bubbleH, 8); ctx.fill(); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x - 5, bubbleY + bubbleH - 1); ctx.lineTo(x + 5, bubbleY + bubbleH - 1); ctx.lineTo(x, bubbleY + bubbleH + 6); ctx.closePath();
+            ctx.fillStyle = "rgba(255,251,240,0.96)"; ctx.fill();
+            ctx.fillStyle = "#3d2f23";
+            ctx.textAlign = "center";
+            chatLines.forEach(function (ln, li) { ctx.fillText(ln, bubbleX + bubbleW / 2, bubbleY + 15 + li * 14); });
+          }
         }
 
         /* ---------------- Hành động: dâng hương / vái lạy / thiền ---------------- */
@@ -2003,6 +2167,138 @@
           if (e.key === "Escape" && qrOverlay.classList.contains("open")) closeQr();
         });
 
+        /* ---------------- Trò chuyện (chat) trong chùa ----------------
+           Nút 💬 mở khung chat. Khi đã nối server, tin nhắn được gửi qua sự
+           kiện "chat_message" kèm tên + giới tính, và hiện thành bong bóng
+           thoại trên đầu nhân vật của người nói. Chưa nối server thì tin
+           nhắn chỉ hiện trên máy của mình. */
+        var chatFab = document.getElementById("chatFab");
+        var chatPanel = document.getElementById("chatPanel");
+        var chatMsgs = document.getElementById("chatMsgs");
+        var chatForm = document.getElementById("chatForm");
+        var chatInput = document.getElementById("chatInput");
+        var chatBadge = document.getElementById("chatBadge");
+        var chatCloseBtn = document.getElementById("chatClose");
+        var chatHint = document.getElementById("chatHint");
+        var chatOpen = false;
+        var chatUnread = 0;
+        var chatSeen = {}; // chống hiện trùng khi server phát cùng một tin qua nhiều tên sự kiện
+
+        function updateChatHint() {
+          if (!chatHint) return;
+          chatHint.textContent = connected
+            ? "Đang nối chùa chung: tin nhắn của bạn sẽ tới mọi Phật tử đang ở chùa và hiện thành bong bóng thoại trên đầu nhân vật."
+            : "Bạn đang ở chùa một mình: tin nhắn chỉ hiện trên máy của bạn. Hãy kết nối server ở mục “Đồng hành cùng các Phật tử khác” để trò chuyện cùng mọi người.";
+        }
+        function addChatMsg(opts) {
+          if (!chatMsgs) return;
+          var row = document.createElement("div");
+          if (opts.sys) {
+            row.className = "chat-msg sys";
+            row.textContent = opts.text;
+          } else {
+            row.className = "chat-msg" + (opts.me ? " me" : "");
+            var who = document.createElement("div");
+            who.className = "chat-who";
+            who.textContent = opts.me ? "Bạn" : genderSymbol(opts.gender) + " " + (opts.name || "Phật tử");
+            var body = document.createElement("div");
+            body.className = "chat-text";
+            body.textContent = opts.text;
+            row.appendChild(who);
+            row.appendChild(body);
+          }
+          chatMsgs.appendChild(row);
+          while (chatMsgs.children.length > 80) chatMsgs.removeChild(chatMsgs.firstChild);
+          chatMsgs.scrollTop = chatMsgs.scrollHeight;
+          if (!chatOpen && !opts.me) {
+            chatUnread++;
+            chatBadge.textContent = String(chatUnread);
+            chatBadge.hidden = false;
+          }
+        }
+        function addChatSys(text) { addChatMsg({ sys: true, text: text }); }
+        function setChatBubble(u, text) {
+          if (!u) return;
+          u.chatText = text;
+          u.chatUntil = clockT + 5;
+        }
+        function openChat() {
+          chatOpen = true;
+          chatPanel.classList.add("open");
+          chatFab.setAttribute("aria-expanded", "true");
+          chatUnread = 0;
+          chatBadge.hidden = true;
+          chatMsgs.scrollTop = chatMsgs.scrollHeight;
+          chatInput.focus();
+        }
+        function closeChat() {
+          chatOpen = false;
+          chatPanel.classList.remove("open");
+          chatFab.setAttribute("aria-expanded", "false");
+        }
+        chatFab.addEventListener("click", function () { if (chatOpen) closeChat(); else openChat(); });
+        chatCloseBtn.addEventListener("click", closeChat);
+        document.addEventListener("keydown", function (e) { if (e.key === "Escape" && chatOpen) closeChat(); });
+        chatForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var text = chatInput.value.trim().slice(0, 200);
+          if (!text) return;
+          chatInput.value = "";
+          addChatMsg({ me: true, name: myDisplayName, gender: myGender, text: text });
+          setChatBubble(users[myId], text);
+          if (connected && socket) {
+            socket.emit("chat_message", { name: myDisplayName, gender: myGender, text: text });
+          }
+          chatInput.focus();
+        });
+        function onRemoteChat(data) {
+          if (!data) return;
+          var prof = data.user || data.sender || data.profile || data;
+          var sid = data.id || data.userId || data.senderId || prof.id || null;
+          if (sid != null && String(sid) === String(myId)) return; // tin của chính mình do server dội lại — đã hiện rồi
+          var text = data.text || data.message || data.content || prof.text || "";
+          text = String(text || "").trim();
+          if (!text) return;
+          var key = (sid != null ? String(sid) : (prof.name || "?")) + "|" + text;
+          var nowMs = Date.now();
+          if (chatSeen[key] && nowMs - chatSeen[key] < 4000) return;
+          chatSeen[key] = nowMs;
+          var nm = prof.name || prof.displayName || data.name || "Phật tử";
+          var gd = normalizeGender(prof.gender || prof.sex || data.gender);
+          addChatMsg({ name: nm, gender: gd, text: text });
+          if (sid != null && users[sid]) setChatBubble(users[sid], text);
+        }
+        addChatSys("Chào mừng bạn đến chùa 🙏 Hãy nhắn đôi lời lành cùng mọi người.");
+        updateChatHint();
+
+        /* ----- Người nào rời chùa thì nhân vật của họ biến mất -----
+           Server có thể báo ra đi bằng nhiều dạng dữ liệu khác nhau, nên
+           nhận mọi dạng: "id", {id}, {userId}, {user:{id}}… và nhiều tên
+           sự kiện khác nhau. Mất kết nối thì mọi Phật tử khác cũng rời
+           khỏi màn hình của mình. */
+        function leftIdFrom(data) {
+          if (data == null) return null;
+          if (typeof data === "string" || typeof data === "number") return String(data);
+          var cand = data.id || data.userId || data.socketId || null;
+          if (cand == null && data.user) cand = data.user.id || data.user.userId || null;
+          return cand != null ? String(cand) : null;
+        }
+        function removeRemoteUser(id) {
+          if (id == null || String(id) === String(myId)) return;
+          var u = users[id];
+          if (!u) return;
+          var nm = displayNameOf(u, false);
+          var gd = u.gender;
+          delete users[id];
+          updateCount();
+          addChatSys(genderSymbol(gd) + " " + nm + " đã rời chùa.");
+          note("<strong>" + genderSymbol(gd) + " " + escapeHtml(nm) + "</strong> đã rời chùa — nhân vật của họ đã biến mất khỏi chánh điện.");
+        }
+        function clearRemoteUsers() {
+          Object.keys(users).forEach(function (id) { if (String(id) !== String(myId)) delete users[id]; });
+          updateCount();
+        }
+
         /* ---------------- Kết nối server Socket.io (đúng giao thức code mẫu + hành động mới) ---------------- */
         function setConnUI(state, label, status) {
           connDot.className = "dot" + (state === "live" ? " live" : "");
@@ -2045,6 +2341,8 @@
             users[myId].color = colorForGender(myGender, 0);
             setConnUI("live", "Đang đồng hành cùng mọi người", "Đã kết nối tới " + url + " — bảng tên “" + genderSymbol(myGender) + " " + myDisplayName + " — " + genderLabel(myGender) + "” của bạn đã được gửi lên chùa chung; mọi người sẽ thấy tên nhau trên đầu mỗi nhân vật khi di chuyển, dâng hương, vái lạy, tọa thiền và thỉnh chuông.");
             emitProfile();
+            updateChatHint();
+            addChatSys("Đã kết nối chùa chung — từ giờ bạn trò chuyện được với mọi Phật tử đang ở chùa.");
             updateCount();
           });
 
@@ -2088,6 +2386,7 @@
               u.action = nu.action || "walking";
               users[data.id] = u;
               note("<strong>" + genderSymbol(rg2) + " " + escapeHtml(u.name) + " — " + genderLabel(rg2) + "</strong> vừa vào chùa.");
+              addChatSys(genderSymbol(rg2) + " " + u.name + " — " + genderLabel(rg2) + " vừa vào chùa.");
               updateCount();
             } else if (nu.name || nu.gender) {
               users[data.id].name = nu.name || users[data.id].name;
@@ -2144,9 +2443,18 @@
             else if (data.action === "bow" || data.action === "bowing") remoteBow(data.id);
           });
 
-          socket.on("user_left", function (id) {
-            if (users[id]) { delete users[id]; updateCount(); }
+          // Người nào rời đi thì nhân vật của họ biến mất khỏi chánh điện ngay —
+          // nghe mọi tên sự kiện mà server có thể dùng để báo một người ra đi
+          ["user_left", "user_disconnected", "user_leave", "user_removed", "remove_user", "user_offline"].forEach(function (ev) {
+            socket.on(ev, function (data) { removeRemoteUser(leftIdFrom(data)); });
           });
+
+          // Tin nhắn trò chuyện từ các Phật tử khác
+          socket.on("chat_message", onRemoteChat);
+          socket.on("chat", onRemoteChat);
+          socket.on("message", onRemoteChat);
+          socket.on("new_message", onRemoteChat);
+          socket.on("user_chat", onRemoteChat);
 
           socket.on("play_bell_sound", function (data) {
             playBell();
@@ -2165,6 +2473,9 @@
 
           socket.on("disconnect", function () {
             connected = false;
+            clearRemoteUsers(); // mất kết nối: các Phật tử khác cũng rời khỏi màn hình của mình, chỉ còn lại mình
+            addChatSys("Đã ngắt kết nối khỏi chùa chung — bạn đang ở chùa một mình.");
+            updateChatHint();
             setConnUI("off", "Đang tĩnh tâm một mình", "Đã ngắt kết nối khỏi server — bạn vẫn ở lại chánh điện một mình.");
           });
 
@@ -2189,6 +2500,8 @@
             users[myId].gender = myGender;
             users[myId].color = colorForGender(myGender, 0);
             setConnUI("off", "Đang tĩnh tâm một mình", "Đã ngắt kết nối — bạn vẫn vào chánh điện, dâng hương, vái lạy, thiền và thỉnh chuông được một mình.");
+            addChatSys("Đã ngắt kết nối khỏi chùa chung — bạn đang ở chùa một mình.");
+            updateChatHint();
             updateCount();
             return;
           }
