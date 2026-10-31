@@ -32,6 +32,37 @@ app.get('/', (req, res, next) => {
 // Phuc vu cac file tinh con lai tai thu muc goc
 app.use(express.static(__dirname));
 
+// Diem nhan su kien TikTok qua HTTP (dung cho TikFinity "Trigger Webhook").
+// TikFinity tren may cua chu phong se goi URL nay moi khi co binh luan lenh,
+// qua tang, nguoi vao phong, follow... Kem khoa bi mat trong tham so k.
+// Vi du: /tf?k=KHOA&type=gift&u=ten_dang_nhap&n=Ten Hien Thi&gift=Hoa hong&count=1
+app.all('/tf', (req, res) => {
+    if (!BRIDGE_KEY || String(req.query.k || '') !== BRIDGE_KEY) {
+        return res.status(403).json({ ok: false, error: 'sai khoa' });
+    }
+    const q = Object.assign({}, req.query, req.body || {});
+    const evt = {
+        type: String(q.type || ''),
+        user: String(q.u || q.user || ''),
+        nickname: String(q.n || q.nickname || ''),
+        text: String(q.text || ''),
+        giftName: String(q.gift || ''),
+        giftCount: parseInt(q.count, 10) || 1
+    };
+    // Lenh rut gon cho cac su kien lenh chat cua TikFinity: act -> cau chat co dinh
+    if (evt.type === 'act') {
+        const acts = { incense: 'dang huong', bow: 'vai lay', bell: 'thinh chuong', meditate: 'toa thien' };
+        evt.type = 'chat';
+        evt.text = acts[String(q.act || '')] || '';
+    }
+    if (['member', 'chat', 'gift', 'follow'].includes(evt.type) && evt.user) {
+        handleLiveEvent(evt);
+        console.log('Su kien TikTok qua /tf:', evt.type, '|', evt.nickname || evt.user, '|', evt.text || evt.giftName || '');
+        return res.json({ ok: true, received: evt });
+    }
+    return res.status(400).json({ ok: false, error: 'thieu type hoac u', received: evt });
+});
+
 // Luu tru trang thai cua tat ca "Phat tu" dang online
 // Khong gian toa do chuan cua chua: 800 x 500 (khop voi trang client)
 const users = {};
