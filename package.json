@@ -1,0 +1,1 @@
+{"dependencies":{"express":"^4.19.2","socket.io":"^4.7.5"},"description":"Chùa Online - Không gian tĩnh tâm nhiều người (Express + Socket.io)","main":"server.js","name":"chua-online","scripts":{"start":"node server.js"},"version":"1.0.0"}

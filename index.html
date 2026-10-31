@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chùa Thanh Tịnh Online</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        body { text-align: center; background-color: #2c3e50; color: white; font-family: sans-serif; margin: 0; padding: 16px; }
+        canvas { background-color: #ecf0f1; border: 5px solid #8e44ad; cursor: crosshair; max-width: 100%; height: auto; }
+        .controls { margin-top: 20px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #d35400; color: #fff; border: none; border-radius: 5px; margin: 0 4px; }
+        button:hover { background: #e67e22; }
+        #status { color: #bdc3c7; font-size: 14px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <h2>Chùa Online - Không gian Tĩnh tâm</h2>
+    <!-- Khuôn viên chùa -->
+    <canvas id="templeCanvas" width="800" height="500"></canvas>
+
+    <div class="controls">
+        <button onclick="startMeditating()">🧘‍♂️ Tọa Thiền</button>
+        <button onclick="ringBell()">🔔 Thỉnh Chuông</button>
+    </div>
+    <div id="status">Đang kết nối tới chùa…</div>
+
+    <audio id="bellSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" preload="auto"></audio>
+
+    <script>
+        // Ket noi cung nguon voi trang web (ban goc ghi cung localhost:3000
+        // nen chi chay duoc tren dung may dang chay server)
+        const socket = io();
+        const canvas = document.getElementById('templeCanvas');
+        const ctx = canvas.getContext('2d');
+        const bellAudio = document.getElementById('bellSound');
+        const statusEl = document.getElementById('status');
+
+        let users = {};
+        let myId = '';
+
+        // Vẽ toàn bộ không gian chùa
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Xóa canvas cũ
+
+            // Vẽ một lư hương ở giữa chùa (Tượng trưng)
+            ctx.fillStyle = '#7f8c8d';
+            ctx.fillRect(380, 50, 40, 40);
+            ctx.fillStyle = 'black';
+            ctx.fillText("Lư Hương", 375, 45);
+
+            // Vẽ tất cả mọi người
+            for (let id in users) {
+                let user = users[id];
+
+                // Vẽ người (dạng vòng tròn)
+                ctx.beginPath();
+                ctx.arc(user.x, user.y, 15, 0, Math.PI * 2);
+                ctx.fillStyle = user.color;
+                ctx.fill();
+                ctx.stroke();
+
+                // Nếu đang thiền, vẽ hào quang màu vàng
+                if (user.action === 'meditating') {
+                    ctx.beginPath();
+                    ctx.arc(user.x, user.y, 25, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'gold';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    ctx.lineWidth = 1;
+
+                    ctx.fillStyle = 'black';
+                    ctx.fillText("🧘 Thiền", user.x - 15, user.y + 30);
+                } else {
+                    ctx.fillStyle = 'black';
+                    if (id === myId) ctx.fillText("Bạn", user.x - 10, user.y + 30);
+                }
+            }
+            requestAnimationFrame(draw);
+        }
+
+        // Lắng nghe dữ liệu từ Server
+        socket.on('connect', () => {
+            myId = socket.id;
+            statusEl.textContent = 'Đã vào chùa. Chạm/click vào sân để di chuyển.';
+        });
+        socket.on('disconnect', () => { statusEl.textContent = 'Mất kết nối với chùa…'; });
+        socket.on('current_users', (serverUsers) => { users = serverUsers; });
+        socket.on('new_user', (data) => { users[data.id] = data.user; });
+        socket.on('user_moved', (data) => {
+            if (users[data.id]) {
+                users[data.id].x = data.x;
+                users[data.id].y = data.y;
+                users[data.id].action = 'walking';
+            }
+        });
+        socket.on('user_meditating', (data) => {
+            if (users[data.id]) users[data.id].action = 'meditating';
+        });
+        socket.on('user_left', (id) => { delete users[id]; });
+        socket.on('play_bell_sound', () => {
+            bellAudio.currentTime = 0;
+            bellAudio.play().catch(() => {});
+        });
+
+        // Di chuyển bằng cách click/chạm vào màn hình (quy ve toa do that cua canvas)
+        function handleTap(clientX, clientY) {
+            if (!users[myId]) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (clientX - rect.left) * (canvas.width / rect.width);
+            const y = (clientY - rect.top) * (canvas.height / rect.height);
+
+            users[myId].x = x;
+            users[myId].y = y;
+            users[myId].action = 'walking';
+
+            socket.emit('move', { x, y });
+        }
+        canvas.addEventListener('mousedown', (e) => handleTap(e.clientX, e.clientY));
+        canvas.addEventListener('touchstart', (e) => {
+            const t = e.touches[0];
+            handleTap(t.clientX, t.clientY);
+        }, { passive: true });
+
+        // Gửi hành động
+        function startMeditating() {
+            if (!users[myId]) return;
+            users[myId].action = 'meditating';
+            socket.emit('meditate');
+        }
+
+        function ringBell() {
+            socket.emit('ring_bell');
+        }
+
+        // Bắt đầu vòng lặp vẽ
+        draw();
+    </script>
+</body>
+</html>
