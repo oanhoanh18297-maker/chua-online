@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.31" />
+    <meta name="chua-build" content="2026-11-01.32" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -2676,6 +2676,62 @@
           });
         }
         function seatWaitingTikTokGuests() { seatWaitingGuests(); }
+
+        /* ---- CHÓ CANH TỰ CHỮA KẸT GHẾ (bản .32) ----
+           Lớp phòng vệ độc lập với mọi đường sự kiện: cứ 2 giây quét
+           toàn sảnh một lần. Bất kỳ Phật tử nào (khách TikTok tt_ lẫn
+           khách web) ở trạng thái ĐANG ĐI TÌM GHẾ quá 18 giây liên tục
+           mà chưa ngồi xuống — dù vì bất kỳ lỗi nào ở đường đi, xếp
+           ghế hay bản chụp danh sách — chó canh TỰ HOÀN TẤT việc vào
+           ghế: cấp ghế trống theo đúng luật hiện có (reserveSeat) rồi
+           đặt nhân vật NGỒI XUỐNG ghế đó ngay tại nhịp quét, dọn sạch
+           trạng thái đi dở. Khách vì thế không bao giờ kẹt vô hình ở
+           cửa quá vài chục giây nữa.
+           Mốc thời gian kẹt được giữ trong bản đồ NGOÀI đối tượng nhân
+           vật (theo định danh): các bản chụp current_users gửi lại vốn
+           dựng lại đối tượng nhân vật từ đầu — mốc để trong nhân vật
+           sẽ bị xoá theo, chó canh "quên" khách đang kẹt; để ngoài thì
+           mốc sống qua mọi bản chụp.
+           Không đụng vào: người đang trên đường ra làm lễ (dâng
+           hương / vái / thỉnh chuông — đích không phải ghế), người
+           đang rời chùa, người chờ ghế ở mép cổng (luật chờ khi kín
+           100 ghế), và nhân vật của chính người xem (được tự đi dạo
+           như luật vòng quét ghế hiện có). */
+        var wdWalkSince = {}; // định danh -> mốc ms bắt đầu kẹt đi tìm ghế
+        var WATCHDOG_STUCK_MS = 18000;
+        window.__chuaWatchdog = { rescued: 0, lastRescueAt: 0, lastRescueName: "" };
+        function seatWatchdogTick() {
+          var now = Date.now();
+          var alive = {};
+          Object.keys(users).forEach(function (id) {
+            var u = users[id];
+            if (!u) return;
+            alive[id] = true;
+            if (String(id) === String(myId)) { delete wdWalkSince[id]; return; }
+            var seekingSeat = u.action === "walking" && !u.leaving && !u.leavePending && !u.waitingGate
+              && !u.pendingOffer && !u.pendingBow && !u.pendingBell && !u.queuedOffer && !u.queuedBow && !u.offerThenBow;
+            if (!seekingSeat) { delete wdWalkSince[id]; return; }
+            if (!wdWalkSince[id]) { wdWalkSince[id] = now; return; }
+            if (now - wdWalkSince[id] < WATCHDOG_STUCK_MS) return;
+            // Kẹt quá ngưỡng: hoàn tất vào ghế NGAY tại nhịp quét này.
+            if (!reserveSeat(u)) { wdWalkSince[id] = now; return; } // kín 100 ghế thật: đặt lại mốc, nhịp sau thử lại (luật nhường ghế nằm trong pickFreeSeat)
+            var ci = u.homeCushion;
+            if (ci === null || ci === undefined || !CUSHIONS[ci]) { wdWalkSince[id] = now; return; }
+            u.cushion = ci;
+            u.x = CUSHIONS[ci].x; u.y = CUSHIONS[ci].y; u.tx = u.x; u.ty = u.y;
+            u.path = null;
+            u.pendingSit = false; u.pendingMeditate = false; u.pendingStand = false; u.seatAsStand = false;
+            u.action = "seated";
+            if (!u.seatedAt) u.seatedAt = now;
+            if (!u.lastActAt) u.lastActAt = now;
+            delete wdWalkSince[id];
+            window.__chuaWatchdog.rescued++;
+            window.__chuaWatchdog.lastRescueAt = now;
+            try { window.__chuaWatchdog.lastRescueName = displayNameOf(u, false); } catch (e) {}
+          });
+          Object.keys(wdWalkSince).forEach(function (id) { if (!alive[id]) delete wdWalkSince[id]; });
+        }
+        setInterval(seatWatchdogTick, 2000);
         function nearestFreeCushion(u) { return pickFreeSeat(u); }
         function cushionAt(x, y) {
           for (var i = 0; i < CUSHIONS.length; i++) {
@@ -2841,6 +2897,12 @@
         }
 
         function clampPos(x, y) {
+          // Tọa độ hỏng (bản ghi máy chủ thiếu x/y → NaN) thì quay về
+          // điểm cửa sảnh thay vì để NaN lan vào vị trí nhân vật —
+          // nhân vật mang tọa độ NaN không vẽ được ở bất cứ đâu và
+          // cũng không bao giờ tới được ghế (lỗi "có khách mà không
+          // thấy nhân vật" đã gặp). Mọi đường vào ghế xử lý tiếp từ đó.
+          if (!isFinite(x) || !isFinite(y)) return { x: 270, y: H - 16 };
           // Khu lễ trước bàn thờ đã mở rộng: đi lại thoải mái gần khắp chiều
           // ngang sàn điện (từ sát giá chuông bên trái tới gần bia công đức
           // bên phải) và tiến sát hơn về phía bàn thờ, cho đông người cùng lễ
@@ -8164,6 +8226,32 @@
 
           var snapshotSeenOnce = false;
           socket.on("current_users", function (serverUsers) {
+            // Chuẩn hoá MỌI dạng gói danh sách máy chủ có thể gửi (bản
+            // .32): dạng chuẩn là bản đồ {định danh: bản ghi}; nhưng gói
+            // cũng có thể tới dạng MẢNG bản ghi hoặc BỌC trong
+            // {users}/{list}/{data}. Trước đây trang chỉ đọc đúng dạng
+            // bản đồ — gói lệch dạng là Object.keys đi qua các khóa lạ,
+            // toàn bộ khách trong gói bị bỏ qua và sảnh chỉ còn nhân
+            // vật của chính người xem (đúng lỗi đã báo trên live).
+            if (Array.isArray(serverUsers)) {
+              var arrMap = {};
+              serverUsers.forEach(function (rec, ai) {
+                if (!rec || typeof rec !== "object") return;
+                var rk = rec.id || rec.userId || rec.uid || rec.socketId || (rec.name ? String(rec.name) : ("row" + ai));
+                arrMap[String(rk)] = rec;
+              });
+              serverUsers = arrMap;
+            } else if (serverUsers && typeof serverUsers === "object") {
+              var innerMap = serverUsers.users || serverUsers.list || serverUsers.data;
+              if (innerMap && typeof innerMap === "object") {
+                var outerLooksUserMap = Object.keys(serverUsers).some(function (k) {
+                  var v = serverUsers[k];
+                  return v && typeof v === "object" && ("x" in v || "y" in v || "name" in v || "displayName" in v);
+                });
+                if (!outerLooksUserMap) serverUsers = innerMap;
+              }
+            }
+            if (!serverUsers || typeof serverUsers !== "object") return;
             var prevUserIds = {};
             var prevUsers = users;
             Object.keys(users).forEach(function (id) { prevUserIds[id] = true; });
@@ -8171,6 +8259,7 @@
             var merged = {};
             Object.keys(serverUsers).forEach(function (id, idx) {
               var su = serverUsers[id];
+              if (!su || typeof su !== "object") return; // bản ghi rỗng/hỏng: bỏ qua riêng bản ghi đó, không sập cả bản chụp
               var p = fromServer(su.x, su.y);
               var x = p.x, y = p.y;
               if (id === myId && selfState) {
@@ -8266,7 +8355,24 @@
           });
 
           socket.on("new_user", function (data) {
-            var nu = data.user || data;
+            if (!data || typeof data !== "object") return;
+            var nu = data.user || data.profile || data;
+            // Định danh khách có thể nằm trong bản ghi lồng (user.id /
+            // userId / uid…) thay vì ở lớp ngoài (bản .32): trước đây
+            // trang chỉ đọc data.id ở lớp ngoài — gói để định danh ở
+            // trong là MỌI khách mới dồn vào cùng một khóa "undefined",
+            // khách sau ghi đè khách trước, sảnh chỉ hiện được tối đa
+            // một người lạ rồi mất hẳn. Nay suy ra định danh từ mọi
+            // trường có thể; gói không mang định danh nào thì bỏ qua
+            // (bản chụp current_users vẫn đưa khách vào đúng khóa sau).
+            if (data.id == null) {
+              var nid = null;
+              if (nu && typeof nu === "object") nid = nu.id || nu.userId || nu.uid || nu.socketId || nu.ttId || null;
+              if (nid == null) nid = data.userId || data.uid || data.socketId || data.ttId || null;
+              if (nid == null && nu && nu.name && String(nu.name).indexOf("tt_") === 0) nid = String(nu.name);
+              if (nid == null) return;
+              data.id = nid;
+            }
             if (!users[data.id]) {
               var rg2 = normalizeGender(nu.gender || nu.sex);
               // Người mới vào XUẤT HIỆN Ở CỬA sảnh (dưới chân khung) rồi
