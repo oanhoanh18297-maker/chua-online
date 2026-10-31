@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.33" />
+    <meta name="chua-build" content="2026-11-01.34" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -2729,6 +2729,16 @@
             var u = users[id];
             if (!u) return;
             alive[id] = true;
+            /* Ân hạn bản chụp (bản .34): khách bị bản chụp bỏ sót
+               quá 45 giây thì cho đứng dậy đi ra cửa như một lượt rời
+               chùa bình thường; quá 90 giây mà vòng lặp chính chưa
+               dọn được (khung hình bị bóp nghẹt) thì xóa hẳn — khách
+               "ma" không ở lại sảnh vô hạn. */
+            if (u.missingSince) {
+              var missAge = now - u.missingSince;
+              if (missAge > 90000) { delete users[id]; return; }
+              if (missAge > 45000 && !u.leaving && !u.leavePending) { u.missingSince = 0; startExitWalk(u); return; }
+            }
             if (String(id) === String(myId)) { delete wdWalkSince[id]; return; }
             var seekingSeat = u.action === "walking" && !u.leaving && !u.leavePending && !u.waitingGate
               && !u.pendingOffer && !u.pendingBow && !u.pendingBell && !u.queuedOffer && !u.queuedBow && !u.offerThenBow;
@@ -8274,12 +8284,19 @@
           manualDisconnect = false;
           var urlLabel = url || "máy chủ chùa tại chính địa chỉ trang đang mở";
           if (socket) { try { socket.disconnect(); } catch (e) {} socket = null; }
-          /* POLLING ĐI TRƯỚC (bản .33): polling là đường đã kiểm chứng
-             sống trên máy chủ thật; WebSocket chỉ là đường nâng cấp sau
-             khi đã nối được. Kèm kiên nhẫn nối lại dài hơi (máy chủ
-             miễn phí ngủ dậy chậm) thay cho 2 lần thử rồi bỏ của trước
-             đây. */
-          socket = io(url ? url : undefined, { transports: ["polling", "websocket"], timeout: 20000, reconnection: true, reconnectionAttempts: 60, reconnectionDelay: 1500, reconnectionDelayMax: 8000 });
+          /* CHỈ POLLING, BỎ HẲN WEBSOCKET (bản .34): đường WebSocket
+             tới máy chủ chùa thật ĐÃ CHẾT — bắt tay bị từ chối ngay
+             ("'Connection' header value must contain 'Upgrade'" —
+             bằng chứng trong nhật ký console của lượt kiểm chứng).
+             Cứ để client thử nâng cấp là mỗi lần nối lại thêm một
+             vòng dò đường chết, có môi trường mạng còn treo luôn
+             nhịp polling trong lúc dò. Polling đã kiểm chứng sống
+             và đủ cho mọi sự kiện của chùa (bản chụp danh sách, sự
+             kiện khách vào/lễ/chat đều về bằng polling trong các
+             lượt đo trực tiếp trên máy chủ thật). Kèm kiên nhẫn nối
+             lại dài hơi (máy chủ miễn phí ngủ dậy chậm) thay cho 2
+             lần thử rồi bỏ của trước đây. */
+          socket = io(url ? url : undefined, { transports: ["polling"], timeout: 20000, reconnection: true, reconnectionAttempts: 60, reconnectionDelay: 1500, reconnectionDelayMax: 8000 });
 
           socket.on("connect", function () {
             connected = true;
@@ -8399,6 +8416,25 @@
               }
             });
             if (!merged[myId]) merged[myId] = selfState || makeUser(270, 918, colorForGender(myGender, 0), myDisplayName, myGender);
+            /* ÂN HẠN BẢN CHỤP (bản .34): khách đang có trong sảnh mà
+               bản chụp này KHÔNG nhắc tới thì KHÔNG xóa ngay. Máy chủ
+               có lúc gửi bản chụp thiếu/thừa nhịp (đồng bộ dở, khách
+               vừa đổi định danh phía server…) — xóa tức thì là khách
+               đang ngồi yên cũng biến mất giữa buổi (một trong các
+               đường gây lỗi "sảnh chỉ còn 1 nhân vật"). Nay khách
+               thiếu mặt được đóng dấu missingSince và GIỮ NGUYÊN
+               trong sảnh (đang ngồi vẫn ngồi đúng ghế); bản chụp sau
+               nhắc lại thì dấu tự xóa; quá 45 giây vẫn thiếu mặt mới
+               coi là đã rời chùa thật (chó canh lo phần cho ra cửa —
+               xem seatWatchdogTick). Sự kiện rời rõ ràng (user_left…)
+               vẫn cho khách ra cửa ngay như cũ, không qua ân hạn. */
+            Object.keys(prevUsers).forEach(function (pid) {
+              if (pid === myId || merged[pid]) return;
+              var pu = prevUsers[pid];
+              if (!pu || pu.leaving || pu.leavePending) return;
+              if (!pu.missingSince) pu.missingSince = Date.now();
+              merged[pid] = pu;
+            });
             users = merged;
             // Khách TikTok lần đầu xuất hiện trong một bản chụp danh sách
             // GỬI LẠI giữa buổi (không phải bản chụp đầu tiên ngay khi
@@ -8650,7 +8686,22 @@
           socket.on("disconnect", function () {
             connected = false;
             if (!manualDisconnect && everConnected && !outageSince) outageSince = Date.now();
-            clearRemoteUsers(); // mất kết nối: các Phật tử khác cũng rời khỏi màn hình của mình, chỉ còn lại mình
+            /* KHÔNG XÓA KHÁCH KHI RỚT NỐI (bản .34): bản .33 gọi
+               clearRemoteUsers() ở đây — đường polling qua proxy của
+               máy chủ mà chập chờn (rớt vài giây rồi nối lại) là toàn
+               bộ hội chúng biến mất khỏi sảnh ngay lập tức, nối lại
+               xong lại phải đi từ cửa vào ghế lại từ đầu; buổi live
+               nhìn vào đúng lúc chập chờn là thấy sảnh trống trơn chỉ
+               còn 1 nhân vật (đúng lỗi đã báo). Máy chủ vẫn giữ danh
+               sách khách (khách chỉ rời khi live kết thúc / có sự kiện
+               rời rõ ràng), nên trang GIỮ NGUYÊN mọi nhân vật đang có:
+               ai đang ngồi vẫn ngồi yên trên ghế của mình suốt lúc
+               mất nối; bản chụp current_users ngay khi nối lại sẽ đối
+               chiếu và dọn đúng người thật sự đã rời (kèm ân hạn ở
+               trình xử lý bản chụp). Chỉ khi người dùng CHỦ ĐỘNG bấm
+               ngắt kết nối mới dọn sảnh (nút bấm tự dựng lại danh
+               sách riêng của nó). */
+            if (manualDisconnect) clearRemoteUsers();
             updateChatHint();
             if (manualDisconnect) {
               addChatSys("Đã ngắt kết nối khỏi chùa chung — bạn đang ở chùa một mình.");
@@ -8659,7 +8710,7 @@
               /* Rớt kết nối ngoài ý muốn: báo rõ là MẤT KẾT NỐI và đang
                  tự nối lại (bản .33), không giả vờ “tĩnh tâm một mình”. */
               addChatSys("Mất kết nối máy chủ chùa — trang đang tự kết nối lại…");
-              setConnUI("warn", "Mất kết nối máy chủ chùa — đang tự kết nối lại", "Kết nối tới máy chủ chùa vừa rớt. Khách TikTok sẽ hiện lại ngay khi nối lại được.");
+              setConnUI("warn", "Mất kết nối máy chủ chùa — đang tự kết nối lại", "Kết nối tới máy chủ chùa vừa rớt — hội chúng đang ngồi vẫn ở nguyên trên ghế, trang đang tự kết nối lại để nhận khách và sự kiện mới.");
             }
           });
 
@@ -8716,11 +8767,20 @@
           }, LIVE_FULL_MODE ? 900 : 1400);
         }
 
-        /* Mất kết nối máy chủ kéo dài quá 60 giây mà không nối lại được
-           thì tự tải lại trang một lần để hồi phục (mỗi đợt mất kết nối
-           chỉ tải lại một lần; nối lại được thì mốc được đặt lại). */
+        /* Mất kết nối máy chủ kéo dài quá 240 giây mà không nối lại
+           được thì tự tải lại trang một lần để hồi phục (mỗi đợt mất
+           kết nối chỉ tải lại một lần; nối lại được thì mốc được đặt
+           lại). Mốc nới từ 60 giây lên 240 giây ở bản .34: bài kiểm
+           rớt-nối-thật cho thấy một lượt nối lại qua đường polling bị
+           treo poll có thể cần hơn 60 giây mới thông — tải lại ở giây
+           60 là tự xóa sạch hội chúng mà bản .34 vừa giữ được qua
+           lượt mất nối (khách đang ngồi bị buộc đi lại từ đầu, bản
+           chụp thiếu sau đó còn làm sảnh hụt người). Socket.io vốn
+           đã tự thử lại 60 lần với giãn cách tới 8 giây (đủ ~4 phút),
+           nên mốc tải lại đặt NGANG cuối ngân sách thử lại đó: chỉ
+           khi đường nối thật sự chết hẳn mới làm mới trang. */
         setInterval(function () {
-          if (!connected && outageSince && !outageReloaded && Date.now() - outageSince > 60000) {
+          if (!connected && outageSince && !outageReloaded && Date.now() - outageSince > 240000) {
             if (window.chuaAutoReload) {
               // Chỉ đánh dấu đã tải lại khi lần tải lại thật sự diễn ra;
               // chốt chống vòng lặp từ chối thì để nhịp sau thử lại.
@@ -9405,7 +9465,19 @@
           }
         }
         function checkVersion() {
-          var url = "index.html?__chua_v=" + Date.now();
+          /* Lấy ĐÚNG tài liệu của địa chỉ đang chạy (bản .34): trước
+             đây hàm này luôn tải "index.html" theo đường dẫn tương
+             đối — nhưng trên máy chủ thật, địa chỉ "/" (bản Express
+             hiện hành) và file tĩnh "/index.html" là HAI BẢN KHÁC
+             NHAU, nên trang đang chạy ở "/" lại đi so phiên bản với
+             một file không phải nó: nhẹ thì không bao giờ nhận ra bản
+             mới thật, nặng thì so lệch qua lại. Nay lấy theo chính
+             pathname của trang đang mở (mở ở "/" thì lấy "/", mở ở
+             file nào thì lấy đúng file đó). */
+          var ownPath = "/index.html";
+          try { ownPath = window.location.pathname || "/index.html"; } catch (e) {}
+          if (ownPath === "/" || ownPath === "") ownPath = "/";
+          var url = ownPath + "?__chua_v=" + Date.now();
           fetch(url, { cache: "no-store", credentials: "same-origin" }).then(function (res) {
             if (!res || !res.ok) return null;
             return res.text();
