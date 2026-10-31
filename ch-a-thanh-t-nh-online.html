@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.15" />
+    <meta name="chua-build" content="2026-11-01.18" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -350,6 +350,131 @@
       @media (max-width: 560px) {
         .gift-banner { padding: 10px 16px 9px; top: 8px; }
         .gift-banner .gb-who { font-size: 14.5px; }
+      }
+      /* ================= BỐ CỤC KIỂU RPC (bản 2026-11-01.16) =================
+         Sân khấu chánh điện nằm bên trái; bên phải là CỘT ĐIỀU KHIỂN tối
+         sơn son thếp vàng như bảng điều khiển của bộ chùa RPC mẫu: thẻ
+         Phật tử đang làm lễ ở trung tâm, bảng công đức dạng danh sách
+         xếp hạng, dòng sự kiện trực tiếp và trạng thái nhạc nền. Trên
+         màn hẹp cột này xếp xuống dưới sân khấu. Chế độ ?full chỉ hiện
+         sân khấu như cũ — cột này bị ẩn hẳn. */
+      .hall-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 520px) minmax(272px, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+      @media (max-width: 920px) {
+        .hall-layout { grid-template-columns: minmax(0, 1fr); }
+      }
+      html.live-display .hall-layout { display: block; }
+      html.live-display .rpc-side { display: none !important; }
+      .rpc-side {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        min-width: 0;
+      }
+      .rpc-panel {
+        background: linear-gradient(170deg, #2b1a10, #1d110a 60%, #170d07);
+        border: 2px solid #a87c2e;
+        border-radius: 14px;
+        padding: 16px 16px 14px;
+        color: #f3e3bd;
+        box-shadow: 0 14px 30px rgba(30, 12, 4, 0.35), inset 0 0 0 2px rgba(0, 0, 0, 0.35);
+        line-height: 1.5;
+      }
+      .rpc-panel h3 {
+        margin: 0 0 10px;
+        font-size: 15px;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        color: #ffd968;
+        border-bottom: 1px solid rgba(217, 164, 65, 0.45);
+        padding-bottom: 8px;
+      }
+      .spot-name {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: 21px;
+        font-weight: 700;
+        color: #fff3d6;
+        overflow-wrap: anywhere;
+      }
+      .spot-action { margin: 3px 0 0; font-size: 14.5px; color: #f0d9a0; }
+      .spot-prayer {
+        margin: 10px 0 0;
+        background: rgba(255, 240, 200, 0.94);
+        color: #4a3208;
+        border-radius: 10px;
+        padding: 9px 12px;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+      }
+      .spot-prayer::before { content: "💬 Lời khấn: "; font-weight: 700; }
+      .spot-counters {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px dashed rgba(217, 164, 65, 0.4);
+        font-size: 13.5px;
+        color: #e8cf96;
+      }
+      .spot-counters strong { color: #ffd968; font-variant-numeric: tabular-nums; }
+      .rpc-merit { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+      .rpc-merit li {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 14px; padding: 4px 8px; border-radius: 7px;
+        background: rgba(255, 214, 120, 0.06);
+      }
+      .rpc-merit li.top1 { background: rgba(255, 190, 60, 0.18); font-weight: 700; }
+      .rpc-merit .mb-rank {
+        flex: none; width: 22px; height: 22px; border-radius: 50%;
+        background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(217, 164, 65, 0.6);
+        color: #ffd977; font-size: 12px; font-weight: 700;
+        display: inline-flex; align-items: center; justify-content: center;
+      }
+      .rpc-merit li.top1 .mb-rank { background: #d9a441; color: #3a2404; }
+      .rpc-merit .mb-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .rpc-merit .mb-points { flex: none; font-weight: 700; color: #ffce54; font-variant-numeric: tabular-nums; }
+      .rpc-empty { margin: 0; font-size: 13px; font-style: italic; color: rgba(238, 214, 150, 0.8); line-height: 1.55; }
+      .event-feed { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; max-height: 340px; overflow-y: auto; }
+      .event-feed li {
+        display: flex; gap: 8px; align-items: baseline;
+        font-size: 13.5px; line-height: 1.45;
+        background: rgba(255, 214, 120, 0.05);
+        border-radius: 8px; padding: 6px 9px;
+        overflow-wrap: anywhere;
+      }
+      .event-feed .ev-time { flex: none; font-size: 11.5px; font-weight: 700; color: #d9a441; font-variant-numeric: tabular-nums; }
+      .event-feed li.ev-gift { background: rgba(255, 190, 60, 0.16); }
+      .event-feed li.ev-prayer { background: rgba(255, 150, 90, 0.14); }
+      .rpc-music-status { margin: 0 0 6px; font-size: 14px; color: #f0d9a0; }
+      .rpc-note { margin: 0; font-size: 12.5px; color: rgba(238, 214, 150, 0.75); line-height: 1.55; }
+      /* Huy hiệu đếm hương nổi trong sảnh, ngay trên dòng hướng dẫn live */
+      .incense-badge {
+        position: absolute;
+        left: 8px;
+        bottom: 52px;
+        z-index: 6;
+        background: rgba(43, 26, 12, 0.82);
+        color: #ffe9bd;
+        border: 1.5px solid rgba(217, 164, 65, 0.75);
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-size: 12.5px;
+        font-weight: 600;
+        line-height: 1.3;
+        pointer-events: none;
+        backdrop-filter: blur(2px);
+      }
+      .incense-badge strong { color: #ffd968; font-variant-numeric: tabular-nums; }
+      @media (max-width: 560px) {
+        .incense-badge { bottom: 64px; font-size: 11.5px; padding: 4px 10px; }
       }
       .controls {
         display: flex;
@@ -751,8 +876,8 @@
          đối diện với chuông ở góc trái ---- */
       .altar-head {
         position: absolute;
-        top: 10px;
-        top: 2cqw;
+        top: 62px;
+        top: 12.4cqw;
         left: 50%;
         transform: translateX(-50%);
         width: min(540px, 60%);
@@ -761,6 +886,10 @@
         pointer-events: none;
         line-height: 1.3;
       }
+      /* Sảnh mới .18 đã có biển "CHÁNH ĐIỆN" vẽ ngay trên sân khấu nên
+         dòng tiêu đề DOM trùng tên được ẩn, chỉ giữ dòng hướng dẫn nhỏ
+         nằm gọn giữa biển hiệu và hào quang tượng Phật giữa. */
+      .altar-head .ah-title { display: none; }
       .altar-head .ah-title {
         font-family: "Playfair Display", serif;
         font-weight: 700;
@@ -967,6 +1096,60 @@
         color: rgba(236, 210, 142, 0.82);
         text-align: center;
         line-height: 1.55;
+      }
+      /* ---- BẢNG CÔNG ĐỨC dạng DANH SÁCH XẾP HẠNG trong sân khấu (bản .17) ----
+         Thay hẳn bia đá cũ: thẻ sơn son thếp vàng treo ở phía phải sảnh,
+         dưới câu đối phải — hiện cả trong chế độ ?full để khán giả live
+         thấy thứ hạng đầu ngay trên hình phát. Không còn hình bia đá,
+         không mũ bia, không đế bia. */
+      .stage-merit {
+        position: absolute;
+        right: 2%;
+        top: 118cqw;
+        z-index: 7;
+        width: 34%;
+        background: linear-gradient(170deg, rgba(64, 32, 14, 0.94), rgba(38, 20, 8, 0.94));
+        border: 2px solid #d9a441;
+        border-radius: 12px;
+        padding: 2.6cqw 2.2cqw 2.2cqw;
+        color: #f3e3bd;
+        box-shadow: 0 12px 26px rgba(15, 8, 2, 0.5), inset 0 0 0 2px rgba(0, 0, 0, 0.3);
+        line-height: 1.4;
+        pointer-events: none;
+      }
+      .stage-merit h3 {
+        margin: 0 0 1.4cqw;
+        font-family: "Playfair Display", serif;
+        font-size: 3.1cqw;
+        letter-spacing: 0.22cqw;
+        color: #ffd968;
+        text-align: center;
+        border-bottom: 1px solid rgba(217, 164, 65, 0.5);
+        padding-bottom: 1.1cqw;
+      }
+      .stage-merit ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.6cqw; }
+      .stage-merit li {
+        display: flex; align-items: center; gap: 1.4cqw;
+        font-size: 2.5cqw; padding: 0.4cqw 1.2cqw; border-radius: 6px;
+        background: rgba(255, 214, 120, 0.07);
+      }
+      .stage-merit li.top1 { background: rgba(255, 190, 60, 0.2); font-weight: 700; }
+      .stage-merit .mb-rank {
+        flex: none; width: 3.8cqw; height: 3.8cqw; border-radius: 50%;
+        background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(217, 164, 65, 0.6);
+        color: #ffd977; font-size: 2.2cqw; font-weight: 700;
+        display: inline-flex; align-items: center; justify-content: center;
+      }
+      .stage-merit li.top1 .mb-rank { background: #d9a441; color: #3a2404; }
+      .stage-merit .mb-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .stage-merit .mb-points { flex: none; font-weight: 700; color: #ffce54; font-variant-numeric: tabular-nums; }
+      .stage-merit .mb-empty { margin: 0; font-size: 2.4cqw; font-style: italic; color: rgba(243, 227, 189, 0.85); text-align: center; line-height: 1.55; }
+      @media (max-width: 560px) {
+        .stage-merit { width: 37%; top: 112cqw; padding: 8px 6px 7px; }
+        .stage-merit h3 { font-size: 10.5px; margin-bottom: 5px; padding-bottom: 4px; }
+        .stage-merit li { font-size: 9.3px; padding: 1.5px 4px; gap: 4px; }
+        .stage-merit .mb-rank { width: 14px; height: 14px; font-size: 8.5px; }
+        .stage-merit .mb-empty { font-size: 9.5px; }
       }
       /* Nhãn nhỏ trong sân chùa khi có quà tặng, đi cùng banner lời chúc */
       .gift-tag {
@@ -1227,6 +1410,7 @@
         </div>
       </section>
 
+      <div class="hall-layout">
       <section class="stage" aria-label="Chánh điện chùa">
         <div class="hall-bar">
           <span class="hall-name">🛕 Sảnh Cầu Bình An</span>
@@ -1240,6 +1424,7 @@
             <span class="mb-label">Hòm Công Đức</span>
             <span class="mb-hint">Ấn để mở mã QR</span>
           </button>
+          <div class="incense-badge" id="incenseBadge" aria-hidden="true">🪔 <strong id="incenseNowBadge">0</strong> nén hương đang cháy trên lư · đã dâng <strong id="incenseTotalBadge">0</strong> nén</div>
           <div class="breath" id="breath"><span class="orb" id="breathOrb"></span><span id="breathText">Hít vào…</span></div>
           <div class="gift-banner" id="giftBanner" role="status" aria-live="polite" aria-hidden="true">
             <p class="gb-thanks">🙏 Tri ân tấm lòng vàng</p>
@@ -1253,9 +1438,8 @@
           </div>
           <div class="couplet left" id="coupletLeft" aria-hidden="true"><span>Gieo</span><span>hạt</span><span>thiện</span><span>lành</span></div>
           <div class="couplet right" id="coupletRight" aria-hidden="true"><span>Gặt</span><span>quả</span><span>bình</span><span>an</span></div>
-          <aside class="merit-board" id="meritBoard" aria-label="Bia công đức — bảng xếp hạng công đức">
-            <div class="stele-cap" aria-hidden="true">🪷</div>
-            <h3>BIA CÔNG ĐỨC</h3>
+          <aside class="stage-merit" id="meritBoard" aria-label="Bảng công đức — danh sách xếp hạng công đức">
+            <h3>🏆 BẢNG CÔNG ĐỨC</h3>
             <ol id="meritBoardList"></ol>
             <p class="mb-empty" id="meritBoardEmpty">Chưa có công đức — tặng quà trên live TikTok để ghi danh</p>
           </aside>
@@ -1264,7 +1448,7 @@
             <p class="wb-text" id="welcomeText"></p>
             <p class="wb-sub">Nam mô A Di Đà Phật — chúc Phật tử thân tâm an lạc, vạn sự bình an 🪷</p>
           </div>
-          <div class="live-guide" aria-label="Hướng dẫn cho khách xem live">🙏 Khách trên live gõ <b>!dang huong</b> để dâng hương · <b>!vai lay</b> để vái lạy · <b>!thinh chuong</b> để thỉnh chuông · gõ <b>a di đà phật</b> để niệm Phật · ghi <b>lời cầu nguyện</b> để thả đèn hoa đăng · tặng quà để ghi danh <b>Bia Công Đức</b></div>
+          <div class="live-guide" aria-label="Hướng dẫn cho khách xem live">🙏 Khách trên live gõ <b>!dang huong</b> để dâng hương · <b>!vai lay</b> để vái lạy · <b>!thinh chuong</b> để thỉnh chuông · gõ <b>a di đà phật</b> để niệm Phật · ghi <b>lời cầu nguyện</b> để thả đèn hoa đăng · tặng quà để ghi danh <b>Bảng Công Đức</b></div>
         </div>
 
         <div class="controls">
@@ -1289,17 +1473,47 @@
           <div class="yt-holder" aria-hidden="true"><div id="ytPlayer"></div></div>
         </div>
 
-        <p class="action-note" id="actionNote">Không gian lễ Phật trước bàn thờ đã được mở rộng: trên bệ thờ là ba tượng trang trọng thẳng hàng: tượng Phật lớn ở chính giữa giữ nguyên; bên trái là <strong>tượng Phật Bà Quan Âm</strong> bằng đồng dát vàng — dung mạo hiền từ, đội vương miện, tay cầm cành dương liễu, ngự trên đài sen; bên phải là <strong>tượng Phật Di Lặc</strong> bằng đồng dát vàng — nụ cười phúc hậu, bụng tròn to, tay cầm chuỗi tràng hạt, ngự trên đài sen; hai tượng bên là ảnh tượng thật, cùng cỡ vừa và nhỏ hơn rõ so với tượng lớn ở giữa, chân tượng cùng hàng trên bệ thờ; khu dâng hương ở giữa sảnh nay rộng và thoáng hơn, lư hương lớn đặt trên bệ đá giữa thảm lễ rộng, đủ chỗ cho nhiều Phật tử cùng đứng thành hàng cắm hương ngay ngắn quanh lư; sàn điện trải sẵn 32 đệm thiền (bồ đoàn) thành hai dãy, tám hàng hai bên lối đi giữa ở nửa dưới sảnh, đủ chỗ cho đông Phật tử cùng quỳ lạy, tọa thiền và đứng lễ. Nhạc nền <strong>Pháp thoại trước khi ngủ (YouTube)</strong> sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng). Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và <strong>Xem Bát Tự · Tử Vi</strong>.</p>
+        <p class="action-note" id="actionNote">Không gian lễ Phật trước bàn thờ đã được mở rộng: trên bệ thờ là ba tượng trang trọng thẳng hàng: tượng Phật lớn ở chính giữa giữ nguyên; bên trái là <strong>tượng Phật Bà Quan Âm</strong> bằng đồng dát vàng — dung mạo hiền từ, đội vương miện, tay cầm cành dương liễu, ngự trên đài sen; bên phải là <strong>tượng Phật Di Lặc</strong> bằng đồng dát vàng — nụ cười phúc hậu, bụng tròn to, tay cầm chuỗi tràng hạt, ngự trên đài sen; hai tượng bên là ảnh tượng thật, cùng cỡ vừa và nhỏ hơn rõ so với tượng lớn ở giữa, chân tượng cùng hàng trên bệ thờ; khu dâng hương ở giữa sảnh nay rộng và thoáng hơn, lư hương lớn đặt trên bệ đá giữa thảm lễ rộng; giữa sảnh là ĐIỂM LỄ TRUNG TÂM — một Phật tử trung tâm mang đúng tên của khách đang có sự kiện (dâng hương, vái lạy, thỉnh chuông, tọa thiền, niệm Phật hay tặng quà) bước ra làm lễ thay khách đó, hiện bảng tên, nhãn hành động và bong bóng lời khấn ngay trên sân khấu, nhiều sự kiện thì xếp hàng lần lượt; hội chúng đứng dự lễ thành hai dãy, tám hàng hai bên lối đi giữa ở nửa dưới sảnh (không còn đệm ngồi); mỗi lượt dâng hương cắm thêm ba nén lên lư và hương tích lũy ở lại trên lư suốt buổi lễ; Bảng Công Đức dạng danh sách xếp hạng treo ở phía phải sảnh. Nhạc nền <strong>Pháp thoại trước khi ngủ (YouTube)</strong> sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng). Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và <strong>Xem Bát Tự · Tử Vi</strong>.</p>
 
         <div class="guide">
           <span><b>Đi dạo:</b> chạm / nhấp vào lối đi giữa điện, hoặc dùng phím mũi tên</span>
-          <span><b>Đệm thiền:</b> các bồ đoàn tròn trên tọa cụ, chia hai dãy trái — phải, tám hàng trong khu lễ rộng trước bàn thờ; chạm vào một đệm trống để tới ngồi thiền</span>
-          <span><b>Dâng hương:</b> bước tới thảm lễ rộng trước lư hương lớn giữa sảnh — dưới chân ba tượng Phật — cắm hương lên lư, khói bay lên bàn thờ</span>
-          <span><b>Vái lạy:</b> quỳ xuống, cúi mình lạy ba lạy trước Phật</span>
-          <span><b>Tọa thiền:</b> bước tới đệm thiền trống gần nhất, ngồi yên tỏa hào quang vàng</span>
+          <span><b>Hội chúng dự lễ:</b> các vị trí đứng trên thảm đỏ chia hai dãy trái — phải, tám hàng ở nửa dưới sảnh; chạm vào một vị trí trống để tới đứng dự lễ cùng hội chúng</span>
+          <span><b>Dâng hương:</b> Phật tử trung tâm mang tên bạn bước tới thảm lễ trước lư hương lớn giữa sảnh — dưới chân ba tượng Phật — cắm thêm hương lên lư, khói bay lên bàn thờ</span>
+          <span><b>Vái lạy:</b> Phật tử trung tâm mang tên bạn quỳ xuống, cúi mình lạy ba lạy trước Phật</span>
+          <span><b>Tọa thiền:</b> Phật tử trung tâm mang tên bạn ngồi thiền giữa sảnh, tỏa hào quang vàng</span>
           <span><b>Thỉnh chuông:</b> tiếng chuông vang cho mọi người đang ở chùa</span>
         </div>
       </section>
+
+      <aside class="rpc-side" aria-label="Bảng điều khiển chùa — Phật tử đang làm lễ, bảng công đức và dòng sự kiện">
+        <section class="rpc-panel" aria-label="Phật tử đang làm lễ tại chánh điện">
+          <h3>🙏 Đang Làm Lễ Tại Chánh Điện</h3>
+          <p class="spot-name" id="spotName">Chánh điện đang tĩnh lặng</p>
+          <p class="spot-action" id="spotAction">Hội chúng đang ngồi yên, lắng nghe nhạc thiền…</p>
+          <p class="spot-prayer" id="spotPrayer" hidden></p>
+          <div class="spot-counters">
+            <span>🪔 Hương đang cháy trên lư: <strong id="incenseNow">0</strong> nén</span>
+            <span>🙏 Tổng số nén hương đã dâng: <strong id="incenseTotal">0</strong> nén</span>
+            <span>🧘 Hội chúng đang ở chùa: <strong id="sideOnlineCount">1</strong> người</span>
+          </div>
+        </section>
+        <section class="rpc-panel" aria-label="Bảng công đức — danh sách xếp hạng">
+          <h3>🏆 Bảng Công Đức · Tấm Lòng Thành</h3>
+          <ol class="rpc-merit" id="meritBoardListSide"></ol>
+          <p class="rpc-empty" id="meritBoardEmptySide">Chưa có công đức — tặng quà trên live TikTok để ghi danh</p>
+        </section>
+        <section class="rpc-panel" aria-label="Dòng sự kiện trong chùa">
+          <h3>📰 Dòng Sự Kiện Trong Chùa</h3>
+          <ul class="event-feed" id="eventFeed" aria-live="polite"></ul>
+          <p class="rpc-empty" id="eventFeedEmpty">Việc vừa xảy ra trong chùa — khách vào, dâng hương, vái lạy, thỉnh chuông, tặng quà, thả đèn hoa đăng — sẽ hiện tại đây.</p>
+        </section>
+        <section class="rpc-panel" aria-label="Âm thanh chùa và nhạc nền">
+          <h3>🎵 Âm Thanh Chùa &amp; Nhạc Nền</h3>
+          <p class="rpc-music-status" id="musicStatusSide">Nhạc nền đang sẵn sàng — chạm vào chánh điện hoặc bấm một nút bất kỳ để nhạc bắt đầu.</p>
+          <p class="rpc-note">Nút bật/tắt nhạc, menu chọn bản nhạc (pháp thoại trước khi ngủ · nhạc thiền An Nhiên · thiền tịnh tâm · tụng kinh gõ mõ) và thanh âm lượng nằm ngay dưới chánh điện. Khi có giọng đọc thông báo, nhạc tự nhỏ xuống rồi trở lại như cũ.</p>
+        </section>
+      </aside>
+      </div>
 
       <section class="connect">
         <h2>Đồng hành cùng các Phật tử khác</h2>
@@ -1334,13 +1548,13 @@
           <strong>Chào khách TikTok mới vào sảnh:</strong> khi server đưa một khách từ phòng live vào chùa qua sự kiện
           <em>new_user</em> với định danh hoặc tên mang tiền tố <em>tt_</em> (nhân vật khách TikTok), trang sẽ hiện một bảng chào trang trọng
           <strong>“🙏 {Tên khách} vừa vào chùa”</strong> với <strong>cỡ chữ lớn, treo ngay dưới lư hương ở khu trung tâm phía trước chánh điện</strong>
-          (không che tượng Phật, không che lư hương, không đè lên Bia Công Đức hay dòng hướng dẫn dưới sảnh) trong ít giây rồi mờ đi — nhiều khách vào cùng lúc thì xếp hàng hiện lần lượt,
-          khách vào quá đông sẽ gộp chung một lời chào — và <strong>nhân vật của khách tự đi tới một nệm thiền còn trống trong khu nệm đã trải sẵn và ngồi xuống</strong>:
-          mỗi nệm chỉ một khách, khách rời chùa thì nệm trống lại cho khách sau, nệm kín hết thì khách mới đứng ở sảnh như trước.
-          Khi khách đang ngồi nhận lệnh <em>dâng hương / vái lạy / thỉnh chuông</em> qua TikTok, nhân vật <strong>đứng dậy ra khu lư hương (hoặc giá chuông) làm lễ như thường lệ, xong quay về đúng nệm của mình ngồi lại</strong> — nệm được giữ chỗ suốt lúc khách làm lễ.
+          (không che tượng Phật, không che lư hương, không đè lên Bảng Công Đức hay dòng hướng dẫn dưới sảnh) trong ít giây rồi mờ đi — nhiều khách vào cùng lúc thì xếp hàng hiện lần lượt,
+          khách vào quá đông sẽ gộp chung một lời chào — và <strong>nhân vật của khách tự đi tới một vị trí đứng dự lễ còn trống trong hai dãy hội chúng hai bên sảnh và đứng vào hàng</strong>:
+          mỗi vị trí chỉ một khách, khách rời chùa thì vị trí trống lại cho khách sau, kín hết 32 vị trí thì khách mới đứng chờ ở sảnh.
+          Khi khách nhận lệnh <em>dâng hương / vái lạy / thỉnh chuông</em> qua TikTok, <strong>Phật tử trung tâm giữa sảnh sẽ mang đúng tên của khách đó bước ra làm lễ thay</strong> (bảng tên, nhãn hành động và bong bóng lời khấn hiện ngay tại nhân vật trung tâm), còn nhân vật của khách vẫn đứng dự lễ tại vị trí của mình.
           Cầu nối cũng có thể gọi trực tiếp <em>window.chaoPhatTuMoi({ ten: "Tên khách" })</em> hoặc <em>postMessage</em> một gói
           <em>{ type: "tiktok_member", name }</em>. Ở sát đáy khung sảnh luôn có sẵn <strong>dòng hướng dẫn cố định cho khách xem live</strong>:
-          gõ <em>!dang huong</em> để dâng hương · <em>!vai lay</em> để vái lạy · <em>!thinh chuong</em> để thỉnh chuông · tặng quà để ghi danh Bia Công Đức —
+          gõ <em>!dang huong</em> để dâng hương · <em>!vai lay</em> để vái lạy · <em>!thinh chuong</em> để thỉnh chuông · tặng quà để ghi danh Bảng Công Đức —
           luồng dâng hương qua bình luận vẫn do server và TikFinity đảm nhiệm như trước, trang chỉ chào khách và hướng dẫn rõ ràng.
         </p>
         <p style="margin-top:10px">
@@ -1349,12 +1563,12 @@
           <em>“Nam mô A Di Đà Phật 🙏”</em> (kèm sự kiện vái lạy cho cùng nhân vật) — trang nhận tin, hiện nội dung trong khung chat và
           thành <strong>bong bóng thoại ngay trên đầu đúng nhân vật khách TikTok đó</strong> trong khoảng 5 giây rồi mờ dần.
           Bong bóng được kẹp gọn trong khung sảnh, không vươn lên che ban thờ, chữ đậm rõ dễ đọc trên hình live.
-          Kèm theo đó, nếu khách đang ngồi thiền trên nệm, nhân vật <strong>đứng dậy, bước ra hàng lễ trước lư hương vái lạy, xong quay về đúng nệm của mình ngồi lại</strong> —
+          Kèm theo đó, lượt vái lạy đi kèm câu niệm sẽ do <strong>Phật tử trung tâm giữa sảnh mang đúng tên của khách đó thể hiện</strong> —
           đúng như mọi lượt vái lạy khác (lệnh <em>!vai lay</em>, lạy cảm ơn khi tặng quà): mọi đường sự kiện lạy đều tra nhân vật theo cả định danh lẫn tên <em>tt_</em>
-          và đi qua cùng một luồng đứng dậy — ra lư hương — lạy — về nệm, nệm được giữ chỗ suốt lúc khách làm lễ.
+          rồi xếp hàng vào luồng lễ trung tâm — bước ra trước lư hương, quỳ lạy, rồi về điểm chờ giữa sảnh.
         </p>
         <p style="margin-top:10px">
-          <strong>Bia công đức (tấm bia đá ở góc phải chánh điện, đối diện với chuông ở góc trái):</strong> server tính điểm từ quà tặng trên TikTok Live
+          <strong>Bảng công đức (danh sách xếp hạng treo ở phía phải sảnh, hiện cả trong màn hình phát ?full):</strong> server tính điểm từ quà tặng trên TikTok Live
           (có số xu thì tính theo xu) và gửi xuống qua sự kiện <em>merit_board</em> với dữ liệu
           <em>{ entries: [{ name, points }] }</em> ngay khi kết nối và mỗi khi điểm thay đổi —
           trang chỉ lắng nghe và vẽ lại bảng xếp hạng tối đa 10 dòng, điểm cao xếp trước, không tự cộng điểm.
@@ -1675,11 +1889,17 @@
           });
         }
 
-        /* ---- Khu đệm thiền: bồ đoàn chia hai dãy trái — phải, lối đi giữa dẫn tới lư hương (như ảnh mẫu) ---- */
+        /* ---- KHU HỘI CHÚNG ĐỨNG DỰ LỄ (bản .17 — BỎ HẲN cơ chế nệm) ----
+           Hai dãy vị trí ĐỨNG dự lễ trái — phải ở nửa dưới sảnh, lối đi
+           giữa (x 210–330) để trống cho Phật tử TRUNG TÂM đi làm lễ.
+           Mảng vẫn giữ tên nội bộ CUSHIONS vì toàn bộ logic giữ chỗ /
+           xếp khách dùng chung chỉ số này — nhưng trên sân khấu KHÔNG
+           còn đệm/bồ đoàn nào được vẽ nữa: mỗi vị trí là một tấm thảm
+           đứng chữ nhật và khách đứng dự lễ trên đó. */
         var CUSHIONS = [];
         (function () {
-          var rows = [{ y: 622, s: 0.6 }, { y: 660, s: 0.66 }, { y: 698, s: 0.72 }, { y: 736, s: 0.78 }, { y: 774, s: 0.84 }, { y: 812, s: 0.9 }, { y: 850, s: 0.96 }, { y: 888, s: 1.02 }];
-          var cols = [100, 182, 358, 440]; // 2 cột mỗi dãy, chừa lối đi giữa x 223–317 dẫn tới lư hương — 8 hàng × 4 cột = 32 đệm ở nửa dưới khung dọc
+          var rows = [{ y: 652, s: 0.68 }, { y: 690, s: 0.73 }, { y: 728, s: 0.78 }, { y: 766, s: 0.83 }, { y: 804, s: 0.88 }, { y: 842, s: 0.93 }, { y: 880, s: 0.98 }, { y: 916, s: 1.03 }];
+          var cols = [74, 156, 384, 466]; // 2 cột mỗi dãy, chừa lối đi giữa cho nhân vật trung tâm — 8 hàng × 4 cột = 32 vị trí đứng
           rows.forEach(function (r) {
             cols.forEach(function (cx) { CUSHIONS.push({ x: cx, y: r.y, s: r.s }); });
           });
@@ -1689,8 +1909,8 @@
           return Object.keys(users).some(function (id) {
             var u = users[id];
             if (u === exceptUser) return false;
-            // Nệm đang có người ngồi / đang bước tới ngồi
-            if (u.cushion === idx && (u.action === "meditating" || u.pendingMeditate)) return true;
+            // Vị trí đứng đang có người đứng dự lễ / đang bước tới đứng
+            if (u.cushion === idx && (u.action === "meditating" || u.action === "standing" || u.pendingMeditate || u.pendingStand)) return true;
             // Nệm "nhà" của một khách TikTok: khách đang ra trước lư hương
             // làm lễ (dâng hương / vái lạy / thỉnh chuông) thì nệm vẫn được
             // giữ chỗ cho đúng khách đó, không ai khác ngồi vào được.
@@ -1721,13 +1941,16 @@
           u.homeCushion = idx;
           return true;
         }
-        // Cho khách TikTok bước tới đúng nệm nhà của mình và ngồi xuống.
+        // Cho khách TikTok bước tới đúng vị trí đứng nhà của mình và
+        // ĐỨNG dự lễ ở đó (bản .17: hội chúng đứng hai bên, không ngồi nệm).
         function headToTikTokSeat(u) {
           if (!u || !u.isTikTok) return false;
           if (!reserveTikTokSeat(u)) return false;
           var idx = u.homeCushion;
           u.cushion = idx;
-          u.pendingMeditate = true;
+          u.seatAsStand = true;
+          u.pendingStand = true;
+          u.pendingMeditate = true; // giữ cờ cũ để vòng lặp chính gọi beginMeditate — nơi rẽ sang ĐỨNG khi seatAsStand
           u.pendingOffer = false;
           u.pendingBow = false;
           u.pendingBell = false;
@@ -1743,7 +1966,7 @@
         // (trang sẽ tự thử xếp chỗ lại mỗi khi có nệm trống ra).
         function assignTikTokSeat(u) {
           if (!u || !u.isTikTok) return false;
-          if (u.action === "meditating" && u.cushion !== null && u.cushion !== undefined) {
+          if ((u.action === "meditating" || u.action === "standing") && u.cushion !== null && u.cushion !== undefined) {
             u.homeCushion = u.cushion;
             return true;
           }
@@ -1775,7 +1998,7 @@
             if (id === myId) return;
             var u = users[id];
             if (!u || !u.isTikTok) return;
-            if (u.action === "meditating") return; // đã ngồi yên trên nệm
+            if (u.action === "meditating" || u.action === "standing") return; // đã đứng yên dự lễ tại vị trí của mình
             if (u.action === "offering" || u.action === "bowing" || u.action === "belling") return; // đang làm lễ
             if (u.pendingOffer || u.pendingBow || u.pendingBell) return; // đang trên đường ra làm lễ
             if (u.pendingMeditate) {
@@ -1814,55 +2037,59 @@
           return -1;
         }
 
+        /* ---- Vẽ KHU HỘI CHÚNG: thảm ĐỨNG chữ nhật hai dãy (không còn
+           bồ đoàn/nệm tròn) + dòng nhãn khu hội chúng ở đầu lối đi ---- */
         function drawCushions() {
+          // Thảm lễ TRUNG TÂM giữa lối đi: điểm chờ của Phật tử trung tâm
+          ctx.fillStyle = "rgba(255,205,80,0.14)";
+          ctx.beginPath(); ctx.ellipse(CENTRAL_HOME.x, CENTRAL_HOME.y + 5, 34, 10, 0, 0, 6.29); ctx.fill();
+          ctx.strokeStyle = "rgba(255,216,120,0.75)"; ctx.lineWidth = 1.6;
+          ctx.beginPath(); ctx.ellipse(CENTRAL_HOME.x, CENTRAL_HOME.y + 5, 34, 10, 0, 0, 6.29); ctx.stroke(); ctx.lineWidth = 1;
+          ctx.fillStyle = "rgba(253,243,221,0.8)";
+          ctx.font = "600 10.5px 'Be Vietnam Pro', sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("ĐIỂM LỄ TRUNG TÂM", CENTRAL_HOME.x, CENTRAL_HOME.y + 26);
+          ctx.fillStyle = "rgba(253,243,221,0.66)";
+          ctx.font = "600 12px 'Be Vietnam Pro', sans-serif";
+          ctx.fillText("— HỘI CHÚNG DỰ LỄ HAI BÊN —", 270, 634);
           CUSHIONS.forEach(function (c, i) {
             var s = c.s;
             var occupied = Object.keys(users).some(function (id) {
               var u = users[id];
-              return (u.cushion === i && (u.action === "meditating" || u.pendingMeditate)) || u.homeCushion === i;
+              return (u.cushion === i && (u.action === "standing" || u.action === "meditating" || u.pendingMeditate || u.pendingStand)) || u.homeCushion === i;
             });
             if (occupied) {
-              var og = ctx.createRadialGradient(c.x, c.y, 2, c.x, c.y, 40 * s);
-              og.addColorStop(0, "rgba(255,205,80,0.28)");
+              var og = ctx.createRadialGradient(c.x, c.y, 2, c.x, c.y, 42 * s);
+              og.addColorStop(0, "rgba(255,205,80,0.26)");
               og.addColorStop(1, "rgba(255,205,80,0)");
               ctx.fillStyle = og;
-              ctx.fillRect(c.x - 42 * s, c.y - 42 * s, 84 * s, 84 * s);
+              ctx.fillRect(c.x - 44 * s, c.y - 44 * s, 88 * s, 88 * s);
             }
-            // Tọa cụ (tấm đệm vuông lót dưới)
-            var mw = 62 * s, mh = 18 * s;
+            // Tấm thảm đứng chữ nhật sơn son viền vàng (thảm dự lễ, KHÔNG phải đệm ngồi)
+            var mw = 56 * s, mh = 15 * s;
             ctx.fillStyle = "rgba(20,10,4,0.35)";
-            rr(c.x - mw / 2, c.y + 2 * s, mw, mh, 4 * s); ctx.fill();
-            ctx.fillStyle = "#8a6a42";
-            rr(c.x - mw / 2, c.y, mw, mh, 4 * s); ctx.fill();
-            ctx.strokeStyle = "rgba(58,38,16,0.75)";
-            ctx.lineWidth = 1.2;
-            rr(c.x - mw / 2, c.y, mw, mh, 4 * s); ctx.stroke();
-            ctx.strokeStyle = "rgba(240,214,150,0.4)";
-            rr(c.x - mw / 2 + 3 * s, c.y + 3 * s, mw - 6 * s, mh - 6 * s, 3 * s); ctx.stroke();
-            ctx.lineWidth = 1;
-            // Thân bồ đoàn (đệm tròn)
-            ctx.fillStyle = "#5f2a18";
-            ctx.beginPath(); ctx.ellipse(c.x, c.y + 3.5 * s, 26 * s, 9.5 * s, 0, 0, 6.29); ctx.fill();
-            // Mặt trên bồ đoàn
-            var tg = ctx.createRadialGradient(c.x - 6 * s, c.y - 3 * s, 2, c.x, c.y, 26 * s);
-            tg.addColorStop(0, occupied ? "#c47a4a" : "#b4653f");
-            tg.addColorStop(1, "#7e3a20");
-            ctx.fillStyle = tg;
-            ctx.beginPath(); ctx.ellipse(c.x, c.y, 26 * s, 9.5 * s, 0, 0, 6.29); ctx.fill();
-            ctx.strokeStyle = "rgba(226,178,90,0.85)";
+            rr(c.x - mw / 2, c.y + 3 * s, mw, mh, 3 * s); ctx.fill();
+            var tg2 = ctx.createLinearGradient(0, c.y, 0, c.y + mh);
+            tg2.addColorStop(0, occupied ? "#a03a26" : "#8e2f1d");
+            tg2.addColorStop(1, "#671d0e");
+            ctx.fillStyle = tg2;
+            rr(c.x - mw / 2, c.y, mw, mh, 3 * s); ctx.fill();
+            ctx.strokeStyle = occupied ? "rgba(255,216,120,0.95)" : "rgba(226,178,90,0.6)";
             ctx.lineWidth = 1.3;
-            ctx.beginPath(); ctx.ellipse(c.x, c.y, 26 * s, 9.5 * s, 0, 0, 6.29); ctx.stroke();
+            rr(c.x - mw / 2, c.y, mw, mh, 3 * s); ctx.stroke();
             ctx.lineWidth = 1;
-            ctx.strokeStyle = "rgba(70,32,14,0.55)";
-            ctx.beginPath(); ctx.ellipse(c.x, c.y, 17 * s, 6 * s, 0, 0, 6.29); ctx.stroke();
-            ctx.fillStyle = "rgba(70,32,14,0.7)";
-            ctx.beginPath(); ctx.arc(c.x, c.y, 1.8 * s, 0, 6.29); ctx.fill();
+            ctx.strokeStyle = "rgba(240,214,150,0.35)";
+            rr(c.x - mw / 2 + 3 * s, c.y + 3 * s, mw - 6 * s, mh - 6 * s, 2 * s); ctx.stroke();
+            // Dấu hai bàn chân nhỏ tại vị trí đứng
+            ctx.fillStyle = "rgba(255,232,170,0.5)";
+            ctx.beginPath(); ctx.ellipse(c.x - 6 * s, c.y + mh / 2, 3.4 * s, 2 * s, 0, 0, 6.29); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(c.x + 6 * s, c.y + mh / 2, 3.4 * s, 2 * s, 0, 0, 6.29); ctx.fill();
           });
         }
 
         function makeUser(x, y, color, name, gender) {
           var g = normalizeGender(gender);
-          return { x: x, y: y, tx: x, ty: y, color: color || colorForGender(g, 0), gender: g, action: "walking", phase: Math.random() * 6.28, name: String(name || "").slice(0, 24), actionT0: 0, pendingOffer: false, pendingMeditate: false, pendingBow: false, pendingBell: false, cushion: null, offerSpot: null, incenseSlot: null, isTikTok: false, homeCushion: null, queuedBow: false, lastBowAt: 0 };
+          return { x: x, y: y, tx: x, ty: y, color: color || colorForGender(g, 0), gender: g, action: "walking", phase: Math.random() * 6.28, name: String(name || "").slice(0, 24), actionT0: 0, pendingOffer: false, pendingMeditate: false, pendingStand: false, seatAsStand: false, pendingBow: false, pendingBell: false, cushion: null, offerSpot: null, incenseSlot: null, isTikTok: false, homeCushion: null, queuedBow: false, lastBowAt: 0 };
         }
         users[myId] = makeUser(270, 918, colorForGender("nam", 0), "Bạn", "nam");
 
@@ -2576,6 +2803,7 @@
             bornAt: nowMs(), // mốc sinh của CHÍNH chiếc đèn này theo GIỜ TƯỜNG (performance.now) — tuổi và vòng đời của đèn chỉ tính từ đây, cùng một gốc đồng hồ với lúc vẽ
             life: 16.5 // 9,5 giây bay lên + 5 giây lơ lửng ở đỉnh + 2 giây mờ dần
           });
+          pushEvent("🏮 " + String(name == null ? "" : name).replace(/^tt_/i, "").trim() + " thả đèn hoa đăng" + (shortText ? ": “" + shortText + "”" : ""), "prayer");
           return true;
         }
         function queuePrayerLantern(sid, nm, text) {
@@ -2650,46 +2878,267 @@
           ctx.closePath();
         }
 
+        /* ================= SẢNH MỚI TOÀN DIỆN (bản .18) =================
+           Toàn bộ khung cảnh chánh điện được VẼ MỚI bằng mã vẽ, không
+           còn dùng ảnh nền sảnh cũ: tường gỗ tối chia ô, hai cột sơn
+           son thếp vàng đỡ xà ngang, đèn lồng treo, biển "CHÁNH ĐIỆN",
+           ban thờ ba cấp ở giữa với tượng Phật LỚN ngự giữa có hào
+           quang riêng, hai tượng nhỏ hai bên (vẽ ở drawSideBuddhas),
+           bàn thờ có nến cháy, bình hoa sen và mâm quả; sàn đá bóng
+           phối cảnh với THẢM ĐỎ trung tâm chạy dọc lối đi giữa xuống
+           tận đáy sảnh — sân khấu mở, trang trọng kiểu bộ mẫu RPC. */
+        function drawMainBuddha(t) {
+          var cx = 270, baseY = 442;
+          ctx.save();
+          ctx.translate(cx, baseY);
+          ctx.scale(2.05, 2.05);
+          // Đài sen lớn hai lớp cánh
+          ctx.fillStyle = "#8a6524";
+          ctx.fillRect(-52, -3, 104, 6);
+          ctx.fillStyle = "#a87c2c";
+          [-44, -30, -15, 0, 15, 30, 44].forEach(function (px) {
+            ctx.beginPath(); ctx.ellipse(px, -8, 11, 6.5, 0, 0, 6.29); ctx.fill();
+          });
+          ctx.fillStyle = "#c99b3f";
+          [-36, -20, -7, 7, 20, 36].forEach(function (px) {
+            ctx.beginPath(); ctx.ellipse(px, -14, 10, 6, 0, 0, 6.29); ctx.fill();
+          });
+          // Thân tượng ngồi xếp bằng, áo vàng nếp gấp
+          var g = ctx.createLinearGradient(-38, 0, 38, 0);
+          g.addColorStop(0, "#b98a34"); g.addColorStop(0.5, "#f0cd72"); g.addColorStop(1, "#b98a34");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.moveTo(-40, -13);
+          ctx.quadraticCurveTo(-37, -33, -22, -42);
+          ctx.quadraticCurveTo(-24, -72, -14, -81);
+          ctx.lineTo(14, -81);
+          ctx.quadraticCurveTo(24, -72, 22, -42);
+          ctx.quadraticCurveTo(37, -33, 40, -13);
+          ctx.quadraticCurveTo(0, -5, -40, -13);
+          ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = "rgba(122,84,26,0.55)"; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(-14, -80); ctx.quadraticCurveTo(2, -63, 15, -46); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(-32, -22); ctx.quadraticCurveTo(0, -14, 32, -22); ctx.stroke();
+          ctx.lineWidth = 1;
+          // Hai tay kết ấn thiền định
+          ctx.fillStyle = "#e9c05c";
+          ctx.beginPath(); ctx.ellipse(0, -36, 11, 5.4, 0, 0, 6.29); ctx.fill();
+          ctx.fillStyle = "#d9ab45";
+          ctx.beginPath(); ctx.ellipse(0, -38.6, 7, 3.6, 0, 0, 6.29); ctx.fill();
+          // Đầu tượng: tai dài, mặt vàng, tóc búi nhục kế
+          ctx.fillStyle = "#eec96e";
+          ctx.beginPath(); ctx.ellipse(-14.5, -91, 2.8, 6.6, 0, 0, 6.29); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(14.5, -91, 2.8, 6.6, 0, 0, 6.29); ctx.fill();
+          var fg = ctx.createRadialGradient(-4, -100, 3, 0, -95, 17);
+          fg.addColorStop(0, "#f9e193"); fg.addColorStop(1, "#dfae4a");
+          ctx.fillStyle = fg;
+          ctx.beginPath(); ctx.arc(0, -95, 13.5, 0, 6.29); ctx.fill();
+          ctx.fillStyle = "#3d3428";
+          ctx.beginPath(); ctx.arc(0, -97.5, 13.5, 3.45, 5.98); ctx.fill();
+          ctx.beginPath(); ctx.arc(0, -111, 5.4, 0, 6.29); ctx.fill();
+          ctx.fillStyle = "#fff3c4";
+          ctx.beginPath(); ctx.arc(0, -99, 1.7, 0, 6.29); ctx.fill();
+          ctx.strokeStyle = "rgba(90,64,20,0.8)"; ctx.lineWidth = 1.3;
+          ctx.beginPath(); ctx.moveTo(-8, -94); ctx.quadraticCurveTo(-5, -92.4, -2, -94); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(2, -94); ctx.quadraticCurveTo(5, -92.4, 8, -94); ctx.stroke();
+          ctx.lineWidth = 1;
+          ctx.restore();
+        }
+
         function drawBackdrop(t) {
-          if (bgReady) {
-            // Khung dọc 9:16: ảnh chánh điện 1920x1280 phủ kín (cover) theo chiều
-            // cao cần thiết rồi căn giữa vào tượng Phật — bàn thờ kết thúc ~y=450,
-            // phần sàn phía dưới là sàn vẽ tiếp cho khu đệm thiền ở nửa dưới khung.
-            var dh = 564;
-            var dw = dh * (bgImg.naturalWidth / bgImg.naturalHeight); // ≈846, cắt hai bên, Phật ở chính giữa
-            var dx = (W - dw) / 2;
-            var dy = -32;
-            ctx.drawImage(bgImg, dx, dy, dw, dh);
-            var floorTop = dy + dh;
-            if (floorTop < H) {
-              var g = ctx.createLinearGradient(0, floorTop, 0, H);
-              g.addColorStop(0, "#57452f");
-              g.addColorStop(0.4, "#453322");
-              g.addColorStop(1, "#2e2013");
-              ctx.fillStyle = g;
-              ctx.fillRect(0, floorTop, W, H - floorTop);
-              ctx.fillStyle = "rgba(255,205,110,0.07)";
-              ctx.beginPath(); ctx.ellipse(270, floorTop + 26, 190, 20, 0, 0, 6.29); ctx.fill();
-            }
-            // Ánh nến / hào quang Phật khẽ thở
-            var glow = 0.05 + (Math.sin(t * 0.8) + 1) * 0.02;
-            var rg = ctx.createRadialGradient(270, 150, 10, 270, 150, 165);
-            rg.addColorStop(0, "rgba(255,214,120," + glow + ")");
-            rg.addColorStop(1, "rgba(255,214,120,0)");
-            ctx.fillStyle = rg;
-            ctx.fillRect(105, 0, 330, 330);
-          } else {
-            var g2 = ctx.createLinearGradient(0, 0, 0, H);
-            g2.addColorStop(0, "#4a2f1a");
-            g2.addColorStop(0.6, "#5d3d20");
-            g2.addColorStop(1, "#2e2013");
-            ctx.fillStyle = g2;
-            ctx.fillRect(0, 0, W, H);
-            ctx.fillStyle = "#f3d9a4";
-            ctx.font = "600 17px 'Be Vietnam Pro', sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText("Đang mở cửa chánh điện…", W / 2, H / 2);
+          // --- Tường hậu cảnh: gỗ tối chia ô, ấm và sâu ---
+          var wg = ctx.createLinearGradient(0, 0, 0, 500);
+          wg.addColorStop(0, "#241407");
+          wg.addColorStop(0.55, "#3a2110");
+          wg.addColorStop(1, "#2a1708");
+          ctx.fillStyle = wg;
+          ctx.fillRect(0, 0, W, 500);
+          // Ô panel tường
+          ctx.strokeStyle = "rgba(217,164,65,0.16)"; ctx.lineWidth = 1.4;
+          for (var px = 0; px <= 4; px++) {
+            var wx = 18 + px * 126;
+            rr(wx, 92, 108, 348, 6); ctx.stroke();
           }
+          ctx.lineWidth = 1;
+          // Vầng sáng ấm giữa điện
+          var amb = ctx.createRadialGradient(270, 250, 20, 270, 250, 330);
+          amb.addColorStop(0, "rgba(255,196,92,0.20)");
+          amb.addColorStop(1, "rgba(255,196,92,0)");
+          ctx.fillStyle = amb;
+          ctx.fillRect(0, 0, W, 560);
+          // --- Xà ngang + biển hiệu trên cùng ---
+          ctx.fillStyle = "#170b04";
+          ctx.fillRect(0, 0, W, 34);
+          ctx.fillStyle = "#4a2a12";
+          ctx.fillRect(0, 34, W, 10);
+          ctx.fillStyle = "rgba(217,164,65,0.5)";
+          ctx.fillRect(0, 44, W, 2);
+          var signG = ctx.createLinearGradient(0, 8, 0, 62);
+          signG.addColorStop(0, "#93331f"); signG.addColorStop(1, "#671d0e");
+          ctx.fillStyle = signG;
+          rr(178, 8, 184, 52, 8); ctx.fill();
+          ctx.strokeStyle = "#d9a441"; ctx.lineWidth = 2;
+          rr(178, 8, 184, 52, 8); ctx.stroke(); ctx.lineWidth = 1;
+          ctx.fillStyle = "#ffd977";
+          ctx.font = "700 21px 'Playfair Display', serif";
+          ctx.textAlign = "center";
+          ctx.fillText("CHÁNH ĐIỆN", 270, 42);
+          // --- Hai cột sơn son thếp vàng đỡ sảnh ---
+          [44, 496].forEach(function (colX) {
+            var cg = ctx.createLinearGradient(colX - 17, 0, colX + 17, 0);
+            cg.addColorStop(0, "#671d0e"); cg.addColorStop(0.5, "#a23420"); cg.addColorStop(1, "#671d0e");
+            ctx.fillStyle = cg;
+            ctx.fillRect(colX - 17, 46, 34, 440);
+            ctx.fillStyle = "#d9a441";
+            ctx.fillRect(colX - 20, 46, 40, 8);
+            ctx.fillRect(colX - 20, 470, 40, 10);
+            ctx.fillRect(colX - 17, 150, 34, 3);
+            ctx.fillRect(colX - 17, 330, 34, 3);
+            // Câu đối dọc trên thân cột
+            ctx.fillStyle = "#ffd977";
+            ctx.font = "700 15px 'Playfair Display', serif";
+            var words = colX < 270 ? ["PHẬT", "QUANG", "PHỔ", "CHIẾU"] : ["TÂM", "THANH", "TỊNH", "AN"];
+            words.forEach(function (wd, wi) { ctx.fillText(wd, colX, 196 + wi * 34); });
+          });
+          // --- Đèn lồng treo hai bên ---
+          [104, 436].forEach(function (lx) {
+            ctx.strokeStyle = "rgba(217,164,65,0.8)"; ctx.lineWidth = 1.6;
+            ctx.beginPath(); ctx.moveTo(lx, 46); ctx.lineTo(lx, 74); ctx.stroke(); ctx.lineWidth = 1;
+            var flick = 0.85 + Math.sin(t * 3.1 + lx) * 0.15;
+            var lg = ctx.createRadialGradient(lx, 96, 3, lx, 96, 40);
+            lg.addColorStop(0, "rgba(255,170,60," + (0.5 * flick).toFixed(3) + ")");
+            lg.addColorStop(1, "rgba(255,170,60,0)");
+            ctx.fillStyle = lg;
+            ctx.fillRect(lx - 42, 54, 84, 84);
+            ctx.fillStyle = "#b3402a";
+            ctx.beginPath(); ctx.ellipse(lx, 96, 17, 21, 0, 0, 6.29); ctx.fill();
+            ctx.strokeStyle = "#d9a441"; ctx.lineWidth = 1.4;
+            ctx.beginPath(); ctx.ellipse(lx, 96, 17, 21, 0, 0, 6.29); ctx.stroke(); ctx.lineWidth = 1;
+            ctx.fillStyle = "#d9a441";
+            ctx.fillRect(lx - 6, 74, 12, 4);
+            ctx.fillRect(lx - 6, 114, 12, 4);
+            ctx.strokeStyle = "rgba(217,164,65,0.7)";
+            ctx.beginPath(); ctx.moveTo(lx, 118); ctx.lineTo(lx, 128); ctx.stroke();
+          });
+          // --- HÀO QUANG riêng của tượng Phật giữa: ba vòng vàng có viền sẫm ---
+          var pulse = 0.72 + 0.28 * Math.sin(t * 1.4);
+          var hg = ctx.createRadialGradient(270, 218, 10, 270, 218, 168);
+          hg.addColorStop(0, "rgba(255,216,110," + (0.34 * pulse).toFixed(3) + ")");
+          hg.addColorStop(1, "rgba(255,216,110,0)");
+          ctx.fillStyle = hg;
+          ctx.fillRect(102, 50, 336, 336);
+          [128, 104, 80].forEach(function (hr, hi) {
+            ctx.strokeStyle = "rgba(120,66,8,0.55)"; ctx.lineWidth = 5;
+            ctx.beginPath(); ctx.arc(270, 218, hr, 0, 6.29); ctx.stroke();
+            ctx.strokeStyle = "rgba(255,205,80," + (0.5 + 0.3 * pulse - hi * 0.08).toFixed(3) + ")"; ctx.lineWidth = 2.4;
+            ctx.beginPath(); ctx.arc(270, 218, hr, 0, 6.29); ctx.stroke();
+          });
+          ctx.lineWidth = 1;
+          // Tia sáng tỏa chậm quanh hào quang
+          ctx.save();
+          ctx.translate(270, 218);
+          ctx.rotate(t * 0.05);
+          ctx.strokeStyle = "rgba(255,205,80,0.20)"; ctx.lineWidth = 3;
+          for (var ri = 0; ri < 12; ri++) {
+            var ra = ri * Math.PI / 6;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(ra) * 136, Math.sin(ra) * 136);
+            ctx.lineTo(Math.cos(ra) * 152, Math.sin(ra) * 152);
+            ctx.stroke();
+          }
+          ctx.restore();
+          ctx.lineWidth = 1;
+          // --- Tượng Phật LỚN ở giữa + hai tượng bên (vẽ ở drawSideBuddhas ngay sau) ---
+          drawMainBuddha(t);
+          // --- Ban thờ ba cấp trước tượng ---
+          ctx.fillStyle = "rgba(15,7,2,0.45)";
+          ctx.beginPath(); ctx.ellipse(270, 492, 238, 13, 0, 0, 6.29); ctx.fill();
+          ctx.fillStyle = "#54351a";
+          rr(52, 470, 436, 16, 4); ctx.fill();
+          ctx.fillStyle = "#6b4423";
+          rr(72, 454, 396, 16, 4); ctx.fill();
+          var atG = ctx.createLinearGradient(0, 428, 0, 454);
+          atG.addColorStop(0, "#8a5a2a"); atG.addColorStop(1, "#6b4423");
+          ctx.fillStyle = atG;
+          rr(96, 428, 348, 26, 5); ctx.fill();
+          ctx.strokeStyle = "rgba(238,201,110,0.75)"; ctx.lineWidth = 1.6;
+          rr(96, 428, 348, 26, 5); ctx.stroke(); ctx.lineWidth = 1;
+          // Nến cháy hai bên bàn thờ
+          [128, 412].forEach(function (nx, ni) {
+            ctx.fillStyle = "#d9a441";
+            ctx.fillRect(nx - 7, 414, 14, 4);
+            ctx.fillStyle = "#f6e7c8";
+            ctx.fillRect(nx - 3, 396, 6, 18);
+            var fl = 1 + Math.sin(t * 9 + ni * 2.4) * 0.18;
+            var cg2 = ctx.createRadialGradient(nx, 388, 1, nx, 388, 15 * fl);
+            cg2.addColorStop(0, "rgba(255,190,80,0.85)");
+            cg2.addColorStop(1, "rgba(255,190,80,0)");
+            ctx.fillStyle = cg2;
+            ctx.fillRect(nx - 16, 372, 32, 32);
+            ctx.fillStyle = "#ffb84d";
+            ctx.beginPath(); ctx.ellipse(nx, 389, 3.2, 5.6 * fl, 0, 0, 6.29); ctx.fill();
+            ctx.fillStyle = "#fff3c4";
+            ctx.beginPath(); ctx.ellipse(nx, 391, 1.4, 2.6, 0, 0, 6.29); ctx.fill();
+          });
+          // Bình hoa sen + mâm quả trên bàn thờ
+          [196, 344].forEach(function (vx) {
+            ctx.fillStyle = "#2e5d50";
+            ctx.beginPath();
+            ctx.moveTo(vx - 8, 428); ctx.quadraticCurveTo(vx - 5, 410, vx - 2.5, 406);
+            ctx.lineTo(vx + 2.5, 406); ctx.quadraticCurveTo(vx + 5, 410, vx + 8, 428);
+            ctx.closePath(); ctx.fill();
+            ctx.strokeStyle = "#4d7c4d"; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(vx, 408); ctx.quadraticCurveTo(vx - 6, 394, vx - 10, 388); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(vx, 408); ctx.quadraticCurveTo(vx + 6, 394, vx + 10, 388); ctx.stroke();
+            ctx.lineWidth = 1;
+            ctx.fillStyle = "#e88bb0";
+            ctx.beginPath(); ctx.ellipse(vx - 10, 386, 5.5, 3.6, -0.5, 0, 6.29); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(vx + 10, 386, 5.5, 3.6, 0.5, 0, 6.29); ctx.fill();
+            ctx.fillStyle = "#f2a7c3";
+            ctx.beginPath(); ctx.ellipse(vx, 380, 5, 3.6, 0, 0, 6.29); ctx.fill();
+          });
+          ctx.fillStyle = "#8a6524";
+          ctx.beginPath(); ctx.ellipse(270, 424, 26, 6, 0, 0, 6.29); ctx.fill();
+          ["#e8a13a", "#d96f52", "#e8a13a", "#c97b2e", "#d96f52"].forEach(function (fc, fi) {
+            ctx.fillStyle = fc;
+            ctx.beginPath(); ctx.arc(252 + fi * 9, 416 - (fi % 2) * 5, 6, 0, 6.29); ctx.fill();
+          });
+          // --- SÀN SẢNH MỚI: đá bóng phối cảnh + thảm đỏ trung tâm ---
+          var fg2 = ctx.createLinearGradient(0, 486, 0, H);
+          fg2.addColorStop(0, "#3d2c1c");
+          fg2.addColorStop(0.5, "#312315");
+          fg2.addColorStop(1, "#20150b");
+          ctx.fillStyle = fg2;
+          ctx.fillRect(0, 486, W, H - 486);
+          // Gạch sàn phối cảnh: đường ngang xa nhau dần + đường dọc tỏa từ tâm
+          ctx.strokeStyle = "rgba(238,201,110,0.13)"; ctx.lineWidth = 1.2;
+          [512, 548, 592, 646, 712, 792, 884].forEach(function (fy) {
+            ctx.beginPath(); ctx.moveTo(0, fy); ctx.lineTo(W, fy); ctx.stroke();
+          });
+          [-260, -130, 130, 260].forEach(function (off) {
+            ctx.beginPath(); ctx.moveTo(270 + off * 0.36, 486); ctx.lineTo(270 + off, H); ctx.stroke();
+          });
+          ctx.lineWidth = 1;
+          // Phản sáng sàn dưới ban thờ
+          var fl2 = ctx.createRadialGradient(270, 520, 10, 270, 520, 250);
+          fl2.addColorStop(0, "rgba(255,205,110,0.13)");
+          fl2.addColorStop(1, "rgba(255,205,110,0)");
+          ctx.fillStyle = fl2;
+          ctx.fillRect(20, 486, 500, 220);
+          // THẢM ĐỎ trung tâm: chạy dọc lối đi giữa từ khu lễ xuống đáy sảnh
+          var cpG = ctx.createLinearGradient(0, 540, 0, H);
+          cpG.addColorStop(0, "#93331f"); cpG.addColorStop(1, "#5f1a0c");
+          ctx.fillStyle = cpG;
+          ctx.beginPath();
+          ctx.moveTo(216, 540); ctx.lineTo(324, 540); ctx.lineTo(348, H); ctx.lineTo(192, H);
+          ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = "rgba(238,201,110,0.8)"; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(216, 540); ctx.lineTo(192, H); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(324, 540); ctx.lineTo(348, H); ctx.stroke();
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = "rgba(238,201,110,0.3)";
+          ctx.beginPath(); ctx.moveTo(228, 540); ctx.lineTo(206, H); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(312, 540); ctx.lineTo(334, H); ctx.stroke();
         }
 
         /* ---- Thảm lễ lớn của khu dâng hương: trải rộng trước lư hương để
@@ -2799,19 +3248,34 @@
           ctx.fillRect(bx - 46, by - 12, 92, 8);
           ctx.fillStyle = "#cfc4b0";
           ctx.beginPath(); ctx.ellipse(bx, by - 12, 40, 4.5, 0, 0, 6.29); ctx.fill();
-          // Hàng nhang sẵn trong lư khi chưa có ai dâng: năm que xếp ngay ngắn
-          if (!anyOffering) {
-            ctx.strokeStyle = "#8a4a2a"; ctx.lineWidth = 2.4;
-            [-26, -13, 0, 13, 26].forEach(function (dx) {
-              ctx.beginPath(); ctx.moveTo(bx + dx, by - 12); ctx.lineTo(bx + dx * 1.3, by - 44); ctx.stroke();
-            });
-            ctx.lineWidth = 1;
-            ctx.fillStyle = "#e2543e";
-            [-34, -17, 0, 17, 34].forEach(function (dx) {
-              ctx.beginPath(); ctx.arc(bx + dx, by - 45, 3 + Math.sin(t * 7 + dx) * 0.5, 0, 6.29); ctx.fill();
-            });
-          }
           ctx.restore();
+          // HƯƠNG TÍCH LŨY TRÊN LƯ (bản .17): lư luôn có 5 nén hương nền;
+          // mỗi lượt dâng hương thật (qua nhân vật trung tâm) cắm THÊM 3
+          // nén và các nén đó Ở LẠI trên miệng lư suốt phiên — miệng lư
+          // đông dần theo số lượt dâng, tối đa hiện 29 nén thành 3 hàng.
+          (function drawAccumulatedIncense() {
+            var total = Math.min(29, 5 + stageIncenseTotal);
+            for (var i = 0; i < total; i++) {
+              var col = i % 10, row = Math.floor(i / 10);
+              var dx = -40 + col * 9 + (row % 2) * 4;
+              var baseY = by - 14 - row * 5;
+              var topX = bx + dx * 1.25 + Math.sin(t * 1.2 + i * 1.7) * 0.8;
+              var topY = baseY - 42 + (i % 3) * 3;
+              ctx.strokeStyle = "#7c3f1d"; ctx.lineWidth = 2.2;
+              ctx.beginPath(); ctx.moveTo(bx + dx, baseY); ctx.lineTo(topX, topY); ctx.stroke();
+              ctx.fillStyle = "rgba(255,96,54,0.22)";
+              ctx.beginPath(); ctx.arc(topX, topY, 5.5, 0, 6.29); ctx.fill();
+              ctx.fillStyle = "#ff5a36";
+              ctx.beginPath(); ctx.arc(topX, topY, 2.4 + Math.sin(t * 7 + i * 2.1) * 0.4, 0, 6.29); ctx.fill();
+            }
+            ctx.lineWidth = 1;
+            if (stageIncenseTotal > 0) {
+              ctx.fillStyle = "rgba(255,233,189,0.95)";
+              ctx.font = "700 12px 'Be Vietnam Pro', sans-serif";
+              ctx.textAlign = "center";
+              ctx.fillText("🪔 " + (5 + stageIncenseTotal) + " nén hương đang cháy trên lư", bx, by + 106);
+            }
+          })();
           // Hương Phật tử vừa cắm lên lư (to, rõ, theo đúng ô đã giữ chỗ)
           drawPlantedIncense(t);
           ctx.fillStyle = "rgba(253,243,221,0.92)";
@@ -2822,8 +3286,8 @@
 
         /* ---- Tượng vẽ tay dự phòng: chỉ dùng trong thoáng chốc khi ảnh tượng
            thật chưa tải xong, để ban thờ không bao giờ trống ---- */
-        function drawSideBuddha(cx, t, flip) {
-          var baseY = 305, s = 1.12;
+        function drawSideBuddha(cx, t, flip, baseYOver, scaleOver) {
+          var baseY = baseYOver || 452, s = scaleOver || 0.84;
           ctx.save();
           ctx.translate(cx, baseY);
           ctx.scale(s * (flip ? -1 : 1), s);
@@ -2954,17 +3418,20 @@
            bụng tròn to, tay cầm chuỗi tràng hạt và gậy như ý, ngự trên đài
            sen. Hai tượng cùng chiều cao 150px, chân cùng hàng ở y=306 ---- */
         function drawSideBuddhas(t) {
-          var BASE = 306, HGT = 150;
+          // Sảnh mới .18: hai tượng bên ngự trên bệ thấp hai phía của ban
+          // thờ ba cấp, chân tượng chạm y=452 ngang mặt bàn thờ, cao 112px
+          // — nhỏ hơn rõ so với tượng Phật lớn vẽ mới ở giữa (cao ~250px).
+          var BASE = 452, HGT = 112;
           if (quanAmReady) {
-            drawRealStatue(quanAmImg, true, 168, BASE, HGT, 0.19, 24, t);
+            drawRealStatue(quanAmImg, true, 112, BASE, HGT, 0.19, 20, t);
           } else {
-            drawSideBuddha(168, t, false);
+            drawSideBuddha(112, t, false);
           }
           if (diLacReady) {
-            drawLotusPlinth(372, BASE, 156);
-            drawRealStatue(diLacImg, true, 372, BASE - 6, HGT, 0.31, 30, t);
+            drawLotusPlinth(428, BASE, 118);
+            drawRealStatue(diLacImg, true, 428, BASE - 5, HGT, 0.31, 24, t);
           } else {
-            drawSideBuddha(372, t, true);
+            drawSideBuddha(428, t, true);
           }
         }
 
@@ -3153,7 +3620,8 @@
 
           // BẢNG TÊN TRÊN ĐẦU: ♂/♀ + tên tự đặt + Phật tử nam/nữ (+ hành động)
           var actLabel = "";
-          if (u.action === "meditating") actLabel = " · đang thiền";
+          if (u.action === "standing") actLabel = " · dự lễ";
+          else if (u.action === "meditating") actLabel = " · đang thiền";
           else if (u.action === "offering") actLabel = " · dâng hương";
           else if (u.action === "bowing") actLabel = " · vái lạy";
           else if (u.action === "belling") actLabel = " · thỉnh chuông";
@@ -3307,6 +3775,104 @@
           u.actionT0 = clockT;
           u.tx = u.x; u.ty = u.y;
           ringVisual(BELL_POS.x, BELL_POS.y);
+        }
+
+        /* ================= NHÂN VẬT TRUNG TÂM TRÊN SÂN KHẤU (bản .17) =================
+           Một Phật tử TRUNG TÂM vẽ ngay trên canvas, đứng giữa lối đi
+           của sảnh. Mọi sự kiện lễ THẬT — khách tt_ từ server dâng
+           hương / vái lạy / thỉnh chuông / tọa thiền, lệnh niệm Phật,
+           lạy cảm ơn khi tặng quà, và thao tác của chính người xem —
+           đều xếp hàng vào đây: nhân vật trung tâm mang TÊN của đúng
+           khách đó (bảng tên vẽ trên canvas tại nhân vật), NHÃN HÀNH
+           ĐỘNG theo tư thế, và BONG BÓNG LỜI KHẤN nếu khách có lời
+           khấn/chat cầu nguyện. Chuỗi động tác theo giờ tường: đứng ở
+           điểm chờ giữa sảnh → bước ra khu lễ (trước lư hương / giá
+           chuông / thảm giữa) → làm lễ (dâng hương, quỳ lạy cúi sâu,
+           thỉnh chuông, ngồi thiền) → bước về điểm chờ. Nhiều sự kiện
+           nối nhau thì làm lần lượt theo hàng đợi. Hội chúng hai bên
+           chỉ đứng dự lễ, không còn ai ngồi nệm hay tự đi làm lễ nữa. */
+        var stageIncenseTotal = 0; // số nén hương ĐÃ CẮM THÊM lên lư trong phiên — tích lũy, không mất khi người dâng rời đi
+        var centralUser = makeUser(270, 706, colorForGender("nam", 0), "", "nam");
+        centralUser.action = "standing";
+        var centralState = { mode: "idle", ritual: null, until: 0, lastKey: "", lastAt: 0 };
+        var centralQueue = [];
+        var CENTRAL_HOME = { x: 270, y: 706 };
+        var CENTRAL_SPOTS = {
+          offer: { x: 270, y: 592 },
+          bow: { x: 270, y: 600 },
+          bell: { x: 116, y: 566 },
+          meditate: { x: 270, y: 672 }
+        };
+        var CENTRAL_DUR = { offer: 4400, bow: 5400, bell: 2400, meditate: 7000 };
+        var CENTRAL_ACTION = { offer: "offering", bow: "bowing", bell: "belling", meditate: "meditating" };
+        function enqueueCentral(kind, name, gender, prayer) {
+          if (!CENTRAL_SPOTS[kind]) return;
+          var nm = String(name == null ? "" : name).replace(/^tt_/i, "").trim().slice(0, 24);
+          if (!nm) nm = "Phật tử";
+          var now = Date.now();
+          var key = kind + "|" + nm.toLowerCase();
+          if (centralState.lastKey === key && now - centralState.lastAt < 2500) return; // cùng một sự kiện phát qua nhiều kênh — gộp làm một
+          centralState.lastKey = key;
+          centralState.lastAt = now;
+          centralQueue.push({ kind: kind, name: nm, gender: normalizeGender(gender), prayer: String(prayer || "").slice(0, 140) });
+          if (centralQueue.length > 6) centralQueue.shift();
+        }
+        window.xepLeTrungTam = enqueueCentral;
+        function moveFigureToward(u, dt, speed) {
+          var dx = u.tx - u.x, dy = u.ty - u.y;
+          var dist = Math.hypot(dx, dy);
+          if (dist <= 2.5) { u.x = u.tx; u.y = u.ty; return true; }
+          var step = Math.min(speed * dt, dist);
+          u.x += (dx / dist) * step;
+          u.y += (dy / dist) * step;
+          u.phase += dt * 9;
+          return false;
+        }
+        function centralStep(t, dt) {
+          var cu = centralUser;
+          if (centralState.mode === "idle") {
+            if (!centralQueue.length) return;
+            var r = centralQueue.shift();
+            centralState.ritual = r;
+            cu.name = r.name;
+            cu.gender = r.gender;
+            cu.color = colorForGender(r.gender, 0);
+            var spot = CENTRAL_SPOTS[r.kind];
+            cu.tx = spot.x; cu.ty = spot.y;
+            cu.action = "walking";
+            centralState.mode = "going";
+            if (r.prayer) { cu.chatText = r.prayer; cu.chatUntil = t + 16; }
+            else { cu.chatText = ""; cu.chatUntil = 0; }
+            return;
+          }
+          if (centralState.mode === "going") {
+            if (moveFigureToward(cu, dt, 175)) {
+              var rk = centralState.ritual;
+              cu.action = CENTRAL_ACTION[rk.kind] || "standing";
+              cu.actionT0 = t;
+              centralState.until = t + (CENTRAL_DUR[rk.kind] || 4000) / 1000;
+              centralState.mode = "doing";
+              if (rk.kind === "offer") stageIncenseTotal += 3; // ba nén hương của khách này cắm THÊM lên lư và ở lại đó
+              if (rk.kind === "bell") ringVisual(BELL_POS.x, BELL_POS.y);
+              if (rk.prayer) { cu.chatText = rk.prayer; cu.chatUntil = t + (CENTRAL_DUR[rk.kind] || 4000) / 1000 + 1.5; }
+            }
+            return;
+          }
+          if (centralState.mode === "doing") {
+            if (t >= centralState.until) {
+              cu.action = "walking";
+              cu.tx = CENTRAL_HOME.x; cu.ty = CENTRAL_HOME.y;
+              centralState.mode = "returning";
+            }
+            return;
+          }
+          if (centralState.mode === "returning") {
+            if (moveFigureToward(cu, dt, 175)) {
+              cu.action = "standing";
+              centralState.mode = "idle";
+              centralState.ritual = null;
+            }
+          }
         }
 
         /* ---- Vẽ ĐẠI LỄ: hào quang lớn quanh ban thờ (quà từ 100 xu) ----
@@ -3569,6 +4135,9 @@
           rings.forEach(function (r) { r.r += dt * 130; r.a -= dt * 0.32; });
           rings = rings.filter(function (r) { return r.a > 0; });
 
+          // Nhân vật TRUNG TÂM làm lễ theo hàng đợi sự kiện (giờ tường)
+          centralStep(t, dt);
+
           // Cập nhật mọi người
           Object.keys(users).forEach(function (id) {
             var u = users[id];
@@ -3603,7 +4172,7 @@
               }
               return;
             }
-            if (u.action === "meditating") return;
+            if (u.action === "meditating" || u.action === "standing") return;
             var dx = u.tx - u.x, dy = u.ty - u.y;
             var dist = Math.hypot(dx, dy);
             if (dist > 2) {
@@ -3664,9 +4233,13 @@
             ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.29); ctx.fill();
           });
 
-          // Người (sắp xếp theo y để người phía trước che phía sau)
-          var sorted = Object.keys(users).map(function (id) { return { id: id, u: users[id] }; })
-            .sort(function (a, b) { return a.u.y - b.u.y; });
+          // Người (sắp xếp theo y để người phía trước che phía sau).
+          // Phật tử TRUNG TÂM đang làm lễ cũng nằm trong cùng danh sách
+          // vẽ này — bảng tên, nhãn hành động và bong bóng lời khấn của
+          // khách đang làm lễ hiện ngay tại nhân vật giữa sảnh.
+          var sorted = Object.keys(users).map(function (id) { return { id: id, u: users[id] }; });
+          if (centralState.mode !== "idle") sorted.push({ id: "__central", u: centralUser });
+          sorted.sort(function (a, b) { return a.u.y - b.u.y; });
           sorted.forEach(function (e) { drawPerson(e.u, e.id === myId, t); });
 
           // Cánh sen rơi (cánh VÀNG của Đại Lễ: lớn hơn, vàng đậm tương
@@ -3718,19 +4291,20 @@
           var rect = canvas.getBoundingClientRect();
           var x = (clientX - rect.left) * (W / rect.width);
           var y = (clientY - rect.top) * (H / rect.height);
-          // Chạm vào một đệm thiền trống → bước tới đệm đó và ngồi thiền
+          // Chạm vào một vị trí đứng dự lễ trống → bước tới đứng dự lễ ở đó
           var ci = cushionAt(x, y);
           var me0 = users[myId];
           if (ci >= 0 && me0 && !cushionTaken(ci, me0)) {
             cancelActions();
             me0.cushion = ci;
+            me0.seatAsStand = true;
+            me0.pendingStand = true;
             me0.pendingMeditate = true;
             me0.pendingOffer = false;
             me0.action = "walking";
             me0.tx = CUSHIONS[ci].x;
             me0.ty = CUSHIONS[ci].y;
-            btnMeditate.classList.add("active");
-            note("<strong>Đang bước tới đệm thiền:</strong> bạn chọn một bồ đoàn trong dãy đệm trước bàn thờ và tới ngồi thiền…");
+            note("<strong>Đang bước tới vị trí dự lễ:</strong> bạn tới đứng vào hàng hội chúng hai bên sảnh, chắp tay dự lễ cùng mọi người…");
             if (connected && socket) socket.emit("move", { x: Math.round(me0.tx * SX), y: Math.round(me0.ty * SY), name: myDisplayName, gender: myGender });
             if (Math.hypot(me0.tx - me0.x, me0.ty - me0.y) <= 3) beginMeditate(me0);
             return;
@@ -3784,12 +4358,14 @@
           tryStartMusic();
           var me = users[myId];
           if (!me) return;
-          if (me.action === "offering" || me.pendingOffer) { cancelActions(); return; }
           stopMeditation(false);
           btnBow.classList.remove("active");
           btnOffer.classList.add("active");
-          requestOffer(me);
-          note("<strong>Đang dâng hương:</strong> bạn bước tới hàng dâng hương trên thảm lễ rộng trước lư hương lớn giữa sảnh, cắm nén nhang lên lư — khói hương bay lên bàn thờ, trước ba tượng Phật.");
+          setTimeout(function () { btnOffer.classList.remove("active"); }, 6000);
+          // Phật tử TRUNG TÂM mang tên bạn bước ra trước lư hương dâng hương
+          enqueueCentral("offer", myDisplayName, myGender, "");
+          pushEvent("🪔 " + myDisplayName + " dâng hương trước lư hương lớn", "offer");
+          note("<strong>Đang dâng hương:</strong> Phật tử trung tâm mang bảng tên của bạn bước ra thảm lễ trước lư hương lớn giữa sảnh, cắm thêm ba nén nhang lên lư — hương trên lư tích lũy dần và ở lại suốt buổi lễ.");
           if (connected && socket) {
             socket.emit("offer_incense");
             socket.emit("action", { action: "offer_incense" });
@@ -3801,13 +4377,14 @@
           tryStartMusic();
           var me = users[myId];
           if (!me) return;
-          if (me.action === "bowing") { cancelActions(); return; }
           stopMeditation(false);
-          me.pendingOffer = false;
           btnOffer.classList.remove("active");
           btnBow.classList.add("active");
-          beginBow(me);
-          note("<strong>Đang vái lạy:</strong> quỳ xuống, cúi mình lạy ba lạy trước Đức Phật.");
+          setTimeout(function () { btnBow.classList.remove("active"); }, 7000);
+          // Phật tử TRUNG TÂM mang tên bạn ra trước lư hương quỳ lạy
+          enqueueCentral("bow", myDisplayName, myGender, "");
+          pushEvent("🙏 " + myDisplayName + " vái lạy trước Phật", "bow");
+          note("<strong>Đang vái lạy:</strong> Phật tử trung tâm mang bảng tên của bạn bước ra trước lư hương, quỳ xuống cúi mình lạy ba lạy trước Đức Phật.");
           if (connected && socket) {
             socket.emit("bow");
             socket.emit("action", { action: "bow" });
@@ -3863,18 +4440,33 @@
             u.tx = u.x; u.ty = u.y;
           }
           u.pendingMeditate = false;
+          u.pendingStand = false;
           u.pendingOffer = false;
           u.pendingBow = false;
           u.pendingBell = false;
-          u.action = "meditating";
+          u.action = "standing"; // khách từ xa đứng dự lễ tại vị trí của mình (không còn ngồi nệm)
           if (u.isTikTok && u.cushion !== null && u.cushion !== undefined) u.homeCushion = u.cushion;
         }
         function beginMeditate(u) {
           u.pendingMeditate = false;
+          u.pendingStand = false;
           u.pendingBow = false;
           u.pendingBell = false;
           u.offerSpot = null;
           u.incenseSlot = null;
+          // Hội chúng (khách TikTok và khách từ xa) tới vị trí là ĐỨNG dự
+          // lễ, không ngồi thiền trên vị trí đó — tọa thiền từ nay do
+          // Phật tử TRUNG TÂM thể hiện giữa sảnh.
+          if (u.seatAsStand) {
+            if (u.isTikTok && u.cushion !== null && u.cushion !== undefined) u.homeCushion = u.cushion;
+            if (u.cushion !== null && u.cushion !== undefined && CUSHIONS[u.cushion]) {
+              u.x = CUSHIONS[u.cushion].x;
+              u.y = CUSHIONS[u.cushion].y;
+            }
+            u.action = "standing";
+            u.tx = u.x; u.ty = u.y;
+            return;
+          }
           if (u.isTikTok && u.cushion !== null && u.cushion !== undefined) u.homeCushion = u.cushion;
           if (u.cushion !== null && u.cushion !== undefined && CUSHIONS[u.cushion]) {
             u.x = CUSHIONS[u.cushion].x;
@@ -3901,16 +4493,17 @@
           me.pendingOffer = false;
           btnOffer.classList.remove("active");
           btnBow.classList.remove("active");
-          var idx = nearestFreeCushion(me);
-          if (idx >= 0 && walkToCushion(me, idx)) {
-            btnMeditate.classList.add("active");
-            note("<strong>Đang bước tới đệm thiền:</strong> bạn đi tới bồ đoàn trống gần nhất trong hai dãy đệm trước bàn thờ…");
-            if (Math.hypot(me.tx - me.x, me.ty - me.y) <= 3) beginMeditate(me);
-          } else {
-            // Hết đệm trống — thiền ngay tại chỗ như trước
-            me.cushion = null;
-            beginMeditate(me);
-          }
+          // Phật tử TRUNG TÂM mang tên bạn ngồi thiền giữa sảnh; vòng
+          // thở + đồng hồ thiền của bạn chạy như trước.
+          enqueueCentral("meditate", myDisplayName, myGender, "");
+          meditateSince = Date.now();
+          medTime.textContent = "00:00";
+          medTimer.classList.add("on");
+          btnMeditate.classList.add("active");
+          btnMeditate.textContent = "🧘 Đang Thiền — Chạm Để Đứng Dậy";
+          startBreath();
+          note("<strong>Đang tọa thiền:</strong> Phật tử trung tâm mang bảng tên của bạn ngồi thiền giữa chánh điện — bạn ngồi yên nghe nhạc thiền, thở chậm cùng vòng thở trên sảnh.");
+          if (connected && socket) socket.emit("meditate");
         }
         function stopMeditation(notifyServer) {
           var me = users[myId];
@@ -3918,7 +4511,7 @@
           var wasMeditating = me.action === "meditating";
           me.pendingMeditate = false;
           me.cushion = null;
-          if (!wasMeditating) { meditateSince = null; stopBreath(); btnMeditate.classList.remove("active"); btnMeditate.textContent = "🧘 Tọa Thiền"; return; }
+          if (!wasMeditating) { meditateSince = null; stopBreath(); medTimer.classList.remove("on"); btnMeditate.classList.remove("active"); btnMeditate.textContent = "🧘 Tọa Thiền"; return; }
           me.action = "walking";
           meditateSince = null;
           medTimer.classList.remove("on");
@@ -3932,8 +4525,7 @@
         }
         btnMeditate.addEventListener("click", function () {
           tryStartMusic();
-          var me = users[myId];
-          if (me && (me.action === "meditating" || me.pendingMeditate)) stopMeditation(true);
+          if (meditateSince) stopMeditation(true);
           else startMeditation();
         });
 
@@ -3944,6 +4536,8 @@
           lastBellAt = now;
           tryStartMusic();
           var me = users[myId];
+          // Phật tử TRUNG TÂM mang tên bạn bước tới giá chuông thỉnh chuông
+          enqueueCentral("bell", myDisplayName, myGender, "");
           if (connected && socket) {
             socket.emit("ring_bell"); // server sẽ phát lại play_bell_sound cho mọi người, kể cả mình
           } else {
@@ -4198,6 +4792,9 @@
           if (!(count > 0)) count = 1;
           var coins = giftCoinsValue(data, count);
           giftQueue.push({ name: name, gift: gift, count: count, coins: coins, tier: giftTierOf(coins) });
+          pushEvent("🎁 " + name + " tặng " + gift + (count > 1 ? " ×" + count : "") + (coins > 0 ? " (" + coins + " xu)" : ""), "gift");
+          // Phật tử TRUNG TÂM vái lạy cảm tạ thay người tặng, mang đúng tên người tặng
+          enqueueCentral("bow", name, undefined, "");
           // Lạy cảm ơn khi tặng quà: nếu người tặng là khách TikTok đang
           // ngồi nệm trong sảnh, nhân vật của họ đứng dậy ra trước lư
           // hương vái lạy cảm ơn rồi quay về nệm — qua cùng một cửa
@@ -4438,9 +5035,119 @@
             meritListEl.appendChild(li);
           });
           if (meritEmptyEl) meritEmptyEl.style.display = clean.length ? "none" : "block";
+          // Gương sang BẢNG CÔNG ĐỨC dạng danh sách ở cột RPC bên phải:
+          // cùng một dữ liệu xếp hạng, trình bày như leaderboard của mẫu.
+          var sideMeritList = document.getElementById("meritBoardListSide");
+          if (sideMeritList) {
+            sideMeritList.innerHTML = meritListEl.innerHTML;
+            var sideMeritEmpty = document.getElementById("meritBoardEmptySide");
+            if (sideMeritEmpty) sideMeritEmpty.style.display = clean.length ? "none" : "block";
+          }
         }
         window.capNhatBangCongDuc = renderMeritBoard;
         renderMeritBoard(null);
+
+        /* ----- THẺ "ĐANG LÀM LỄ" + BỘ ĐẾM HƯƠNG + TRẠNG THÁI NHẠC (cột RPC) -----
+           Một đồng hồ canh nhẹ (600ms) đọc trạng thái nhân vật hiện có:
+           - Phật tử TRUNG TÂM: người đang làm lễ trước lư/chuông gần nhất
+             (dâng hương / vái lạy / thỉnh chuông), hiện tên + nhãn hành
+             động + lời khấn (bong bóng chat còn hạn) lên thẻ bên phải.
+           - Hương TÍCH LŨY: mỗi nhân vật đang cắm hương giữ một ô trên
+             lư với 3 nén; ô mới xuất hiện thì tổng đã dâng cộng thêm 3 —
+             số nén đang cháy và tổng đã dâng hiện cả ở cột phải lẫn huy
+             hiệu nổi trong sảnh. Đây chỉ là hiển thị phía trang, không
+             đụng vào điểm công đức phía server.
+           - Dòng trạng thái nhạc ở cột phải phản ánh đúng nguồn nhạc
+             đang chọn và bật/tắt hiện tại. */
+        var spotNameEl = document.getElementById("spotName");
+        var spotActionEl = document.getElementById("spotAction");
+        var spotPrayerEl = document.getElementById("spotPrayer");
+        var incenseNowEl = document.getElementById("incenseNow");
+        var incenseTotalEl = document.getElementById("incenseTotal");
+        var incenseNowBadgeEl = document.getElementById("incenseNowBadge");
+        var incenseTotalBadgeEl = document.getElementById("incenseTotalBadge");
+        var sideOnlineEl = document.getElementById("sideOnlineCount");
+        var musicStatusSideEl = document.getElementById("musicStatusSide");
+        var incenseTotalCount = 0;
+        var incenseHoldersPrev = {};
+        var SPOT_LABELS = {
+          offering: "🪔 đang dâng hương trước lư hương lớn giữa sảnh",
+          bowing: "🙏 đang quỳ vái lạy trước Phật",
+          belling: "🔔 đang thỉnh chuông chùa",
+          meditating: "🧘 đang tọa thiền giữa chánh điện",
+          standing: "🙏 đang đứng dự lễ giữa sảnh",
+          walking: "đang bước tới khu làm lễ"
+        };
+        setInterval(function () {
+          // --- Hương tích lũy trên lư ---
+          var holders = {};
+          Object.keys(users).forEach(function (id) {
+            var u = users[id];
+            if (u && u.action === "offering" && u.incenseSlot !== null && u.incenseSlot !== undefined) holders[id] = true;
+          });
+          Object.keys(holders).forEach(function (id) { if (!incenseHoldersPrev[id]) incenseTotalCount += 3; });
+          incenseHoldersPrev = holders;
+          var nowSticks = Object.keys(holders).length * 3;
+          // Hương TÍCH LŨY trên lư (nhân vật trung tâm cắm thêm): số nén
+          // đang cháy và tổng đã dâng không bao giờ thấp hơn lượng hương
+          // đã tích lũy trên miệng lư trong phiên.
+          if (stageIncenseTotal > incenseTotalCount) incenseTotalCount = stageIncenseTotal;
+          var stageNowSticks = stageIncenseTotal > 0 ? Math.min(29, 5 + stageIncenseTotal) : 0;
+          if (stageNowSticks > nowSticks) nowSticks = stageNowSticks;
+          if (incenseNowEl) incenseNowEl.textContent = String(nowSticks);
+          if (incenseTotalEl) incenseTotalEl.textContent = String(incenseTotalCount);
+          if (incenseNowBadgeEl) incenseNowBadgeEl.textContent = String(nowSticks);
+          if (incenseTotalBadgeEl) incenseTotalBadgeEl.textContent = String(incenseTotalCount);
+          if (sideOnlineEl && onlineCountEl) sideOnlineEl.textContent = onlineCountEl.textContent;
+          // --- Phật tử trung tâm đang làm lễ ---
+          if (spotNameEl && spotActionEl) {
+            var best = null, bestId = null, bestT = -1;
+            // Nhân vật TRUNG TÂM trên sân khấu được ưu tiên tuyệt đối:
+            // thẻ này phản ánh đúng khách mà nhân vật trung tâm đang
+            // mang tên để làm lễ giữa sảnh.
+            if (centralState.mode !== "idle" && centralState.ritual) {
+              var cr = centralState.ritual;
+              best = { name: cr.name, gender: cr.gender, action: CENTRAL_ACTION[cr.kind] || "standing", chatText: cr.prayer || "", chatUntil: clockT + 1 };
+              bestId = "__central";
+              bestT = Infinity;
+            }
+            Object.keys(users).forEach(function (id) {
+              var u = users[id];
+              if (!u) return;
+              var ritual = (u.action === "offering" || u.action === "bowing" || u.action === "belling");
+              if (!ritual) return;
+              var t0 = u.actionT0 || 0;
+              if (t0 >= bestT) { best = u; bestId = id; bestT = t0; }
+            });
+            if (!best) {
+              Object.keys(users).forEach(function (id) {
+                var u = users[id];
+                if (u && u.action === "meditating" && (u.actionT0 || 0) >= bestT) { best = u; bestId = id; bestT = u.actionT0 || 0; }
+              });
+            }
+            if (best) {
+              spotNameEl.textContent = genderSymbol(best.gender) + " " + displayNameOf(best, bestId === myId).replace(/^tt_/i, "") + " — " + genderLabel(best.gender);
+              spotActionEl.textContent = SPOT_LABELS[best.action] || "đang làm lễ";
+              if (spotPrayerEl) {
+                if (best.chatText && clockT < (best.chatUntil || 0)) {
+                  spotPrayerEl.textContent = String(best.chatText);
+                  spotPrayerEl.hidden = false;
+                } else spotPrayerEl.hidden = true;
+              }
+            } else {
+              spotNameEl.textContent = "Chánh điện đang tĩnh lặng";
+              spotActionEl.textContent = "Hội chúng đang đứng dự lễ hai bên, lắng nghe nhạc thiền…";
+              if (spotPrayerEl) spotPrayerEl.hidden = true;
+            }
+          }
+          // --- Trạng thái nhạc ở cột phải ---
+          if (musicStatusSideEl) {
+            var trackLabel = isYtMode(musicMode) ? ytLabel() : (musicMode === "chant" ? "Tụng kinh · gõ mõ" : "Thiền tịnh tâm · chuông bát & hơi thở");
+            musicStatusSideEl.textContent = soundOn
+              ? "🎵 Nhạc nền: BẬT — " + trackLabel + " · âm lượng " + Math.round(musicVolume * 100) + "%"
+              : "🔇 Nhạc nền đang TẮT — bấm nút “🎵 Nhạc thiền: Bật” dưới chánh điện để mở lại.";
+          }
+        }, 600);
 
         /* ----- Nút bật/tắt âm thanh (nhạc thiền + tụng kinh + chuông) ----- */
         btnSound.addEventListener("click", function () {
@@ -4538,6 +5245,31 @@
         var chatUnread = 0;
         var chatSeen = {}; // chống hiện trùng khi server phát cùng một tin qua nhiều tên sự kiện
 
+        /* ----- DÒNG SỰ KIỆN TRỰC TIẾP (cột RPC bên phải sân khấu) -----
+           Mọi việc xảy ra trong chùa (hệ thống báo qua addChatSys, quà
+           tặng, đèn hoa đăng, lượt lễ từ xa, gieo quẻ…) đều ghi một dòng
+           vào đây: mới nhất ở trên, giữ tối đa 14 dòng. Chỉ ghi bằng
+           textContent — không bao giờ ghép HTML từ dữ liệu bên ngoài. */
+        var eventFeedEl = document.getElementById("eventFeed");
+        var eventFeedEmptyEl = document.getElementById("eventFeedEmpty");
+        function pushEvent(text, kind) {
+          if (!eventFeedEl || !text) return;
+          if (eventFeedEmptyEl) eventFeedEmptyEl.style.display = "none";
+          var li = document.createElement("li");
+          if (kind) li.className = "ev-" + kind;
+          var timeEl = document.createElement("span");
+          timeEl.className = "ev-time";
+          try { timeEl.textContent = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }); } catch (e) { timeEl.textContent = ""; }
+          var bodyEl = document.createElement("span");
+          bodyEl.className = "ev-text";
+          bodyEl.textContent = String(text);
+          li.appendChild(timeEl);
+          li.appendChild(bodyEl);
+          eventFeedEl.insertBefore(li, eventFeedEl.firstChild);
+          while (eventFeedEl.children.length > 14) eventFeedEl.removeChild(eventFeedEl.lastChild);
+        }
+        window.daySuKienChua = pushEvent;
+
         function updateChatHint() {
           if (!chatHint) return;
           chatHint.textContent = connected
@@ -4570,7 +5302,7 @@
             chatBadge.hidden = false;
           }
         }
-        function addChatSys(text) { addChatMsg({ sys: true, text: text }); }
+        function addChatSys(text) { addChatMsg({ sys: true, text: text }); pushEvent(text, "sys"); }
         function setChatBubble(u, text) {
           if (!u) return;
           u.chatText = text;
@@ -4792,16 +5524,14 @@
         function remoteOffer(data) {
           var u = findActionUser(data);
           if (!u) return;
-          // Khách TikTok đang ngồi nệm: đứng dậy đi dâng hương — nệm nhà
-          // vẫn giữ chỗ (homeCushion), lễ xong vòng lặp chính tự đưa
-          // khách quay về đúng nệm đó ngồi lại.
-          if (u.action === "bowing" || u.pendingBow) return;
-          // Khách TikTok đang ngồi: chốt nệm nhà trước khi đứng dậy để
-          // nệm không bị cấp cho khách khác trong lúc khách đi dâng hương.
-          if (u.isTikTok && (u.homeCushion === null || u.homeCushion === undefined) && u.cushion !== null && u.cushion !== undefined) u.homeCushion = u.cushion;
-          u.pendingMeditate = false;
-          u.action = "walking";
-          requestOffer(u);
+          pushEvent("🪔 " + displayNameOf(u, false).replace(/^tt_/i, "") + " dâng hương trước lư hương lớn", "offer");
+          // Bản .17: khách đứng dự lễ tại vị trí của mình; lượt dâng
+          // hương do Phật tử TRUNG TÂM giữa sảnh thể hiện, mang đúng
+          // tên + lời khấn (nếu có) của khách này.
+          var prayer = "";
+          if (data && typeof data === "object") prayer = data.prayer || data.text || data.message || "";
+          if (!prayer && u.chatText && clockT < (u.chatUntil || 0)) prayer = u.chatText;
+          enqueueCentral("offer", displayNameOf(u, false), u.gender, prayer);
         }
         /* ---- VÁI LẠY THỐNG NHẤT cho khách TikTok đang ngồi nệm ----
            Mọi đường sự kiện vái lạy đều đi qua cửa này: user_bowing /
@@ -4818,36 +5548,15 @@
         function remoteBowForUser(u) {
           if (!u || u === users[myId]) return;
           var nowMs = Date.now();
-          if (u.pendingBow || u.action === "bowing" || u.queuedBow) {
-            // Đang có một lượt lạy chạy: nếu lượt đang chạy là CÙNG một
-            // sự kiện phát qua nhiều kênh (rất gần nhau) thì gộp bỏ;
-            // nếu là một lượt lạy MỚI (một món quà khác, một lệnh khác)
-            // đến trong lúc khách còn đang lạy thì GHI NHỚ để lạy tiếp
-            // ngay khi lượt hiện tại xong — không được rơi mất.
-            if (!u.queuedBow && u.lastBowAt && nowMs - u.lastBowAt >= 2500) u.queuedBow = true;
-            return;
-          }
           if (u.lastBowAt && nowMs - u.lastBowAt < 2500) return; // cùng một lượt lạy phát qua nhiều kênh — gộp làm một
-          if (u.action === "offering" || u.action === "belling" || u.pendingOffer || u.pendingBell) {
-            u.queuedBow = true;
-            u.lastBowAt = nowMs;
-            return;
-          }
           u.lastBowAt = nowMs;
-          var seated = u.action === "meditating" || u.pendingMeditate ||
-            (u.cushion !== null && u.cushion !== undefined) ||
-            (u.homeCushion !== null && u.homeCushion !== undefined);
-          if (u.isTikTok && seated) {
-            // Chốt nệm nhà trước khi đứng dậy để nệm không bị cấp cho
-            // khách khác trong lúc khách ra trước lư hương làm lễ.
-            if ((u.homeCushion === null || u.homeCushion === undefined) && u.cushion !== null && u.cushion !== undefined) u.homeCushion = u.cushion;
-            if (u.homeCushion === null || u.homeCushion === undefined) reserveTikTokSeat(u);
-            u.pendingMeditate = false;
-            requestBow(u); // đứng dậy (action thiền → đi bộ) và ra hàng lễ trước lư hương
-            return;
-          }
-          if (u.isTikTok && u.homeCushion !== null && u.homeCushion !== undefined) { requestBow(u); return; }
-          beginBow(u);
+          pushEvent("🙏 " + displayNameOf(u, false).replace(/^tt_/i, "") + " vái lạy trước Phật", "bow");
+          // Bản .17: lượt lạy do Phật tử TRUNG TÂM thể hiện giữa sảnh,
+          // mang tên khách này; câu niệm/chat còn hạn của khách thành
+          // bong bóng lời khấn trên đầu nhân vật trung tâm. Hàng đợi
+          // trung tâm tự xếp lượt khi nhiều khách lạy nối nhau.
+          var prayer = (u.chatText && clockT < (u.chatUntil || 0)) ? u.chatText : "";
+          enqueueCentral("bow", displayNameOf(u, false), u.gender, prayer);
         }
         function remoteBow(data) {
           var u = findActionUser(data);
@@ -4855,13 +5564,11 @@
         }
         function remoteBellVisit(data) {
           var u = findActionUser(data);
-          if (!u || !u.isTikTok) return;
-          // Chỉ áp dụng cho khách TikTok đã có nệm và đang rảnh (đang
-          // ngồi hoặc đang về nệm): đứng dậy tới trước giá chuông thỉnh
-          // chuông, xong vòng lặp chính đưa khách về nệm nhà ngồi lại.
-          if (u.homeCushion === null || u.homeCushion === undefined) return;
-          if (u.action === "offering" || u.action === "bowing" || u.action === "belling" || u.pendingOffer || u.pendingBow || u.pendingBell) return;
-          requestBellVisit(u);
+          if (!u) return;
+          pushEvent("🔔 " + displayNameOf(u, false).replace(/^tt_/i, "") + " thỉnh chuông chùa", "bell");
+          // Bản .17: Phật tử TRUNG TÂM bước tới giá chuông thỉnh chuông
+          // thay cho khách này, mang đúng tên của khách.
+          enqueueCentral("bell", displayNameOf(u, false), u.gender, "");
         }
 
         function fromServer(sx, sy) { return clampPos(sx / SX, sy / SY); }
@@ -5046,7 +5753,9 @@
             // ghi nhớ queuedBow) thì không kéo về nệm ngồi lại giữa chừng
             // — tiếng vọng trạng thái thiền của server không được hủy lễ.
             if (u.pendingBow || u.queuedBow || u.pendingOffer || u.pendingBell || u.action === "bowing" || u.action === "offering" || u.action === "belling") return;
-            sitRemoteOnCushion(u); // Phật tử khác cũng ngồi xuống một đệm thiền trống
+            sitRemoteOnCushion(u); // khách đứng dự lễ tại vị trí của mình (bản .17: không còn ngồi nệm)
+            // Lượt tọa thiền do Phật tử TRUNG TÂM thể hiện giữa sảnh, mang tên khách này
+            enqueueCentral("meditate", displayNameOf(u, false), u.gender, (u.chatText && clockT < (u.chatUntil || 0)) ? u.chatText : "");
           });
 
           // Hành động mới — server phát lại cho mọi người cùng thấy.
@@ -5229,6 +5938,7 @@
           box.innerHTML='<span class="badge">Quẻ số '+q.n+' · '+q.hang+'</span><h3 style="margin-top:10px">'+q.ten+'</h3><div class="poem">'+q.tho+'</div><p><strong>Luận giải:</strong> '+q.y+'</p><p><strong>Công việc / Tài lộc:</strong> '+q.vc+'</p><p><strong>Tình duyên / Gia đạo:</strong> '+q.td+'</p><p><strong>Sức khỏe:</strong> '+q.sk+'</p><p style="color:var(--ink-soft)">🙏 Nam Mô A Di Đà Phật — gieo quẻ để nhắc mình sống thiện, không phải để lo sợ. Hãy thắp một nén hương và giữ tâm an.</p>';
           // Giọng đọc: đọc tên khách + tên quẻ (nếu công tắc giọng đọc đang bật)
           try { if (window.chuaSpeakQue) { var qnEl=document.getElementById('visitorName'); window.chuaSpeakQue(qnEl&&qnEl.value.trim()?qnEl.value.trim():'Phật tử', q.ten); } } catch(e) {}
+          try { if (window.daySuKienChua) window.daySuKienChua('🎋 Gieo quẻ: Quẻ số '+q.n+' · '+q.ten+' ('+q.hang+')', 'que'); } catch(e) {}
           box.scrollIntoView({behavior:'smooth',block:'nearest'});
         },1150);
       }
