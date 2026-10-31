@@ -1065,12 +1065,12 @@
           <div class="yt-holder" aria-hidden="true"><div id="ytPlayer"></div></div>
         </div>
 
-        <p class="action-note" id="actionNote">Không gian lễ Phật trước bàn thờ đã được mở rộng: sàn điện trải sẵn 32 đệm thiền (bồ đoàn) thành hai dãy, tám hàng hai bên lối đi giữa ở nửa dưới sảnh, đủ chỗ cho đông Phật tử cùng quỳ lạy, tọa thiền và đứng lễ. Nhạc nền <strong>Nhạc thiền An Nhiên (YouTube)</strong> sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng). Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và <strong>Xem Bát Tự · Tử Vi</strong>.</p>
+        <p class="action-note" id="actionNote">Không gian lễ Phật trước bàn thờ đã được mở rộng: trên bệ thờ là ba tượng Phật vàng ngồi thiền thẳng hàng trang trọng như ban Tam Thế Phật — tượng lớn ở chính giữa, hai tượng vừa cân đối hai bên; khu dâng hương ở giữa sảnh nay rộng và thoáng hơn, lư hương lớn đặt trên bệ đá giữa thảm lễ rộng, đủ chỗ cho nhiều Phật tử cùng đứng thành hàng cắm hương ngay ngắn quanh lư; sàn điện trải sẵn 32 đệm thiền (bồ đoàn) thành hai dãy, tám hàng hai bên lối đi giữa ở nửa dưới sảnh, đủ chỗ cho đông Phật tử cùng quỳ lạy, tọa thiền và đứng lễ. Nhạc nền <strong>Nhạc thiền An Nhiên (YouTube)</strong> sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng). Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và <strong>Xem Bát Tự · Tử Vi</strong>.</p>
 
         <div class="guide">
           <span><b>Đi dạo:</b> chạm / nhấp vào lối đi giữa điện, hoặc dùng phím mũi tên</span>
           <span><b>Đệm thiền:</b> các bồ đoàn tròn trên tọa cụ, chia hai dãy trái — phải, tám hàng trong khu lễ rộng trước bàn thờ; chạm vào một đệm trống để tới ngồi thiền</span>
-          <span><b>Dâng hương:</b> bước tới trước lư hương, nâng hương và khói bay lên bàn thờ</span>
+          <span><b>Dâng hương:</b> bước tới thảm lễ rộng trước lư hương lớn giữa sảnh — dưới chân ba tượng Phật — cắm hương lên lư, khói bay lên bàn thờ</span>
           <span><b>Vái lạy:</b> quỳ xuống, cúi mình lạy ba lạy trước Phật</span>
           <span><b>Tọa thiền:</b> bước tới đệm thiền trống gần nhất, ngồi yên tỏa hào quang vàng</span>
           <span><b>Thỉnh chuông:</b> tiếng chuông vang cho mọi người đang ở chùa</span>
@@ -1287,8 +1287,42 @@
         var lastBellAt = 0;
         var clockT = 0;       // đồng hồ giây của vòng lặp vẽ
 
-        var BURNER = { x: 270, y: 470 };   // bát hương nhỏ đặt sát chân bàn thờ, ngay trước tượng Phật
+        var BURNER = { x: 270, y: 486 };   // lư hương lớn đặt trang trọng ngay giữa sảnh, phía trước bàn thờ — tâm điểm của khu dâng hương
         var BELL_POS = { x: 58, y: 520 };  // chuông treo phía trái chánh điện, ngay dưới bàn thờ
+
+        /* ---- Khu dâng hương rộng: hàng vị trí đứng dâng trên thảm lễ lớn trước
+           lư (xếp một hàng ngang ngay ngắn, từ giữa ra hai bên) và các ô cắm
+           hương trên miệng lư (hai hàng so le) để nhiều người dâng cùng lúc
+           thì hương vẫn thành hàng, không chồng chéo lộn xộn ---- */
+        var OFFER_SPOTS = [
+          { x: 270, y: 590 },
+          { x: 214, y: 594 },
+          { x: 326, y: 594 },
+          { x: 158, y: 600 },
+          { x: 382, y: 600 },
+          { x: 102, y: 606 },
+          { x: 438, y: 606 }
+        ];
+        var INCENSE_SLOTS = [
+          { dx: -48, dy: -21 }, { dx: -29, dy: -24 }, { dx: -10, dy: -25 }, { dx: 10, dy: -25 }, { dx: 29, dy: -24 }, { dx: 48, dy: -21 },
+          { dx: -38, dy: -14 }, { dx: -19, dy: -15 }, { dx: 0, dy: -16 }, { dx: 19, dy: -15 }, { dx: 38, dy: -14 }
+        ];
+        function incenseSlotTaken(idx, exceptUser) {
+          return Object.keys(users).some(function (id) {
+            var u = users[id];
+            return u !== exceptUser && u.action === "offering" && u.incenseSlot === idx;
+          });
+        }
+        function freeIncenseSlot(u) {
+          for (var i = 0; i < INCENSE_SLOTS.length; i++) { if (!incenseSlotTaken(i, u)) return i; }
+          return null;
+        }
+        function offerSpotTaken(idx, exceptUser) {
+          return Object.keys(users).some(function (id) {
+            var u = users[id];
+            return u !== exceptUser && u.offerSpot === idx && (u.pendingOffer || u.action === "offering");
+          });
+        }
 
         /* ---- Khu đệm thiền: bồ đoàn chia hai dãy trái — phải, lối đi giữa dẫn tới lư hương (như ảnh mẫu) ---- */
         var CUSHIONS = [];
@@ -1372,7 +1406,7 @@
 
         function makeUser(x, y, color, name, gender) {
           var g = normalizeGender(gender);
-          return { x: x, y: y, tx: x, ty: y, color: color || colorForGender(g, 0), gender: g, action: "walking", phase: Math.random() * 6.28, name: String(name || "").slice(0, 24), actionT0: 0, pendingOffer: false, pendingMeditate: false, cushion: null };
+          return { x: x, y: y, tx: x, ty: y, color: color || colorForGender(g, 0), gender: g, action: "walking", phase: Math.random() * 6.28, name: String(name || "").slice(0, 24), actionT0: 0, pendingOffer: false, pendingMeditate: false, cushion: null, offerSpot: null, incenseSlot: null };
         }
         users[myId] = makeUser(270, 918, colorForGender("nam", 0), "Bạn", "nam");
 
@@ -1857,8 +1891,13 @@
           rings.push({ x: BELL_POS.x, y: BELL_POS.y - 16, r: 8, a: 0.55 });
           if (typeof fromX === "number") rings.push({ x: fromX, y: fromY - 20, r: 6, a: 0.4 });
         }
-        function spawnSmoke(x, y, spread) {
-          smoke.push({ x: x + (Math.random() - 0.5) * (spread || 8), y: y, r: 3, a: 0.32, vx: (Math.random() - 0.5) * 5, vy: -17 - Math.random() * 10 });
+        function spawnSmoke(x, y, spread, big) {
+          if (big) {
+            // Khói của lư hương lớn: cuộn to, đậm và bốc cao cho thấy rõ từ xa
+            smoke.push({ x: x + (Math.random() - 0.5) * (spread || 24), y: y, r: 5.5 + Math.random() * 2.5, a: 0.42, vx: (Math.random() - 0.5) * 6, vy: -27 - Math.random() * 13 });
+          } else {
+            smoke.push({ x: x + (Math.random() - 0.5) * (spread || 8), y: y, r: 3, a: 0.32, vx: (Math.random() - 0.5) * 5, vy: -17 - Math.random() * 10 });
+          }
         }
 
         /* ---------------- Vẽ chánh điện ---------------- */
@@ -1919,12 +1958,85 @@
           }
         }
 
+        /* ---- Thảm lễ lớn của khu dâng hương: trải rộng trước lư hương để
+           vùng quanh lư thoáng và trang trọng, có dấu từng vị trí đứng dâng ---- */
+        function drawOfferingArea(t) {
+          var bx = BURNER.x, by = BURNER.y;
+          var glow = ctx.createRadialGradient(bx, by + 20, 12, bx, by + 20, 205);
+          glow.addColorStop(0, "rgba(255,198,92,0.15)");
+          glow.addColorStop(1, "rgba(255,198,92,0)");
+          ctx.fillStyle = glow;
+          ctx.fillRect(bx - 210, by - 130, 420, 300);
+          // Bóng + thân thảm đỏ son viền vàng
+          ctx.fillStyle = "rgba(20,10,4,0.35)";
+          rr(78, by + 64, 384, 74, 14); ctx.fill();
+          var cg = ctx.createLinearGradient(0, by + 56, 0, by + 130);
+          cg.addColorStop(0, "#93331f"); cg.addColorStop(1, "#671d0e");
+          ctx.fillStyle = cg;
+          rr(74, by + 56, 392, 74, 14); ctx.fill();
+          ctx.strokeStyle = "rgba(238,201,110,0.9)"; ctx.lineWidth = 2.4;
+          rr(74, by + 56, 392, 74, 14); ctx.stroke();
+          ctx.strokeStyle = "rgba(240,200,110,0.5)"; ctx.lineWidth = 1.2;
+          rr(83, by + 65, 374, 56, 10); ctx.stroke(); ctx.lineWidth = 1;
+          // Vòng dấu tại mỗi vị trí đứng dâng — sáng lên khi có người đang đứng đó
+          OFFER_SPOTS.forEach(function (spot, i) {
+            var taken = Object.keys(users).some(function (id) {
+              var u = users[id];
+              return u.offerSpot === i && (u.pendingOffer || u.action === "offering");
+            });
+            ctx.fillStyle = taken ? "rgba(255,216,120,0.4)" : "rgba(255,216,120,0.16)";
+            ctx.beginPath(); ctx.ellipse(spot.x, spot.y + 5, 18, 5.5, 0, 0, 6.29); ctx.fill();
+            ctx.strokeStyle = taken ? "rgba(255,224,150,0.85)" : "rgba(255,224,150,0.4)";
+            ctx.beginPath(); ctx.ellipse(spot.x, spot.y + 5, 18, 5.5, 0, 0, 6.29); ctx.stroke();
+          });
+        }
+
+        /* ---- Hương của Phật tử cắm trên miệng lư: mỗi người một ô riêng trong
+           hai hàng so le đã định sẵn, que hương to, cao và đầu hương đỏ rực ---- */
+        function drawPlantedIncense(t) {
+          var bx = BURNER.x, by = BURNER.y;
+          Object.keys(users).forEach(function (id) {
+            var u = users[id];
+            if (u.action !== "offering" || u.incenseSlot === null || u.incenseSlot === undefined) return;
+            var s = INCENSE_SLOTS[u.incenseSlot];
+            if (!s) return;
+            var sx = bx + s.dx, sy = by + s.dy;
+            var sway = Math.sin(t * 1.3 + u.incenseSlot * 1.7) * 1.1;
+            var sticks = [[-3.5, -52], [0, -61], [3.5, -52]];
+            ctx.strokeStyle = "#7c3f1d";
+            sticks.forEach(function (o, oi) {
+              ctx.lineWidth = oi === 1 ? 3.6 : 3;
+              ctx.beginPath(); ctx.moveTo(sx + o[0] * 0.4, sy); ctx.lineTo(sx + o[0] + sway, sy + o[1]); ctx.stroke();
+            });
+            ctx.lineWidth = 1;
+            sticks.forEach(function (o, oi) {
+              var tx = sx + o[0] + sway, ty = sy + o[1];
+              ctx.fillStyle = "rgba(255,96,54,0.25)";
+              ctx.beginPath(); ctx.arc(tx, ty, 7, 0, 6.29); ctx.fill();
+              ctx.fillStyle = "#ff5a36";
+              ctx.beginPath(); ctx.arc(tx, ty, 2.9 + Math.sin(t * 7 + oi * 2 + u.incenseSlot) * 0.5, 0, 6.29); ctx.fill();
+              ctx.fillStyle = "#ffd9a0";
+              ctx.beginPath(); ctx.arc(tx, ty, 1.2, 0, 6.29); ctx.fill();
+            });
+          });
+        }
+
         function drawBurner(t) {
           var bx = BURNER.x, by = BURNER.y;
-          // Bát hương vẽ thu nhỏ (0.68) và đặt sát bàn thờ, gần tượng Phật
+          var anyOffering = Object.keys(users).some(function (id) { return users[id].action === "offering"; });
+          // Bệ đá rộng nâng lư hương lên trang trọng giữa thảm lễ
+          ctx.fillStyle = "rgba(20,10,4,0.4)";
+          ctx.beginPath(); ctx.ellipse(bx, by + 60, 118, 15, 0, 0, 6.29); ctx.fill();
+          ctx.fillStyle = "#54402a";
+          ctx.beginPath(); ctx.ellipse(bx, by + 52, 106, 14, 0, 0, 6.29); ctx.fill();
+          ctx.strokeStyle = "rgba(230,190,100,0.65)"; ctx.lineWidth = 1.6;
+          ctx.beginPath(); ctx.ellipse(bx, by + 52, 106, 14, 0, 0, 6.29); ctx.stroke(); ctx.lineWidth = 1;
+          ctx.fillStyle = "#6a5136";
+          ctx.beginPath(); ctx.ellipse(bx, by + 49, 82, 10, 0, 0, 6.29); ctx.fill();
+          // Thân lư đồng lớn: phóng to 1.5 lần bản vẽ gốc, đặt ngay trước bàn thờ
           ctx.save();
           ctx.translate(bx, by);
-          ctx.scale(0.68, 0.68);
+          ctx.scale(1.5, 1.5);
           ctx.translate(-bx, -by);
           // Bóng dưới chân lư
           ctx.fillStyle = "rgba(20,10,4,0.35)";
@@ -1953,21 +2065,100 @@
           ctx.fillRect(bx - 46, by - 12, 92, 8);
           ctx.fillStyle = "#cfc4b0";
           ctx.beginPath(); ctx.ellipse(bx, by - 12, 40, 4.5, 0, 0, 6.29); ctx.fill();
-          // Ba nén nhang đang cháy trong lư
-          ctx.strokeStyle = "#8a4a2a"; ctx.lineWidth = 2;
-          [-13, 0, 13].forEach(function (dx) {
-            ctx.beginPath(); ctx.moveTo(bx + dx, by - 12); ctx.lineTo(bx + dx * 1.35, by - 40); ctx.stroke();
-          });
-          ctx.lineWidth = 1;
-          ctx.fillStyle = "#e2543e";
-          [-17.5, 0, 17.5].forEach(function (dx) {
-            ctx.beginPath(); ctx.arc(bx + dx, by - 41, 2.5 + Math.sin(t * 7 + dx) * 0.5, 0, 6.29); ctx.fill();
-          });
+          // Hàng nhang sẵn trong lư khi chưa có ai dâng: năm que xếp ngay ngắn
+          if (!anyOffering) {
+            ctx.strokeStyle = "#8a4a2a"; ctx.lineWidth = 2.4;
+            [-26, -13, 0, 13, 26].forEach(function (dx) {
+              ctx.beginPath(); ctx.moveTo(bx + dx, by - 12); ctx.lineTo(bx + dx * 1.3, by - 44); ctx.stroke();
+            });
+            ctx.lineWidth = 1;
+            ctx.fillStyle = "#e2543e";
+            [-34, -17, 0, 17, 34].forEach(function (dx) {
+              ctx.beginPath(); ctx.arc(bx + dx, by - 45, 3 + Math.sin(t * 7 + dx) * 0.5, 0, 6.29); ctx.fill();
+            });
+          }
           ctx.restore();
-          ctx.fillStyle = "rgba(253,243,221,0.85)";
-          ctx.font = "500 10.5px 'Be Vietnam Pro', sans-serif";
+          // Hương Phật tử vừa cắm lên lư (to, rõ, theo đúng ô đã giữ chỗ)
+          drawPlantedIncense(t);
+          ctx.fillStyle = "rgba(253,243,221,0.92)";
+          ctx.font = "600 13px 'Be Vietnam Pro', sans-serif";
           ctx.textAlign = "center";
-          ctx.fillText("Bát hương", bx, by + 38);
+          ctx.fillText("Lư Hương", bx, by + 88);
+        }
+
+        /* ---- Hai tượng Phật vàng hai bên tượng chính: cùng phong cách tượng
+           vàng ngồi thiền trên đài sen như tượng giữa, nhỏ hơn rõ rệt, chân
+           tượng cùng hàng trên bệ thờ — ban Tam Thế Phật trang trọng ---- */
+        function drawSideBuddha(cx, t, flip) {
+          var baseY = 305, s = 1.12;
+          ctx.save();
+          ctx.translate(cx, baseY);
+          ctx.scale(s * (flip ? -1 : 1), s);
+          // Hào quang sau tượng, khẽ thở như hào quang tượng chính
+          var pulse = 0.16 + (Math.sin(t * 0.8) + 1) * 0.04;
+          var hg = ctx.createRadialGradient(0, -62, 6, 0, -62, 62);
+          hg.addColorStop(0, "rgba(255,220,130," + pulse.toFixed(3) + ")");
+          hg.addColorStop(1, "rgba(255,220,130,0)");
+          ctx.fillStyle = hg;
+          ctx.fillRect(-64, -126, 128, 128);
+          ctx.strokeStyle = "rgba(255,214,120,0.5)";
+          ctx.lineWidth = 1.6;
+          ctx.beginPath(); ctx.arc(0, -88, 21, 0, 6.29); ctx.stroke();
+          ctx.lineWidth = 1;
+          // Đài sen hai lớp cánh
+          ctx.fillStyle = "#a87c2c";
+          [-30, -15, 0, 15, 30].forEach(function (px) {
+            ctx.beginPath(); ctx.ellipse(px, -8, 10, 6, 0, 0, 6.29); ctx.fill();
+          });
+          ctx.fillStyle = "#c99b3f";
+          [-22, -8, 8, 22].forEach(function (px) {
+            ctx.beginPath(); ctx.ellipse(px, -13, 9, 5.5, 0, 0, 6.29); ctx.fill();
+          });
+          ctx.fillStyle = "#8a6524";
+          ctx.fillRect(-40, -4, 80, 5);
+          // Thân tượng ngồi xếp bằng, áo vàng có nếp gấp
+          var g = ctx.createLinearGradient(-34, 0, 34, 0);
+          g.addColorStop(0, "#b98a34"); g.addColorStop(0.5, "#eec96e"); g.addColorStop(1, "#b98a34");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.moveTo(-36, -12);
+          ctx.quadraticCurveTo(-34, -30, -20, -38);
+          ctx.quadraticCurveTo(-22, -66, -13, -74);
+          ctx.lineTo(13, -74);
+          ctx.quadraticCurveTo(22, -66, 20, -38);
+          ctx.quadraticCurveTo(34, -30, 36, -12);
+          ctx.quadraticCurveTo(0, -5, -36, -12);
+          ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = "rgba(122,84,26,0.55)"; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(-13, -73); ctx.quadraticCurveTo(2, -58, 14, -42); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(-30, -20); ctx.quadraticCurveTo(0, -13, 30, -20); ctx.stroke();
+          ctx.lineWidth = 1;
+          // Hai tay kết ấn thiền định trên đùi
+          ctx.fillStyle = "#e9c05c";
+          ctx.beginPath(); ctx.ellipse(0, -33, 10, 5, 0, 0, 6.29); ctx.fill();
+          ctx.fillStyle = "#d9ab45";
+          ctx.beginPath(); ctx.ellipse(0, -35.5, 6.5, 3.4, 0, 0, 6.29); ctx.fill();
+          // Đầu tượng: tai dài, mặt vàng, tóc búi nhục kế
+          ctx.fillStyle = "#eec96e";
+          ctx.beginPath(); ctx.ellipse(-13.5, -84, 2.6, 6, 0, 0, 6.29); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(13.5, -84, 2.6, 6, 0, 0, 6.29); ctx.fill();
+          var fg = ctx.createRadialGradient(-4, -92, 3, 0, -88, 16);
+          fg.addColorStop(0, "#f7dc8e"); fg.addColorStop(1, "#dfae4a");
+          ctx.fillStyle = fg;
+          ctx.beginPath(); ctx.arc(0, -88, 12.5, 0, 6.29); ctx.fill();
+          ctx.fillStyle = "#3d3428";
+          ctx.beginPath(); ctx.arc(0, -90.5, 12.5, 3.45, 5.98); ctx.fill();
+          ctx.beginPath(); ctx.arc(0, -103, 5, 0, 6.29); ctx.fill();
+          // Mắt khép tĩnh lặng
+          ctx.strokeStyle = "rgba(90,64,20,0.8)"; ctx.lineWidth = 1.3;
+          ctx.beginPath(); ctx.moveTo(-7.5, -87); ctx.quadraticCurveTo(-4.5, -85.4, -1.5, -87); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(1.5, -87); ctx.quadraticCurveTo(4.5, -85.4, 7.5, -87); ctx.stroke();
+          ctx.lineWidth = 1;
+          ctx.restore();
+        }
+        function drawSideBuddhas(t) {
+          drawSideBuddha(168, t, false);
+          drawSideBuddha(372, t, true);
         }
 
         function drawBellStand(t) {
@@ -2131,15 +2322,17 @@
             ctx.lineWidth = 1;
             ctx.fillStyle = "#f2c79b";
             ctx.beginPath(); ctx.arc(x, y - 37 + bowA, 3.6, 0, 6.29); ctx.fill();
-            // Ba nén nhang trên tay, đầu nhang đỏ, khói bay lên
-            ctx.strokeStyle = "#8a4a2a"; ctx.lineWidth = 1.8;
-            [-3.5, 0, 3.5].forEach(function (dx) {
-              ctx.beginPath(); ctx.moveTo(x + dx * 0.5, y - 38 + bowA); ctx.lineTo(x + dx, y - 56 + bowA); ctx.stroke();
+            // Ba nén nhang trên tay: que to, cao và đầu nhang đỏ rực cho rõ từ xa
+            ctx.strokeStyle = "#8a4a2a"; ctx.lineWidth = 3;
+            [-5, 0, 5].forEach(function (dx) {
+              ctx.beginPath(); ctx.moveTo(x + dx * 0.5, y - 38 + bowA); ctx.lineTo(x + dx * 1.7, y - 74 + bowA); ctx.stroke();
             });
             ctx.lineWidth = 1;
-            ctx.fillStyle = "#ff6a4d";
-            [-3.5, 0, 3.5].forEach(function (dx) {
-              ctx.beginPath(); ctx.arc(x + dx, y - 57 + bowA, 1.9, 0, 6.29); ctx.fill();
+            [-8.5, 0, 8.5].forEach(function (dx) {
+              ctx.fillStyle = "rgba(255,110,70,0.28)";
+              ctx.beginPath(); ctx.arc(x + dx, y - 75 + bowA, 6.5, 0, 6.29); ctx.fill();
+              ctx.fillStyle = "#ff6a4d";
+              ctx.beginPath(); ctx.arc(x + dx, y - 75 + bowA, 3.1, 0, 6.29); ctx.fill();
             });
           } else {
             // Đứng / đi lại
@@ -2203,18 +2396,19 @@
         var OFFER_DUR = 4.4, BOW_DUR = 5.4;
 
         function offerSpotFor(id) {
-          // Các vị trí đứng quanh lư hương để nhiều người dâng cùng lúc không chồng nhau
-          var spots = [
-            { x: BURNER.x, y: BURNER.y + 54 },
-            { x: BURNER.x - 52, y: BURNER.y + 58 },
-            { x: BURNER.x + 52, y: BURNER.y + 58 },
-            { x: BURNER.x - 104, y: BURNER.y + 62 },
-            { x: BURNER.x + 104, y: BURNER.y + 62 }
-          ];
-          var h = 0;
-          var s = String(id);
-          for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 997;
-          return spots[h % spots.length];
+          // Vị trí đứng dâng hương đã giữ chỗ cho Phật tử này trong hàng ngang trước lư
+          var u = users[id];
+          if (u && u.offerSpot !== null && u.offerSpot !== undefined && OFFER_SPOTS[u.offerSpot]) return OFFER_SPOTS[u.offerSpot];
+          return OFFER_SPOTS[0];
+        }
+        function allocateOfferSpot(u) {
+          // Giữ chỗ trống gần giữa nhất còn trống — hàng dâng luôn ngay ngắn, không chồng nhau
+          if (u.offerSpot !== null && u.offerSpot !== undefined && OFFER_SPOTS[u.offerSpot] && !offerSpotTaken(u.offerSpot, u)) return OFFER_SPOTS[u.offerSpot];
+          for (var i = 0; i < OFFER_SPOTS.length; i++) {
+            if (!offerSpotTaken(i, u)) { u.offerSpot = i; return OFFER_SPOTS[i]; }
+          }
+          u.offerSpot = OFFER_SPOTS.length - 1;
+          return OFFER_SPOTS[u.offerSpot];
         }
 
         function beginOffer(u) {
@@ -2222,16 +2416,19 @@
           u.action = "offering";
           u.actionT0 = clockT;
           u.tx = u.x; u.ty = u.y;
+          // Cắm hương vào ô trống trên miệng lư đã định sẵn cho Phật tử này
+          if (u.incenseSlot === null || u.incenseSlot === undefined || incenseSlotTaken(u.incenseSlot, u)) u.incenseSlot = freeIncenseSlot(u);
         }
         function requestOffer(u) {
-          var spot = offerSpotFor(u === users[myId] ? myId : Object.keys(users).filter(function (k) { return users[k] === u; })[0] || "x");
-          if (u === users[myId]) spot = { x: BURNER.x, y: BURNER.y + 54 };
+          var spot = allocateOfferSpot(u);
           u.pendingOffer = true;
           u.action = "walking";
           u.tx = spot.x; u.ty = spot.y;
         }
         function beginBow(u) {
           u.pendingOffer = false;
+          u.offerSpot = null;
+          u.incenseSlot = null;
           u.action = "bowing";
           u.actionT0 = clockT;
           u.tx = u.x; u.ty = u.y;
@@ -2245,8 +2442,8 @@
           var t = ts / 1000;
           clockT = t;
 
-          // Khói từ lư hương lớn
-          if (Math.random() < dt * 16) spawnSmoke(BURNER.x, BURNER.y - 30, 8);
+          // Khói từ lư hương lớn: cuộn khói to, rõ, bốc lên từ hàng hương trên miệng lư
+          if (Math.random() < dt * 26) spawnSmoke(BURNER.x, BURNER.y - 80, 36, true);
           smoke.forEach(function (p) { p.x += p.vx * dt + Math.sin(t * 1.5 + p.y * 0.05) * 6 * dt; p.y += p.vy * dt; p.r += dt * 5.5; p.a -= dt * 0.07; });
           smoke = smoke.filter(function (p) { return p.a > 0; });
           // Cánh sen rơi trong điện
@@ -2266,10 +2463,19 @@
             var u = users[id];
             if (u.action === "offering" || u.action === "bowing") {
               var dur = u.action === "offering" ? OFFER_DUR : BOW_DUR;
-              // Khói từ nhang trên tay người đang dâng hương
-              if (u.action === "offering" && Math.random() < dt * 7) spawnSmoke(u.x, u.y - 58, 4);
+              // Khói bốc lên từ đúng ô hương Phật tử này vừa cắm trên miệng lư
+              if (u.action === "offering" && Math.random() < dt * 9) {
+                if (u.incenseSlot !== null && u.incenseSlot !== undefined && INCENSE_SLOTS[u.incenseSlot]) {
+                  var sl = INCENSE_SLOTS[u.incenseSlot];
+                  spawnSmoke(BURNER.x + sl.dx, BURNER.y + sl.dy - 62, 5, true);
+                } else {
+                  spawnSmoke(u.x, u.y - 76, 5, true);
+                }
+              }
               if (t - u.actionT0 > dur) {
                 u.action = "walking";
+                u.incenseSlot = null;
+                u.offerSpot = null;
                 if (id === myId) {
                   btnOffer.classList.remove("active");
                   btnBow.classList.remove("active");
@@ -2305,6 +2511,8 @@
           /* ----- Vẽ ----- */
           ctx.clearRect(0, 0, W, H);
           drawBackdrop(t);
+          drawSideBuddhas(t);
+          drawOfferingArea(t);
           drawCushions();
           drawBellStand(t);
           drawBurner(t);
@@ -2366,8 +2574,8 @@
             return;
           }
           var p = clampPos(x, y);
-          // Không bước vào chỗ đặt lư hương
-          if (Math.abs(p.x - BURNER.x) < 56 && p.y > BURNER.y - 34 && p.y < BURNER.y + 40) p.y = BURNER.y + 54;
+          // Không bước vào khu đặt lư hương lớn và bệ của lư
+          if (Math.abs(p.x - BURNER.x) < 118 && p.y > BURNER.y - 36 && p.y < BURNER.y + 66) p.y = BURNER.y + 104;
           var me = users[myId];
           if (!me) return;
           cancelActions();
@@ -2400,6 +2608,8 @@
           var me = users[myId];
           if (!me) return;
           me.pendingOffer = false;
+          me.offerSpot = null;
+          me.incenseSlot = null;
           if (me.pendingMeditate) { me.pendingMeditate = false; me.cushion = null; }
           if (me.action === "offering" || me.action === "bowing") me.action = "walking";
           btnOffer.classList.remove("active");
@@ -2417,7 +2627,7 @@
           btnBow.classList.remove("active");
           btnOffer.classList.add("active");
           requestOffer(me);
-          note("<strong>Đang dâng hương:</strong> bạn bước tới trước lư hương, nâng ba nén nhang — khói hương bay lên bàn thờ.");
+          note("<strong>Đang dâng hương:</strong> bạn bước tới hàng dâng hương trên thảm lễ rộng trước lư hương lớn giữa sảnh, cắm nén nhang lên lư — khói hương bay lên bàn thờ, trước ba tượng Phật.");
           if (connected && socket) {
             socket.emit("offer_incense");
             socket.emit("action", { action: "offer_incense" });
@@ -2494,6 +2704,8 @@
         }
         function beginMeditate(u) {
           u.pendingMeditate = false;
+          u.offerSpot = null;
+          u.incenseSlot = null;
           if (u.cushion !== null && u.cushion !== undefined && CUSHIONS[u.cushion]) {
             u.x = CUSHIONS[u.cushion].x;
             u.y = CUSHIONS[u.cushion].y;
