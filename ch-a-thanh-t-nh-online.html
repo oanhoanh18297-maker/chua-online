@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-10-31.14" />
+    <meta name="chua-build" content="2026-11-01.15" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1628,7 +1628,15 @@
         var meditateSince = null;
         var lastEmit = 0;
         var lastBellAt = 0;
-        var clockT = 0;       // đồng hồ giây của vòng lặp vẽ
+        /* GIỜ TƯỜNG là gốc thời gian DUY NHẤT của trang: nowMs() đọc
+           performance.now() tại thời điểm cần đo. clockT chỉ là bản
+           sao theo giây của giờ tường, được vòng lặp vẽ đọc mới mỗi
+           khung — không tích lũy theo số khung hình, không bước cố
+           định mỗi khung. Mọi thời lượng hiệu ứng (hành động của
+           nhân vật, bong bóng chat, lễ Đại Lễ…) đều tính từ gốc này
+           nên ở tần số quét 60/120/240Hz thời lượng tường không đổi. */
+        function nowMs() { return performance.now(); }
+        var clockT = 0;       // giây giờ tường (performance.now()/1000), vòng lặp vẽ cập nhật mỗi khung
 
         var BURNER = { x: 270, y: 486 };   // lư hương lớn đặt trang trọng ngay giữa sảnh, phía trước bàn thờ — tâm điểm của khu dâng hương
         var BELL_POS = { x: 58, y: 520 };  // chuông treo phía trái chánh điện, ngay dưới bàn thờ
@@ -2526,12 +2534,15 @@
            nên không bị lớp nào phủ lên. Nếu không tra được nhân vật
            của khách, đèn vẫn được thả tại điểm neo giữa lối đi chính
            của sảnh thay vì rơi mất.
-           Đại lễ (quà từ 100 xu): grandCeremonyUntil mở hào quang quanh
-           ban thờ + mưa cánh sen vàng phủ toàn sảnh trong ~20 giây. */
+           Đại lễ (quà từ 100 xu): grandStartMs/grandUntilMs mở hào quang
+           quanh ban thờ + mưa cánh sen vàng phủ toàn sảnh trong đúng
+           20 GIÂY TƯỜNG (performance.now) — mốc bắt đầu ghi theo giờ
+           tường ngay tại sự kiện quà, mốc kết thúc và độ mờ đọc lại
+           giờ tường tại thời điểm vẽ, không qua đồng hồ vòng lặp. */
         var lanterns = [];
         var pendingLanterns = [];
-        var grandCeremonyUntil = 0;
-        var grandCeremonyStart = 0;
+        var grandUntilMs = 0; // mốc KẾT THÚC Đại Lễ theo giờ tường (performance.now, ms)
+        var grandStartMs = 0; // mốc BẮT ĐẦU Đại Lễ theo giờ tường (performance.now, ms)
         function spawnPrayerLantern(u, name, text) {
           if (!u) return false;
           if (lanterns.length >= 6) return true; // quá nhiều đèn cùng lúc: bỏ qua êm, không chồng chất
@@ -2562,7 +2573,7 @@
             sway: Math.random() * 6.28,
             name: String(name == null ? "" : name).replace(/^tt_/i, "").trim().slice(0, 24) || "Phật tử",
             text: shortText,
-            bornAt: Date.now(), // mốc sinh của CHÍNH chiếc đèn này theo đồng hồ tường — tuổi và vòng đời của đèn chỉ tính từ đây, không mượn đồng hồ vòng lặp vẽ (vốn tính từ lúc tải trang)
+            bornAt: nowMs(), // mốc sinh của CHÍNH chiếc đèn này theo GIỜ TƯỜNG (performance.now) — tuổi và vòng đời của đèn chỉ tính từ đây, cùng một gốc đồng hồ với lúc vẽ
             life: 16.5 // 9,5 giây bay lên + 5 giây lơ lửng ở đỉnh + 2 giây mờ dần
           });
           return true;
@@ -2570,14 +2581,14 @@
         function queuePrayerLantern(sid, nm, text) {
           var u = (typeof findChatUser === "function") ? findChatUser(sid, nm) : null;
           if (u) { spawnPrayerLantern(u, nm, text); return; }
-          pendingLanterns.push({ sid: sid, nm: nm, text: text, until: Date.now() + 6000 });
+          pendingLanterns.push({ sid: sid, nm: nm, text: text, until: nowMs() + 6000 });
         }
         window.thuDenHoaDang = function (name, text) { // xem thử thủ công từ console / cầu nối
           spawnPrayerLantern({ x: 270, y: 700 }, name || "Phật tử", text || "Cầu nguyện bình an cho gia đình");
         };
         setInterval(function () {
           if (!pendingLanterns.length) return;
-          var nowL = Date.now();
+          var nowL = nowMs();
           pendingLanterns = pendingLanterns.filter(function (p) {
             if (nowL > p.until) {
               // Hết hạn chờ mà vẫn không tra được nhân vật của khách
@@ -3309,9 +3320,15 @@
            sáng dao động rõ giữa hai ảnh chụp liên tiếp. Hiện rõ trong
            suốt ~20 giây của Đại Lễ, chỉ mờ dần ở ~2,5 giây cuối. */
         function drawGrandCeremony(t) {
-          if (t >= grandCeremonyUntil) return;
-          var remain = grandCeremonyUntil - t;
-          var fadeIn = Math.min(1, Math.max(0, (t - grandCeremonyStart) / 1.1));
+          // Thời lượng Đại Lễ đọc GIỜ TƯỜNG (performance.now) ngay tại
+          // thời điểm vẽ: còn lại bao nhiêu giây, mờ mở đầu bao nhiêu —
+          // tất cả tính từ grandStartMs/grandUntilMs (cũng giờ tường).
+          // Tham số t chỉ còn dùng cho PHA hình ảnh (nhịp pulse, góc
+          // xoay của tia sáng), không quyết định thời lượng nữa.
+          var nowG = performance.now();
+          if (nowG >= grandUntilMs) return;
+          var remain = (grandUntilMs - nowG) / 1000;
+          var fadeIn = Math.min(1, Math.max(0, (nowG - grandStartMs) / 1100));
           var inten = Math.min(1, remain / 2.5) * fadeIn;
           if (inten <= 0) return;
           var pulse = 0.5 + 0.5 * Math.sin(t * 2.2);
@@ -3379,7 +3396,7 @@
            tương phản, chữ đủ lớn để đọc được trên nền sảnh ---- */
         function drawLanterns(t) {
           lanterns.forEach(function (L) {
-            var age = (Date.now() - L.bornAt) / 1000; // tuổi của đèn tính từ mốc sinh của chính nó (đồng hồ tường), cùng một gốc với bornAt
+            var age = (nowMs() - L.bornAt) / 1000; // tuổi của đèn tính từ mốc sinh của chính nó (giờ tường performance.now), cùng một gốc với bornAt
             var fadeIn = Math.min(1, age / 0.6);
             var fadeOut = Math.min(1, Math.max(0, (L.life - age) / (L.fadeT || 2)));
             var a = Math.max(0, Math.min(fadeIn, fadeOut));
@@ -3458,25 +3475,54 @@
           });
         }
 
-        /* ---------------- Vòng lặp chính ---------------- */
-        var lastTs = 0;
+        /* ---------------- Vòng lặp chính ----------------
+           ĐỒNG HỒ GIỜ TƯỜNG (bản sửa dứt điểm): mọi thời gian của
+           vòng lặp đọc từ performance.now() TẠI THỜI ĐIỂM VẼ —
+           dt là hiệu giờ tường thật giữa hai khung liên tiếp (khung
+           đầu tiên dt = 0). ĐÃ BỎ bước dự phòng cố định 0,016s của
+           bản cũ ("(ts - lastTs)/1000 || 0.016"): hễ một callback
+           nhận delta = 0 — đúng triệu chứng khi vòng lặp bị đăng ký
+           HAI chuỗi dùng chung lastTs — bản cũ cộng thêm 16ms "thời
+           gian ma" mỗi khung, khiến ở 120Hz thời gian tích lũy chạy
+           nhanh ~2,9 lần (mô phỏng khớp bằng chứng chụp thật: khung
+           10s tắt ở ~3,4s, đèn 16,5s mất ở ~5,7s, mưa 20s hết ở
+           ~6,9s). Vòng lặp nay chỉ khởi động qua startMainLoop() có
+           CỜ CHỐNG KHỞI ĐỘNG TRÙNG: gọi lại bao nhiêu lần cũng chỉ
+           chạy đúng MỘT chuỗi requestAnimationFrame duy nhất. */
+        var lastWallMs = 0;
         var lastSeatCheck = 0;
+        var loopStarted = false;
         function frame(ts) {
-          var dt = Math.min(0.05, (ts - lastTs) / 1000 || 0.016);
-          lastTs = ts;
-          var t = ts / 1000;
-          clockT = t;
+          var nowMsF = performance.now();
+          var wallT = nowMsF / 1000;
+          var dt = lastWallMs > 0 ? Math.min(0.05, Math.max(0, (nowMsF - lastWallMs) / 1000)) : 0;
+          lastWallMs = nowMsF;
+          var t = wallT;
+          clockT = wallT;
 
           // Khói từ lư hương lớn: cuộn khói to, rõ, bốc lên từ hàng hương trên miệng lư
           if (Math.random() < dt * 26) spawnSmoke(BURNER.x, BURNER.y - 80, 36, true);
           smoke.forEach(function (p) { p.x += p.vx * dt + Math.sin(t * 1.5 + p.y * 0.05) * 6 * dt; p.y += p.vy * dt; p.r += dt * 5.5; p.a -= dt * 0.07; });
           smoke = smoke.filter(function (p) { return p.a > 0; });
-          // Cánh sen rơi trong điện
+          // Cánh sen rơi trong điện. VỊ TRÍ của mỗi cánh là HÀM THUẦN
+          // của TUỔI THEO GIỜ TƯỜNG của chính cánh đó: rơi thẳng
+          // y = y0 + vy × tuổi; đu đưa ngang là tích phân đúng của
+          // sin theo giờ tường; xoay = rot0 + vr × tuổi. Không còn
+          // tích lũy vị trí theo từng khung hình (bản cũ cộng dồn
+          // vy × dt mỗi khung — dt phồng vì bước ma 0,016s là cánh
+          // rơi nhanh theo). Ở 60/120/240Hz cánh rơi cùng một vận
+          // tốc tường, mưa tồn tại đúng thời lượng tường của Đại Lễ.
           if (Math.random() < dt * 1.4 && petals.length < 26) {
-            petals.push({ x: 30 + Math.random() * (W - 60), y: 120 + Math.random() * 60, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 1.6, vy: 11 + Math.random() * 9, p: Math.random() * 6, s: 0.7 + Math.random() * 0.7 });
+            var apx = 30 + Math.random() * (W - 60), apy = 120 + Math.random() * 60, arot = Math.random() * 6;
+            petals.push({ gold: false, x0: apx, y0: apy, x: apx, y: apy, spawnT: wallT, rot0: arot, rot: arot, vr: (Math.random() - 0.5) * 1.6, vy: 11 + Math.random() * 9, p: Math.random() * 6, s: 0.7 + Math.random() * 0.7 });
           }
-          petals.forEach(function (l) { l.y += l.vy * dt; l.x += Math.sin(t * 1.6 + l.p) * 13 * dt; l.rot += l.vr * dt; });
-          petals = petals.filter(function (l) { return l.gold ? l.y < H - 8 : l.y < 486; });
+          petals.forEach(function (l) {
+            var ageP = Math.max(0, wallT - l.spawnT);
+            l.y = l.y0 + l.vy * ageP;
+            l.x = l.x0 + (13 / 1.6) * (Math.cos(1.6 * l.spawnT + l.p) - Math.cos(1.6 * wallT + l.p));
+            l.rot = l.rot0 + l.vr * ageP;
+          });
+          petals = petals.filter(function (l) { return l.gold ? (l.y < H - 8 && wallT - l.spawnT < 45) : (l.y < 486 && wallT - l.spawnT < 70); });
           // ĐẠI LỄ đang diễn ra: mưa cánh sen VÀNG DÀY phủ TOÀN SẢNH —
           // cánh lớn, vàng đậm, rơi xuống tận khu nệm ở nửa dưới, duy
           // trì suốt ~20 giây của Đại Lễ. Cách sinh theo kiểu "bù đủ
@@ -3487,14 +3533,15 @@
           // hết sau ~9 giây là nửa dưới sảnh thưa hẳn dù Đại Lễ còn
           // đang chạy; kiểu bù đủ này giữ mật độ mưa đều từ giây đầu
           // tới giây cuối của Đại Lễ.
-          if (t < grandCeremonyUntil) {
+          if (nowMsF < grandUntilMs) {
             var goldN = 0;
             for (var gc = 0; gc < petals.length; gc++) { if (petals[gc].gold) goldN++; }
             var wantGold = 185;
             if (goldN < wantGold && petals.length < 340) {
               var addN = Math.min(5, wantGold - goldN, 340 - petals.length);
               for (var gi = 0; gi < addN; gi++) {
-                petals.push({ gold: true, x: 14 + Math.random() * (W - 28), y: -16 + Math.random() * (H * 0.62), rot: Math.random() * 6, vr: (Math.random() - 0.5) * 2.4, vy: 52 + Math.random() * 34, p: Math.random() * 6, s: 1.35 + Math.random() * 0.95 });
+                var gpx = 14 + Math.random() * (W - 28), gpy = -16 + Math.random() * (H * 0.62), grot = Math.random() * 6;
+                petals.push({ gold: true, x0: gpx, y0: gpy, x: gpx, y: gpy, spawnT: wallT, rot0: grot, rot: grot, vr: (Math.random() - 0.5) * 2.4, vy: 52 + Math.random() * 34, p: Math.random() * 6, s: 1.35 + Math.random() * 0.95 });
               }
             }
           }
@@ -3503,7 +3550,7 @@
           // trình bay được kẹp ở 1 khi tới đỉnh nên thân đèn và biển
           // nhãn DỪNG LƠ LỬNG ở đó trong holdT (~5 giây), sau đó hàm
           // vẽ mới cho mờ dần trong fadeT (~2 giây cuối của life)
-          var nowLan = Date.now();
+          var nowLan = nowMsF;
           lanterns.forEach(function (L) {
             var ageL = (nowLan - L.bornAt) / 1000;
             var pr = Math.min(1, Math.max(0, ageL / L.riseT));
@@ -3590,8 +3637,8 @@
           var me = users[myId];
           if (connected && socket && me && me.action === "walking" &&
               (Math.abs(me.tx - me.x) > 2 || Math.abs(me.ty - me.y) > 2) &&
-              ts - lastEmit > 120) {
-            lastEmit = ts;
+              nowMsF - lastEmit > 120) {
+            lastEmit = nowMsF;
             socket.emit("move", { x: Math.round(me.x * SX), y: Math.round(me.y * SY), name: myDisplayName, gender: myGender });
           }
 
@@ -3659,7 +3706,12 @@
 
           requestAnimationFrame(frame);
         }
-        requestAnimationFrame(frame);
+        function startMainLoop() {
+          if (loopStarted) return; // CHỐNG KHỞI ĐỘNG TRÙNG: một trang chỉ chạy đúng MỘT chuỗi vòng lặp
+          loopStarted = true;
+          requestAnimationFrame(frame);
+        }
+        startMainLoop();
 
         /* ---------------- Tương tác đi lại ---------------- */
         function setTarget(clientX, clientY) {
@@ -4088,19 +4140,22 @@
           }
           if (tier === "grand") {
             setTimeout(function () { if (soundOn) playBell(); ringVisual(270, 520); }, 2300);
-            grandCeremonyStart = clockT;
-            grandCeremonyUntil = clockT + 20;
+            grandStartMs = performance.now(); // mốc MỞ Đại Lễ theo GIỜ TƯỜNG, ghi ngay tại sự kiện quà
+            grandUntilMs = grandStartMs + 20000; // hào quang + mưa sen vàng chạy đúng 20 giây tường
           }
+          var spawnNowS = performance.now() / 1000; // giờ tường tại sự kiện quà — mốc sinh của mọi cánh sen phun ra dưới đây
           var petalN = tier === "grand" ? 24 : (tier === "medium" ? 24 : 14);
           for (var i = 0; i < petalN; i++) {
-            petals.push({ gold: tier === "grand", x: 60 + Math.random() * (W - 120), y: 90 + Math.random() * 50, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 1.6, vy: 15 + Math.random() * 12, p: Math.random() * 6, s: 0.8 + Math.random() * 0.8 });
+            var spx = 60 + Math.random() * (W - 120), spy = 90 + Math.random() * 50, srot = Math.random() * 6;
+            petals.push({ gold: tier === "grand", x0: spx, y0: spy, x: spx, y: spy, spawnT: spawnNowS, rot0: srot, rot: srot, vr: (Math.random() - 0.5) * 1.6, vy: 15 + Math.random() * 12, p: Math.random() * 6, s: 0.8 + Math.random() * 0.8 });
           }
           if (tier === "grand") {
             // Đợt cánh sen vàng mở đầu của Đại Lễ: rải sẵn khắp chiều cao
             // sảnh (cả khu nệm ở nửa dưới) để mưa sen phủ toàn sảnh ngay
             // từ giây đầu, cánh lớn và rơi xuống tận đáy sảnh
             for (var gi2 = 0; gi2 < 80; gi2++) {
-              petals.push({ gold: true, x: 14 + Math.random() * (W - 28), y: 20 + Math.random() * (H - 140), rot: Math.random() * 6, vr: (Math.random() - 0.5) * 2.4, vy: 52 + Math.random() * 34, p: Math.random() * 6, s: 1.35 + Math.random() * 0.95 });
+              var bpx = 14 + Math.random() * (W - 28), bpy = 20 + Math.random() * (H - 140), brot = Math.random() * 6;
+              petals.push({ gold: true, x0: bpx, y0: bpy, x: bpx, y: bpy, spawnT: spawnNowS, rot0: brot, rot: brot, vr: (Math.random() - 0.5) * 2.4, vy: 52 + Math.random() * 34, p: Math.random() * 6, s: 1.35 + Math.random() * 0.95 });
             }
           }
           // Giọng đọc: đọc lời cảm tạ kèm tên khách + tên quà theo hàng đợi
