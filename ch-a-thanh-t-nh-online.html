@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-10-31.10" />
+    <meta name="chua-build" content="2026-10-31.11" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1365,9 +1365,9 @@
           đọc tên khách + lời khấn khi khách gửi <strong>lời cầu nguyện</strong> qua chat, và đọc tên khách + tên quẻ khi có kết quả gieo quẻ;
           ở màn hình phát <em>?full</em> giọng đọc mặc định bật. Nghi lễ theo số xu của món quà (trường <em>coins/diamond</em> trong gói quà):
           <strong>1–4 xu</strong> giữ lễ thường; <strong>5–99 xu</strong> thêm tiếng chuông và khung tri ân lớn hơn;
-          <strong>từ 100 xu</strong> mở <strong>Đại Lễ</strong> riêng — mưa cánh sen vàng phủ sảnh, hào quang quanh ban thờ, thỉnh chuông và khung tri ân vàng rực.
+          <strong>từ 100 xu</strong> mở <strong>Đại Lễ</strong> riêng — mưa cánh sen vàng dày phủ toàn sảnh suốt khoảng 20 giây, hào quang phát sáng riêng quanh ban thờ, thỉnh chuông và khung tri ân vàng rực hiện khoảng 10 giây.
           Khi khách gửi lời cầu nguyện qua chat (dòng có <em>cầu / nguyện / chúc / nam mô</em>, không tính các lệnh <em>!dang huong · !vai lay · !thinh chuong</em>),
-          một <strong>đèn hoa đăng</strong> ghi tên khách và lời khấn rút gọn sẽ bay chậm lên trời từ vị trí nhân vật của khách rồi tan nhẹ.
+          một <strong>đèn hoa đăng</strong> lớn ghi tên khách và lời khấn rút gọn trên biển nhãn rõ chữ sẽ bay chậm lên trời từ vị trí nhân vật của khách, khoảng 9–10 giây mới tới đỉnh sảnh rồi tan nhẹ.
         </p>
       </section>
 
@@ -2514,28 +2514,38 @@
         }
 
         /* ---- ĐÈN HOA ĐĂNG CẦU NGUYỆN + ĐẠI LỄ (trạng thái hiệu ứng) ----
-           Đèn thả từ vị trí nhân vật của khách, bay chậm lên trời, trên
-           đèn hiện tên khách + lời khấn rút gọn; bay hết thì tan nhẹ.
+           Đèn thả từ vị trí nhân vật của khách, bay chậm lên trời trong
+           ~9,5 giây mới tới gần đỉnh sảnh (chuyển động chậm dần khi gần
+           tới đỉnh), thân đèn TO và biển nhãn lớn ghi tên khách + lời
+           khấn rút gọn để khán giả live đọc được; tới đỉnh thì dừng lại
+           trong thoáng chốc rồi tan nhẹ.
            Đại lễ (quà từ 100 xu): grandCeremonyUntil mở hào quang quanh
-           ban thờ + mưa cánh sen vàng trong vòng lặp vẽ chính. */
+           ban thờ + mưa cánh sen vàng phủ toàn sảnh trong ~20 giây. */
         var lanterns = [];
         var pendingLanterns = [];
         var grandCeremonyUntil = 0;
+        var grandCeremonyStart = 0;
         function spawnPrayerLantern(u, name, text) {
           if (!u) return false;
           if (lanterns.length >= 6) return true; // quá nhiều đèn cùng lúc: bỏ qua êm, không chồng chất
           var shortText = String(text == null ? "" : text).replace(/\s+/g, " ").trim();
           if (shortText.length > 72) shortText = shortText.slice(0, 72).trim() + "…";
+          // Biển nhãn rộng ~196px nên tâm đèn giữ cách mép sảnh đủ xa
+          // để nhãn không bị cắt khỏi khung.
+          var cx = Math.max(104, Math.min(W - 104, u.x));
+          var startY = u.y - 54;
           lanterns.push({
-            x: Math.max(70, Math.min(W - 70, u.x)),
-            y: u.y - 46,
-            baseX: Math.max(70, Math.min(W - 70, u.x)),
-            vy: 26 + Math.random() * 6,
+            x: cx,
+            y: startY,
+            baseX: cx,
+            startY: startY,
+            topY: 104,
+            riseT: 9.5,
             sway: Math.random() * 6.28,
             name: String(name == null ? "" : name).replace(/^tt_/i, "").trim().slice(0, 24) || "Phật tử",
             text: shortText,
             born: clockT,
-            life: 16
+            life: 11.5
           });
           return true;
         }
@@ -3262,94 +3272,134 @@
           ringVisual(BELL_POS.x, BELL_POS.y);
         }
 
-        /* ---- Vẽ ĐẠI LỄ: hào quang lớn quanh ban thờ (quà từ 100 xu) ---- */
+        /* ---- Vẽ ĐẠI LỄ: hào quang lớn quanh ban thờ (quà từ 100 xu) ----
+           Lớp hào quang vẽ RIÊNG cho Đại Lễ, khác biệt rõ với vầng sáng
+           sẵn có trong ảnh nền: quầng sáng vàng đậm phủ sau các tượng,
+           ba vòng hào quang phát sáng (có bóng phát sáng) nhịp thở nhẹ,
+           và chùm tia sáng vàng xoay chậm tỏa ra quanh ban thờ. Hiện rõ
+           trong suốt ~20 giây của Đại Lễ, chỉ mờ dần ở ~2,5 giây cuối. */
         function drawGrandCeremony(t) {
           if (t >= grandCeremonyUntil) return;
           var remain = grandCeremonyUntil - t;
-          var inten = Math.min(1, remain / 2);
+          var fadeIn = Math.min(1, Math.max(0, (t - grandCeremonyStart) / 1.1));
+          var inten = Math.min(1, remain / 2.5) * fadeIn;
+          if (inten <= 0) return;
           var pulse = 0.5 + 0.5 * Math.sin(t * 2.2);
-          var rg = ctx.createRadialGradient(270, 165, 12, 270, 165, 250);
-          rg.addColorStop(0, "rgba(255,214,110," + (0.30 * inten).toFixed(3) + ")");
-          rg.addColorStop(0.55, "rgba(255,190,70," + (0.14 * inten).toFixed(3) + ")");
+          ctx.save();
+          // Quầng sáng nền đậm sau ban thờ
+          var rg = ctx.createRadialGradient(270, 175, 12, 270, 175, 265);
+          rg.addColorStop(0, "rgba(255,216,110," + (0.52 * inten).toFixed(3) + ")");
+          rg.addColorStop(0.5, "rgba(255,192,64," + (0.30 * inten).toFixed(3) + ")");
           rg.addColorStop(1, "rgba(255,190,70,0)");
           ctx.fillStyle = rg;
-          ctx.fillRect(10, 0, W - 20, 430);
-          ctx.strokeStyle = "rgba(255,220,130," + (0.45 + 0.3 * pulse * inten).toFixed(3) + ")";
+          ctx.fillRect(0, 0, W, 460);
+          // Chùm tia sáng tỏa ra, xoay rất chậm, dài–ngắn xen kẽ
+          ctx.strokeStyle = "rgba(255,205,90," + (0.30 * inten).toFixed(3) + ")";
           ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.arc(270, 152, 88 + pulse * 5, 0, 6.29); ctx.stroke();
-          ctx.lineWidth = 1.6;
-          ctx.beginPath(); ctx.arc(270, 152, 104 + pulse * 6, 0, 6.29); ctx.stroke();
-          ctx.lineWidth = 1;
+          ctx.lineCap = "round";
+          var rot = t * 0.14;
+          for (var ri = 0; ri < 24; ri++) {
+            var ang = rot + ri * (Math.PI * 2 / 24);
+            var rIn = 108, rOut = (ri % 2 === 0 ? 218 : 168) + pulse * 7;
+            ctx.beginPath();
+            ctx.moveTo(270 + Math.cos(ang) * rIn, 172 + Math.sin(ang) * rIn * 0.86);
+            ctx.lineTo(270 + Math.cos(ang) * rOut, 172 + Math.sin(ang) * rOut * 0.86);
+            ctx.stroke();
+          }
+          // Ba vòng hào quang phát sáng bao quanh khu ban thờ
+          ctx.shadowColor = "rgba(255,196,64,0.95)";
+          ctx.shadowBlur = 20;
+          var ringsSpec = [
+            { rx: 128 + pulse * 4, ry: 106 + pulse * 3, w: 5, a: 0.85 },
+            { rx: 162 + pulse * 5, ry: 136 + pulse * 4, w: 3.5, a: 0.62 },
+            { rx: 198 + pulse * 6, ry: 168 + pulse * 5, w: 2.5, a: 0.42 }
+          ];
+          ringsSpec.forEach(function (rs) {
+            ctx.strokeStyle = "rgba(255,222,130," + (rs.a * inten).toFixed(3) + ")";
+            ctx.lineWidth = rs.w;
+            ctx.beginPath(); ctx.ellipse(270, 172, rs.rx, rs.ry, 0, 0, 6.29); ctx.stroke();
+          });
+          ctx.shadowBlur = 0;
+          // Sóng sáng lan ra từ tâm ban thờ như trước, đậm hơn
           for (var k = 0; k < 3; k++) {
             var rr2 = 36 + ((t * 46 + k * 72) % 216);
-            ctx.strokeStyle = "rgba(255,210,110," + Math.max(0, (0.34 * (1 - rr2 / 252)) * inten).toFixed(3) + ")";
+            ctx.strokeStyle = "rgba(255,214,110," + Math.max(0, (0.4 * (1 - rr2 / 252)) * inten).toFixed(3) + ")";
             ctx.lineWidth = 2;
             ctx.beginPath(); ctx.arc(270, 175, rr2, 0, 6.29); ctx.stroke();
           }
+          ctx.restore();
           ctx.lineWidth = 1;
         }
 
-        /* ---- Vẽ ĐÈN HOA ĐĂNG: thân đèn giấy phát sáng + bảng nhỏ ghi
-           tên khách và lời khấn rút gọn treo ngay dưới đèn ---- */
+        /* ---- Vẽ ĐÈN HOA ĐĂNG: thân đèn giấy phát sáng TO + biển nhãn
+           lớn ghi tên khách và lời khấn rút gọn treo ngay dưới đèn —
+           nền tối tương phản, chữ đủ lớn để đọc được trên nền sảnh ---- */
         function drawLanterns(t) {
           lanterns.forEach(function (L) {
             var age = t - L.born;
             var fadeIn = Math.min(1, age / 0.6);
-            var fadeOut = Math.min(1, Math.max(0, (L.life - age) / 2.5), Math.max(0, (L.y - 84) / 80));
+            var fadeOut = Math.min(1, Math.max(0, (L.life - age) / 2));
             var a = Math.max(0, Math.min(fadeIn, fadeOut));
             if (a <= 0) return;
             ctx.save();
             ctx.globalAlpha = a;
             var x = L.x, y = L.y;
-            var glow = ctx.createRadialGradient(x, y, 4, x, y, 54);
-            glow.addColorStop(0, "rgba(255,196,86,0.55)");
+            var glow = ctx.createRadialGradient(x, y, 4, x, y, 82);
+            glow.addColorStop(0, "rgba(255,196,86,0.6)");
             glow.addColorStop(1, "rgba(255,196,86,0)");
             ctx.fillStyle = glow;
-            ctx.fillRect(x - 56, y - 56, 112, 112);
-            var bg2 = ctx.createLinearGradient(x - 24, y, x + 24, y);
+            ctx.fillRect(x - 84, y - 84, 168, 168);
+            var bg2 = ctx.createLinearGradient(x - 34, y, x + 34, y);
             bg2.addColorStop(0, "#e07f35");
             bg2.addColorStop(0.5, "#ffdc8f");
             bg2.addColorStop(1, "#e07f35");
             ctx.fillStyle = bg2;
-            ctx.beginPath(); ctx.ellipse(x, y, 23, 28, 0, 0, 6.29); ctx.fill();
-            ctx.strokeStyle = "rgba(150,84,18,0.55)";
-            ctx.lineWidth = 1;
-            [-13, 0, 13].forEach(function (dx) {
-              ctx.beginPath(); ctx.moveTo(x + dx, y - 25); ctx.quadraticCurveTo(x + dx * 1.25, y, x + dx, y + 25); ctx.stroke();
+            ctx.beginPath(); ctx.ellipse(x, y, 32, 39, 0, 0, 6.29); ctx.fill();
+            ctx.strokeStyle = "rgba(150,84,18,0.6)";
+            ctx.lineWidth = 1.2;
+            [-18, 0, 18].forEach(function (dx) {
+              ctx.beginPath(); ctx.moveTo(x + dx, y - 35); ctx.quadraticCurveTo(x + dx * 1.25, y, x + dx, y + 35); ctx.stroke();
             });
-            ctx.beginPath(); ctx.ellipse(x, y, 23, 28, 0, 0, 6.29); ctx.stroke();
+            ctx.beginPath(); ctx.ellipse(x, y, 32, 39, 0, 0, 6.29); ctx.stroke();
             ctx.fillStyle = "#8a5a10";
-            ctx.fillRect(x - 12, y - 32, 24, 5);
-            ctx.fillRect(x - 12, y + 27, 24, 5);
+            ctx.fillRect(x - 17, y - 45, 34, 7);
+            ctx.fillRect(x - 17, y + 38, 34, 7);
             var flick = 0.75 + Math.sin(t * 9 + L.sway * 3) * 0.25;
-            ctx.fillStyle = "rgba(255,150,50," + (0.5 * flick).toFixed(3) + ")";
-            ctx.beginPath(); ctx.arc(x, y + 2, 10, 0, 6.29); ctx.fill();
+            ctx.fillStyle = "rgba(255,150,50," + (0.55 * flick).toFixed(3) + ")";
+            ctx.beginPath(); ctx.arc(x, y + 3, 14, 0, 6.29); ctx.fill();
             ctx.fillStyle = "#fff3c4";
-            ctx.beginPath(); ctx.arc(x, y + 2, 4.2 * flick + 1.6, 0, 6.29); ctx.fill();
-            // Bảng ghi tên + lời khấn rút gọn
-            ctx.font = "500 10px 'Be Vietnam Pro', sans-serif";
+            ctx.beginPath(); ctx.arc(x, y + 3, 5.8 * flick + 2.2, 0, 6.29); ctx.fill();
+            // Biển nhãn ghi tên + lời khấn rút gọn: chữ lớn, nền tối
+            ctx.font = "600 12.5px 'Be Vietnam Pro', sans-serif";
             var words = String(L.text).split(/\s+/), lines = [], cur = "";
             words.forEach(function (wd) {
               var test = cur ? cur + " " + wd : wd;
-              if (ctx.measureText(test).width > 116 && cur) { lines.push(cur); cur = wd; } else cur = test;
+              if (ctx.measureText(test).width > 172 && cur) { lines.push(cur); cur = wd; } else cur = test;
             });
             if (cur) lines.push(cur);
             if (lines.length > 3) { lines = lines.slice(0, 3); lines[2] = lines[2] + "…"; }
-            var pw = 136, ph = 20 + lines.length * 13 + 7, py = y + 38;
-            ctx.fillStyle = "rgba(43,26,10,0.9)";
-            ctx.strokeStyle = "rgba(230,180,80,0.9)";
+            // Tên khách quá dài thì thu bớt để không tràn biển nhãn
+            var nameTxt = "🏮 " + L.name;
+            ctx.font = "700 14.5px 'Be Vietnam Pro', sans-serif";
+            while (nameTxt.length > 4 && ctx.measureText(nameTxt).width > 182) nameTxt = nameTxt.slice(0, -2);
+            if (nameTxt !== "🏮 " + L.name) nameTxt += "…";
+            var pw = 196, ph = 27 + lines.length * 17 + 9, py = y + 52;
+            // Biển gần đỉnh sảnh thì lật lên trên thân đèn để không rời khung
+            if (py + ph > H - 8) py = y - 48 - ph;
+            ctx.fillStyle = "rgba(28,17,6,0.94)";
+            ctx.strokeStyle = "rgba(240,190,85,0.95)";
+            ctx.lineWidth = 2;
+            rr(x - pw / 2, py, pw, ph, 9); ctx.fill(); ctx.stroke();
             ctx.lineWidth = 1.2;
-            rr(x - pw / 2, py, pw, ph, 8); ctx.fill(); ctx.stroke();
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "rgba(230,180,80,0.6)";
-            ctx.beginPath(); ctx.moveTo(x, y + 32); ctx.lineTo(x, py); ctx.stroke();
+            ctx.strokeStyle = "rgba(240,190,85,0.7)";
+            ctx.beginPath(); ctx.moveTo(x, py > y ? y + 45 : y - 45); ctx.lineTo(x, py > y ? py : py + ph); ctx.stroke();
             ctx.textAlign = "center";
-            ctx.font = "700 11px 'Be Vietnam Pro', sans-serif";
+            ctx.font = "700 14.5px 'Be Vietnam Pro', sans-serif";
             ctx.fillStyle = "#ffd968";
-            ctx.fillText("🏮 " + L.name, x, py + 15);
-            ctx.font = "500 10px 'Be Vietnam Pro', sans-serif";
-            ctx.fillStyle = "#ffefd0";
-            lines.forEach(function (ln, li) { ctx.fillText(ln, x, py + 29 + li * 13); });
+            ctx.fillText(nameTxt, x, py + 20);
+            ctx.font = "600 12.5px 'Be Vietnam Pro', sans-serif";
+            ctx.fillStyle = "#fff3d6";
+            lines.forEach(function (ln, li) { ctx.fillText(ln, x, py + 40 + li * 17); });
             ctx.restore();
           });
         }
@@ -3373,13 +3423,26 @@
           }
           petals.forEach(function (l) { l.y += l.vy * dt; l.x += Math.sin(t * 1.6 + l.p) * 13 * dt; l.rot += l.vr * dt; });
           petals = petals.filter(function (l) { return l.gold ? l.y < H - 8 : l.y < 486; });
-          // ĐẠI LỄ đang diễn ra: mưa cánh sen VÀNG phủ khắp sảnh
-          if (t < grandCeremonyUntil && Math.random() < dt * 22 && petals.length < 120) {
-            petals.push({ gold: true, x: 24 + Math.random() * (W - 48), y: 60 + Math.random() * 50, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 2.2, vy: 26 + Math.random() * 20, p: Math.random() * 6, s: 0.8 + Math.random() * 0.9 });
+          // ĐẠI LỄ đang diễn ra: mưa cánh sen VÀNG DÀY phủ TOÀN SẢNH —
+          // cánh lớn, vàng đậm, sinh liên tục từ đỉnh sảnh và rơi xuống
+          // tận khu nệm ở nửa dưới, duy trì suốt thời gian Đại Lễ
+          if (t < grandCeremonyUntil) {
+            var spawnN = Math.random() < dt * 55 ? 1 + (Math.random() < 0.45 ? 1 : 0) : 0;
+            for (var gi = 0; gi < spawnN && petals.length < 340; gi++) {
+              petals.push({ gold: true, x: 14 + Math.random() * (W - 28), y: -14 + Math.random() * 40, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 2.4, vy: 52 + Math.random() * 34, p: Math.random() * 6, s: 1.35 + Math.random() * 0.95 });
+            }
           }
-          // Đèn hoa đăng: bay chậm lên trời, khẽ đu đưa, hết hành trình thì tan
-          lanterns.forEach(function (L) { L.y -= L.vy * dt; L.x = L.baseX + Math.sin(t * 0.9 + L.sway) * 10; });
-          lanterns = lanterns.filter(function (L) { return (t - L.born) < L.life && L.y > 78; });
+          // Đèn hoa đăng: bay lên CHẬM theo hành trình ~9,5 giây tới gần
+          // đỉnh sảnh (càng lên cao càng chậm lại), khẽ đu đưa; tới đỉnh
+          // thì lưu lại một thoáng rồi tan dần trong cuối hành trình
+          lanterns.forEach(function (L) {
+            var ageL = t - L.born;
+            var pr = Math.min(1, Math.max(0, ageL / L.riseT));
+            var ez = 1 - (1 - pr) * (1 - pr);
+            L.y = L.startY + (L.topY - L.startY) * ez;
+            L.x = L.baseX + Math.sin(t * 0.9 + L.sway) * 10;
+          });
+          lanterns = lanterns.filter(function (L) { return (t - L.born) < L.life; });
           // Chuông đu đưa (dao động tắt dần)
           var acc = -38 * bellSwing - 1.4 * bellSwingV;
           bellSwingV += acc * dt; bellSwing += bellSwingV * dt;
@@ -3483,14 +3546,25 @@
           // Đèn hoa đăng bay trên sảnh (vẽ sau người để đèn nổi rõ khi bay lên)
           drawLanterns(t);
 
-          // Cánh sen rơi
+          // Cánh sen rơi (cánh VÀNG của Đại Lễ: lớn hơn, vàng đậm tương
+          // phản rõ trên nền sảnh, thêm gân cánh sẫm để nhìn ra cánh hoa)
           petals.forEach(function (l) {
             ctx.save();
             ctx.translate(l.x, l.y); ctx.rotate(l.rot); ctx.scale(l.s, l.s);
-            ctx.fillStyle = l.gold ? "rgba(250,205,92,0.92)" : "rgba(246,203,214,0.85)";
-            ctx.beginPath(); ctx.ellipse(0, 0, 6, 3, 0, 0, 6.29); ctx.fill();
-            ctx.fillStyle = "rgba(255,236,200,0.5)";
-            ctx.beginPath(); ctx.ellipse(0, -0.8, 3.4, 1.5, 0, 0, 6.29); ctx.fill();
+            if (l.gold) {
+              ctx.fillStyle = "rgba(255,186,28,0.96)";
+              ctx.beginPath(); ctx.ellipse(0, 0, 7.6, 3.9, 0, 0, 6.29); ctx.fill();
+              ctx.fillStyle = "rgba(255,226,130,0.85)";
+              ctx.beginPath(); ctx.ellipse(0, -1, 4.4, 1.9, 0, 0, 6.29); ctx.fill();
+              ctx.strokeStyle = "rgba(176,110,8,0.65)";
+              ctx.lineWidth = 0.8;
+              ctx.beginPath(); ctx.moveTo(-6.4, 0); ctx.quadraticCurveTo(0, 1.8, 6.4, 0); ctx.stroke();
+            } else {
+              ctx.fillStyle = "rgba(246,203,214,0.85)";
+              ctx.beginPath(); ctx.ellipse(0, 0, 6, 3, 0, 0, 6.29); ctx.fill();
+              ctx.fillStyle = "rgba(255,236,200,0.5)";
+              ctx.beginPath(); ctx.ellipse(0, -0.8, 3.4, 1.5, 0, 0, 6.29); ctx.fill();
+            }
             ctx.restore();
           });
 
@@ -3897,7 +3971,8 @@
             giftTagEl.classList.add("show");
           }
           // Nghi lễ theo hạng xu: nhỏ giữ như cũ; vừa thêm một tiếng
-          // chuông mừng; lớn mở ĐẠI LỄ (hào quang + mưa sen vàng ~9 giây)
+          // chuông mừng; lớn mở ĐẠI LỄ (hào quang riêng + mưa sen vàng
+          // dày phủ toàn sảnh trong ~20 giây)
           if (soundOn) playBell();
           ringVisual(270, 520);
           if (tier === "medium" || tier === "grand") {
@@ -3905,16 +3980,27 @@
           }
           if (tier === "grand") {
             setTimeout(function () { if (soundOn) playBell(); ringVisual(270, 520); }, 2300);
-            grandCeremonyUntil = clockT + 9;
+            grandCeremonyStart = clockT;
+            grandCeremonyUntil = clockT + 20;
           }
-          var petalN = tier === "grand" ? 34 : (tier === "medium" ? 24 : 14);
+          var petalN = tier === "grand" ? 24 : (tier === "medium" ? 24 : 14);
           for (var i = 0; i < petalN; i++) {
             petals.push({ gold: tier === "grand", x: 60 + Math.random() * (W - 120), y: 90 + Math.random() * 50, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 1.6, vy: 15 + Math.random() * 12, p: Math.random() * 6, s: 0.8 + Math.random() * 0.8 });
+          }
+          if (tier === "grand") {
+            // Đợt cánh sen vàng mở đầu của Đại Lễ: rải sẵn khắp chiều cao
+            // sảnh (cả khu nệm ở nửa dưới) để mưa sen phủ toàn sảnh ngay
+            // từ giây đầu, cánh lớn và rơi xuống tận đáy sảnh
+            for (var gi2 = 0; gi2 < 80; gi2++) {
+              petals.push({ gold: true, x: 14 + Math.random() * (W - 28), y: 20 + Math.random() * (H - 140), rot: Math.random() * 6, vr: (Math.random() - 0.5) * 2.4, vy: 52 + Math.random() * 34, p: Math.random() * 6, s: 1.35 + Math.random() * 0.95 });
+            }
           }
           // Giọng đọc: đọc lời cảm tạ kèm tên khách + tên quà theo hàng đợi
           enqueueSpeak((tier === "grand" ? "Đại lễ tri ân. " : "") + "Cảm tạ Phật tử " + g.name + " đã tặng " + g.gift + (g.count > 1 ? " nhân " + g.count : "") + ". " + bless);
           note("<strong>🎁 " + escapeHtml(g.name) + "</strong> vừa tặng <strong>" + escapeHtml(g.gift) + "</strong>" + (g.coins > 0 ? " (" + g.coins + " xu — " + (tier === "grand" ? "ĐẠI LỄ" : (tier === "medium" ? "lễ tri ân lớn" : "lễ tri ân")) + ")" : "") + " trên TikTok Live — lời chúc lành đang hiện trên cuốn thư giữa chánh điện. 🙏");
-          setTimeout(showNextGift, tier === "grand" ? 9000 : (tier === "medium" ? 8000 : 7000));
+          // Khung tri ân của riêng hạng Đại Lễ hiện ~10 giây cho khán
+          // giả kịp đọc (hiệu ứng Đại Lễ trên sảnh vẫn chạy tiếp ~20 giây)
+          setTimeout(showNextGift, tier === "grand" ? 10000 : (tier === "medium" ? 8000 : 7000));
         }
         function hienLoiChucQuaTang(data) {
           if (!data || typeof data !== "object") return;
@@ -4053,11 +4139,13 @@
           setTimeout(function () { hienLoiChucQuaTang({ ten: "Phật tử Diệu Hoa", qua: "🪷 Hoa Sen" }); }, 400);
         });
         // Nút xem thử Đại Lễ (quà 150 xu) + một đèn hoa đăng cầu nguyện
+        // của "Phật tử Tâm An" — đèn xem thử hiện đúng như đèn thật:
+        // thân đèn to, bay chậm ~9,5 giây tới đỉnh, biển nhãn lớn rõ chữ
         var btnFxDemo = document.getElementById("btnFxDemo");
         if (btnFxDemo) btnFxDemo.addEventListener("click", function () {
           hienLoiChucQuaTang({ ten: "Phật tử Tâm An", qua: "🪷 Đài Sen Vàng", coins: 150 });
           var meDemo = users[myId];
-          if (meDemo) spawnPrayerLantern(meDemo, myDisplayName, "Cầu nguyện cho gia đình bình an, sức khỏe dồi dào");
+          if (meDemo) spawnPrayerLantern(meDemo, "Phật tử Tâm An", "Cầu nguyện cho gia đình bình an, sức khỏe dồi dào");
         });
 
         /* ----- HAI BĂNG CÂU ĐỐI ĐỎ HAI BÊN TƯỢNG PHẬT -----
