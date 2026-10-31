@@ -6,8 +6,30 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-// Phuc vu trang web tinh tai thu muc goc (ban goc thieu dong nay
-// nen mo trang se khong thay giao dien chua)
+// Trang chua chinh (ban chanh dien day du) nam trong file xuat ban cua trang.
+// Khi phuc vu, server tu chinh 3 cho cho moi truong cong khai:
+//  - o dia chi server de trong (khach khong phai tu dien)
+//  - dia chi mac dinh = chinh dia chi trang dang mo (tu ket noi)
+//  - chen doan tu dong bam "Ket noi server" sau khi trang tai xong
+const fs = require('fs');
+const path = require('path');
+let fullPageCache = null;
+function fullPage() {
+    if (fullPageCache) return fullPageCache;
+    const file = path.join(__dirname, 'ch-a-thanh-t-nh-online.html');
+    let html = fs.readFileSync(file, 'utf8');
+    html = html.replace('<input id="serverUrl" type="url" value="http://localhost:3000"', '<input id="serverUrl" type="url" value="" placeholder="Dia chi server chua"');
+    html = html.replace('serverUrlInput.value || "http://localhost:3000"', 'serverUrlInput.value || location.origin');
+    const auto = '\n<script>\nwindow.addEventListener(\'load\', function () {\n  if (location.protocol !== \'http:\' && location.protocol !== \'https:\') return;\n  setTimeout(function () {\n    var inp = document.getElementById(\'serverUrl\');\n    var btn = document.getElementById(\'btnConnect\');\n    if (inp && btn) { inp.value = location.origin; btn.click(); }\n  }, 900);\n});\n</script>\n</body>';
+    html = html.replace('</body>', auto);
+    fullPageCache = html;
+    return html;
+}
+app.get('/', (req, res, next) => {
+    try { res.type('html').send(fullPage()); } catch (e) { next(); }
+});
+
+// Phuc vu cac file tinh con lai tai thu muc goc
 app.use(express.static(__dirname));
 
 // Luu tru trang thai cua tat ca "Phat tu" dang online
@@ -29,7 +51,120 @@ function applyProfile(socket, data) {
     socket.broadcast.emit('profile_updated', payload);
 }
 
+/* ================= Khach TikTok Live (qua chuong trinh cau noi) =================
+   Cau noi (bridge) chay tren may tinh cua chu phong live, nghe binh luan/qua tang
+   tren TikTok Live roi gui su kien 'live_event' vao day. Server tao "nhan vat ao"
+   cho tung khan gia TikTok va phat lai bang dung cac su kien chuan cua trang chua
+   (new_user, user_moved, user_offering_incense, user_bowing, user_meditating,
+   play_bell_sound, user_left) nen trang web khong can sua gi them.
+   Khoa bao mat: bien moi truong BRIDGE_KEY tren Render; cau noi gui kem khoa nay. */
+const BRIDGE_KEY = process.env.BRIDGE_KEY || '';
+const TT_MAX_GUESTS = 40;
+const TT_IDLE_MS = 5 * 60 * 1000; // khan gia TikTok khong tuong tac 5 phut thi roi chua
+const ttGuests = {}; // id -> { lastSeen }
+let ttGenderFlip = false;
+
+function stripAccents(s) {
+    return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+}
+
+function ensureTtGuest(evt) {
+    const uname = String(evt.user || '').replace(/[^a-zA-Z0-9_.]/g, '').slice(0, 30);
+    if (!uname) return null;
+    const id = 'tt_' + uname;
+    if (!users[id]) {
+        if (Object.keys(ttGuests).length >= TT_MAX_GUESTS) return null;
+        ttGenderFlip = !ttGenderFlip;
+        users[id] = {
+            x: Math.floor(Math.random() * 300) + 250,
+            y: Math.floor(Math.random() * 80) + 390,
+            action: 'walking',
+            color: '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'),
+            name: String(evt.nickname || uname).slice(0, 24) || 'Phật tử',
+            gender: ttGenderFlip ? 'nu' : 'nam',
+            virtual: true
+        };
+        ttGuests[id] = { lastSeen: Date.now() };
+        io.emit('new_user', { id, user: publicUser(users[id]) });
+        console.log('Khach TikTok vao chua:', id, users[id].name);
+    }
+    ttGuests[id].lastSeen = Date.now();
+    if (evt.nickname) users[id].name = String(evt.nickname).slice(0, 24);
+    return id;
+}
+
+function ttWander(id) {
+    const u = users[id];
+    if (!u || u.action === 'meditating') return;
+    u.x = Math.floor(Math.random() * 340) + 230;
+    u.y = Math.floor(Math.random() * 90) + 385;
+    io.emit('user_moved', { id, x: u.x, y: u.y, name: u.name, gender: u.gender });
+}
+
+function handleLiveEvent(evt) {
+    if (!evt || typeof evt !== 'object') return;
+    const type = evt.type;
+    if (type === 'member' || type === 'chat' || type === 'gift' || type === 'follow') {
+        const id = ensureTtGuest(evt);
+        if (!id) return;
+        if (type === 'gift') {
+            // Co qua tang: thinh chuong vang ca chua + nhan vat vai lay cam on
+            // + hien loi chuc/cam on lon tren man hinh chua cho moi nguoi cung thay
+            io.emit('play_bell_sound', { id });
+            io.emit('user_bowing', { id });
+            const giftPayload = {
+                id,
+                name: users[id].name,
+                giftName: String(evt.giftName || 'quà tặng').slice(0, 40),
+                giftCount: Math.max(1, parseInt(evt.giftCount, 10) || 1)
+            };
+            io.emit('gift_announcement', giftPayload);
+            // Trang chua lang nghe loi chuc qua tang qua cac ten su kien nay
+            io.emit('tiktok_gift', Object.assign({}, giftPayload, { ten: giftPayload.name, qua: giftPayload.giftName, nickname: giftPayload.name, gift: giftPayload.giftName }));
+            io.emit('gift', Object.assign({}, giftPayload, { ten: giftPayload.name, qua: giftPayload.giftName, nickname: giftPayload.name }));
+            return;
+        }
+        if (type === 'chat') {
+            const text = stripAccents(evt.text);
+            if (text.includes('dang huong') || text.includes('thap huong') || text.includes('thap nhang')) {
+                io.emit('user_offering_incense', { id });
+            } else if (text.includes('vai lay') || text.includes('lay phat') || text.includes('nam mo')) {
+                io.emit('user_bowing', { id });
+            } else if (text.includes('thinh chuong') || text.includes('go chuong') || text.includes('danh chuong')) {
+                io.emit('play_bell_sound', { id });
+            } else if (text.includes('toa thien') || text.includes('ngoi thien')) {
+                users[id].action = 'meditating';
+                io.emit('user_meditating', { id });
+            } else {
+                ttWander(id);
+            }
+        }
+    }
+}
+
+// Don khach TikTok khong con tuong tac
+setInterval(() => {
+    const now = Date.now();
+    for (const id of Object.keys(ttGuests)) {
+        if (now - ttGuests[id].lastSeen > TT_IDLE_MS) {
+            delete ttGuests[id];
+            delete users[id];
+            io.emit('user_left', id);
+            console.log('Khach TikTok roi chua (vang mat):', id);
+        }
+    }
+}, 30000);
+
 io.on('connection', (socket) => {
+    // Cau noi TikTok xac thuc bang khoa rieng; khan gia web binh thuong khong can
+    const isBridge = !!BRIDGE_KEY && socket.handshake.auth && socket.handshake.auth.key === BRIDGE_KEY;
+    if (isBridge) {
+        console.log('Cau noi TikTok da ket noi:', socket.id);
+        socket.on('live_event', handleLiveEvent);
+        socket.on('disconnect', () => console.log('Cau noi TikTok ngat ket noi:', socket.id));
+        return;
+    }
+
     console.log('Mot thien nam/tin nu vua vao chua:', socket.id);
 
     // Xuat hien trong loi di giua dien (vung toa do hop le cua client)
