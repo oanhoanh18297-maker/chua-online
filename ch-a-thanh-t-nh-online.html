@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-10-31.6" />
+    <meta name="chua-build" content="2026-10-31.7" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -21,6 +21,12 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
     <link rel="icon" href="data:," />
     <title>Chùa Thanh Tịnh Online</title>
+    <script>
+      // Chế độ màn hình phát "?full": gắn cờ ngay từ đầu trang để bố cục
+      // "chỉ có sảnh" áp dụng từ khung hình đầu tiên, không chờ script
+      // ở cuối trang và không chờ hồ sơ tên/giới tính đã lưu.
+      try { if (new URLSearchParams(window.location.search).has("full")) document.documentElement.classList.add("live-display"); } catch (e) {}
+    </script>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1109,6 +1115,42 @@
         box-shadow: 0 8px 20px rgba(15, 6, 1, 0.5);
       }
       .btn-exit-full:hover { background: rgba(64, 32, 10, 0.95); }
+      /* ---- Chế độ màn hình phát "?full" (display mode) ----
+         Mở …/?full (nguồn liên kết trong TikTok LIVE Studio): trang là
+         MÀN HÌNH HIỂN THỊ của buổi live — bỏ qua cổng nhập tên và mọi
+         phần ngoài sảnh, chỉ còn Sảnh Cầu Bình An phủ kín khung hình.
+         Cờ live-display gắn lên thẻ html ngay từ đầu trang nên áp dụng
+         từ khung hình đầu tiên; trang mở không có ?full không bị ảnh
+         hưởng gì. */
+      html.live-display .wrap { max-width: none; margin: 0; padding: 0; }
+      html.live-display body { overflow: hidden; }
+      html.live-display header.top,
+      html.live-display .entry,
+      html.live-display .connect,
+      html.live-display .below,
+      html.live-display footer,
+      html.live-display .chat-fab,
+      html.live-display .chat-panel { display: none !important; }
+      html.live-display .stage {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 0;
+        height: 100dvh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      html.live-display .stage .hall-bar,
+      html.live-display .stage .controls,
+      html.live-display .stage .action-note,
+      html.live-display .stage .guide { display: none !important; }
+      html.live-display .stage .canvas-holder {
+        max-width: min(100vw, calc(100dvh * 9 / 16)) !important;
+        width: 100%;
+        margin: 0;
+      }
       /* Đang ở chế độ full sảnh: hiện nút Thoát, ẩn nút Mở */
       .stage.hall-is-full .btn-exit-full { display: inline-flex; }
       /* Chế độ phát live "?full": nút Thoát không hiện lên hình phát */
@@ -1765,6 +1807,22 @@
         if (btnSetIdentity) btnSetIdentity.addEventListener("click", function () { tryStartMusic(); applyIdentity(true); });
         if (visitorNameInput) visitorNameInput.addEventListener("input", function () { applyIdentity(false); });
         if (visitorGenderSel) visitorGenderSel.addEventListener("change", function () { applyIdentity(true); });
+
+        /* Chế độ màn hình phát "?full" trên một máy CHƯA từng lưu hồ sơ:
+           vào thẳng sảnh với danh tính hiển thị trung tính "Sảnh Chùa"
+           — không chặn ở cổng nhập tên, không mượn tên cá nhân của ai.
+           Đã có hồ sơ đã lưu thì restorePrefs ở trên đã áp dụng như cũ.
+           Tên trung tính này không ghi vào ô nhập và không lưu thành
+           hồ sơ (savePrefs chỉ lưu khi ô tên có chữ do người dùng nhập). */
+        if (LIVE_FULL_MODE) {
+          var savedPrefsForDisplay = loadPrefs();
+          if (!savedPrefsForDisplay || !savedPrefsForDisplay.name) {
+            myDisplayName = "Sảnh Chùa";
+            var displayMe = users[myId];
+            if (displayMe) displayMe.name = myDisplayName;
+            if (identityPreview) identityPreview.textContent = genderSymbol(myGender) + " " + myDisplayName + " — màn hình phát sảnh (chỉ hiển thị)";
+          }
+        }
 
         function clampPos(x, y) {
           // Khu lễ trước bàn thờ đã mở rộng: đi lại thoải mái gần khắp chiều
@@ -3329,6 +3387,62 @@
           }
           return "";
         }
+        /* ---- Tra nhân vật cho lượt LẠY CẢM ƠN khi tặng quà ----
+           Lỗi đã quan sát thật: khách đang ngồi nệm tặng quà thì cuốn
+           thư tri ân và điểm công đức hiện đúng, nhưng nhân vật KHÔNG
+           đứng dậy lạy — trong khi đường niệm Phật (có thêm đường dự
+           phòng qua dòng chat, tra theo cả id lẫn tên) thì lạy đúng.
+           Đường quà cũ chỉ tra bằng findChatUser(null, tên-trong-gói-quà):
+           tên gói quà thường là định danh TikTok (uniqueId kiểu
+           "khach.chao") trong khi tên nhân vật là tên hiển thị
+           ("tt_Khach Chao") — lệch nhau là tra trượt và lượt lạy rơi
+           mất ngay, không có lần thử nào nữa. Nay: (1) tra qua
+           findActionUser với mọi trường định danh gói mang theo; (2)
+           thử lần lượt MỌI trường tên (uniqueId, username, nickname,
+           displayName…) qua findChatUser — vốn đã có lượt khớp mềm bỏ
+           dấu/bỏ khoảng trắng; (3) vẫn trượt thì GIỮ lượt lạy lại và
+           thử tra lại trong 9 giây (quà có thể tới trước sự kiện vào
+           chùa hoặc trước khi khách được xếp nệm) — tra trúng là lạy
+           ngay, không rơi mất. */
+        var pendingGiftBows = [];
+        function giftBowUser(data) {
+          var u = findActionUser(data);
+          if (u) return u;
+          var pn = payloadIdName(data || {});
+          var cands = [pn.name,
+            giftField(data || {}, ["uniqueId"]), giftField(data || {}, ["username"]),
+            giftField(data || {}, ["nickname"]), giftField(data || {}, ["displayName"]),
+            giftField(data || {}, ["userName"]), giftField(data || {}, ["name"]),
+            giftField(data || {}, ["ten"])];
+          for (var i = 0; i < cands.length; i++) {
+            if (!cands[i]) continue;
+            var f = findChatUser(pn.id, cands[i]);
+            if (f) return f;
+          }
+          return findChatUser(pn.id, pn.name);
+        }
+        function queueGiftBow(data, name) {
+          var u = giftBowUser(data);
+          if (u) {
+            var pn = payloadIdName(data || {});
+            markTikTok(u, pn.id, pn.name || name);
+            if (u.isTikTok) { remoteBowForUser(u); return; }
+          }
+          pendingGiftBows.push({ data: data, name: name, until: Date.now() + 9000 });
+        }
+        setInterval(function () {
+          if (!pendingGiftBows.length) return;
+          var now = Date.now();
+          pendingGiftBows = pendingGiftBows.filter(function (p) {
+            if (now > p.until) return false;
+            var u = giftBowUser(p.data);
+            if (!u) return true;
+            var pn = payloadIdName(p.data || {});
+            markTikTok(u, pn.id, pn.name || p.name);
+            if (u.isTikTok) { remoteBowForUser(u); return false; }
+            return true;
+          });
+        }, 400);
         function showNextGift() {
           if (!giftQueue.length) {
             giftShowing = false;
@@ -3388,8 +3502,8 @@
           // hương vái lạy cảm ơn rồi quay về nệm — qua cùng một cửa
           // remoteBowForUser như mọi lượt lạy khác (sự kiện user_bowing
           // của server nếu có cũng gộp chống trùng, không lạy hai lần).
-          var giftUser = findChatUser(null, name);
-          if (giftUser && giftUser.isTikTok) remoteBowForUser(giftUser);
+          // Việc tra nhân vật + giữ lượt lạy thử lại nằm ở queueGiftBow.
+          queueGiftBow(data, name);
           if (!giftShowing) showNextGift();
           else if (giftQueueEl && giftShowing) {
             giftQueueEl.textContent = "Còn " + giftQueue.length + " lời chúc đang chờ hiện…";
@@ -3402,51 +3516,88 @@
         /* ----- LỜI CHÀO KHI KHÁCH TIKTOK VỪA VÀO SẢNH CHÙA -----
            Khi server đưa một khách TikTok vào chùa (sự kiện "new_user" với
            nhân vật tt_<tên>), trang hiện trong sảnh một bảng chào trang
-           trọng "🙏 <Tên khách> đã vào sảnh chùa" trong ít giây, đồng thời
-           nhân vật của khách cúi chào một cái ngay khi xuất hiện.
-           Nhiều khách vào cùng lúc thì lời chào xếp hàng hiện lần lượt;
-           nếu khách vào quá đông, gộp phần còn lại vào cùng một lời chào
-           để bảng không chạy mãi. Cầu nối cũng có thể gọi trực tiếp
-           window.chaoPhatTuMoi({ ten: "Tên khách" }) hoặc postMessage
-           { type: "tiktok_member" | "tiktok_join", name }. */
+           trọng "🙏 <Tên khách> vừa vào chùa" với chữ TO treo ngay dưới
+           lư hương trong ít giây. Nhiều khách vào cùng lúc thì lời chào
+           xếp hàng hiện lần lượt; nếu khách vào quá đông, gộp phần còn
+           lại vào cùng một lời chào để bảng không chạy mãi. Cầu nối cũng
+           có thể gọi trực tiếp window.chaoPhatTuMoi({ ten: "Tên khách" })
+           hoặc postMessage { type: "tiktok_member" | "tiktok_join", name }.
+           BẢN SỬA DỨT ĐIỂM: hàng chờ cũ nối đuôi bằng setTimeout và một
+           cờ "đang hiện" — một lần đứt nhịp là cờ kẹt vĩnh viễn, mọi lời
+           chào sau đó vào hàng chờ mà KHÔNG BAO GIỜ hiện (đúng lỗi đã
+           quan sát thật trên trang công khai: nhật ký "vừa vào chùa" có
+           mà bảng chào to không hề xuất hiện). Nay hàng chờ được một
+           ĐỒNG HỒ CANH độc lập (setInterval) bơm liên tục: trạng thái
+           đang hiện có hạn dùng rõ ràng, hết hạn là tự chuyển lời chào
+           tiếp theo — về nguyên tắc không thể kẹt. Lời chào cũng được
+           kích hoạt từ nhiều đường (new_user cả hai nhánh, bản chụp
+           current_users gửi lại giữa buổi, tiktok_event kiểu member)
+           và được gọi TRƯỚC bước xếp nệm để trục trặc xếp nệm không
+           nuốt mất lời chào. */
         var welcomeBanner = document.getElementById("welcomeBanner");
         var welcomeTextEl = document.getElementById("welcomeText");
         var welcomeQueue = [];
-        var welcomeShowing = false;
+        var welcomeCurrent = null; // { name, extra, until } — lời chào đang hiện và hạn dùng của nó
         var welcomeRecent = {};
-        function showNextWelcome() {
-          if (!welcomeQueue.length) {
-            welcomeShowing = false;
-            if (welcomeBanner) { welcomeBanner.classList.remove("show"); welcomeBanner.setAttribute("aria-hidden", "true"); }
+        var welcomeSeenIds = {}; // định danh nhân vật đã chào trong phiên mở trang này
+        var WELCOME_MS = 4500;
+        function renderWelcome() {
+          if (!welcomeBanner || !welcomeTextEl) return;
+          if (!welcomeCurrent) {
+            welcomeBanner.classList.remove("show");
+            welcomeBanner.setAttribute("aria-hidden", "true");
             return;
           }
-          welcomeShowing = true;
+          // Tên khách là dữ liệu từ xa: dựng bằng textContent như trên.
+          welcomeTextEl.textContent = "";
+          welcomeTextEl.appendChild(document.createTextNode("🙏 "));
+          var wwName = document.createElement("strong");
+          wwName.textContent = welcomeCurrent.name;
+          welcomeTextEl.appendChild(wwName);
+          if (welcomeCurrent.extra > 0) {
+            welcomeTextEl.appendChild(document.createTextNode(" cùng "));
+            var wwExtra = document.createElement("strong");
+            wwExtra.textContent = welcomeCurrent.extra + " Phật tử";
+            welcomeTextEl.appendChild(wwExtra);
+            welcomeTextEl.appendChild(document.createTextNode(" khác vừa vào chùa"));
+          } else {
+            welcomeTextEl.appendChild(document.createTextNode(" vừa vào chùa"));
+          }
+          welcomeBanner.classList.add("show");
+          welcomeBanner.setAttribute("aria-hidden", "false");
+        }
+        function pumpWelcome() {
+          var now = Date.now();
+          if (welcomeCurrent && now < welcomeCurrent.until) {
+            // Đang hiện: khẳng định lại lớp hiển thị phòng khi một thao
+            // tác khác lỡ gỡ mất — bảng chào không được "mất hình".
+            if (welcomeBanner && !welcomeBanner.classList.contains("show")) renderWelcome();
+            return;
+          }
+          welcomeCurrent = null;
+          if (!welcomeQueue.length) { renderWelcome(); return; }
           var nm = welcomeQueue.shift();
           var extra = 0;
           if (welcomeQueue.length >= 3) { extra = welcomeQueue.length; welcomeQueue.length = 0; }
-          if (welcomeTextEl) {
-            // Tên khách là dữ liệu từ xa: dựng bằng textContent như trên.
-            welcomeTextEl.textContent = "";
-            welcomeTextEl.appendChild(document.createTextNode("🙏 "));
-            var wwName = document.createElement("strong");
-            wwName.textContent = nm;
-            welcomeTextEl.appendChild(wwName);
-            if (extra > 0) {
-              welcomeTextEl.appendChild(document.createTextNode(" cùng "));
-              var wwExtra = document.createElement("strong");
-              wwExtra.textContent = extra + " Phật tử";
-              welcomeTextEl.appendChild(wwExtra);
-              welcomeTextEl.appendChild(document.createTextNode(" khác vừa vào chùa"));
-            } else {
-              welcomeTextEl.appendChild(document.createTextNode(" vừa vào chùa"));
-            }
-          }
-          if (welcomeBanner) { welcomeBanner.classList.add("show"); welcomeBanner.setAttribute("aria-hidden", "false"); }
-          setTimeout(showNextWelcome, 4000);
+          welcomeCurrent = { name: nm, extra: extra, until: now + WELCOME_MS };
+          renderWelcome();
         }
-        function chaoPhatTuMoi(name, userObj) {
+        setInterval(pumpWelcome, 400);
+        function chaoPhatTuMoi(name, userObj, userId) {
           var nm = String(name == null ? "" : name).replace(/^tt_/i, "").trim().slice(0, 40);
           if (!nm) nm = "Phật tử";
+          // Mỗi nhân vật chỉ chào một lần trong phiên. Chống trùng ưu
+          // tiên theo ĐỊNH DANH nhân vật: hai khách khác nhau trùng tên
+          // hiển thị vẫn được chào cả hai. Cửa sổ theo tên 6 giây chỉ
+          // dùng để gộp các kênh trùng của CÙNG một khách khi một trong
+          // hai lượt báo không mang định danh (postMessage…).
+          var idKey = (userId != null && String(userId) !== "") ? String(userId) : null;
+          if (idKey && welcomeSeenIds[idKey]) return;
+          var now = Date.now();
+          var recent = welcomeRecent[nm];
+          if (recent && now - recent.at < 6000 && (!idKey || !recent.hadId)) return;
+          if (idKey) welcomeSeenIds[idKey] = true;
+          welcomeRecent[nm] = { at: now, hadId: !!idKey };
           // Nhân vật của khách cúi chào một cái khi vừa xuất hiện trong sảnh.
           // Riêng khách TikTok đã được xếp nệm: bỏ cúi chào này để khách đi
           // thẳng tới nệm của mình ngồi — chào nhau bằng bảng chào là đủ.
@@ -3454,11 +3605,8 @@
             var target = userObj;
             setTimeout(function () { if (target.action === "walking" && !target.pendingMeditate) beginBow(target); }, 450);
           }
-          var now = Date.now();
-          if (welcomeRecent[nm] && now - welcomeRecent[nm] < 6000) return; // vừa chào khách này rồi — không lặp bảng chào
-          welcomeRecent[nm] = now;
           welcomeQueue.push(nm);
-          if (!welcomeShowing) showNextWelcome();
+          pumpWelcome();
         }
         window.chaoPhatTuMoi = function (data) {
           if (data && typeof data === "object") chaoPhatTuMoi(giftField(data, ["ten", "name", "username", "userName", "nickname", "displayName", "uniqueId"]));
@@ -3731,6 +3879,14 @@
            khác mà chỉ có TÊN mang tiền tố tt_ — nên khớp tiếp theo tên /
            định danh đã bỏ tiền tố tt_ (không phân biệt hoa thường). */
         function stripTtPrefix(s) { return String(s == null ? "" : s).replace(/^tt_/i, "").trim().toLowerCase(); }
+        /* Khóa so khớp "mềm": bỏ tiền tố tt_, bỏ dấu tiếng Việt, hạ chữ
+           thường và bỏ mọi ký tự không phải chữ/số — để tên hiển thị của
+           nhân vật ("Khach Chao") khớp được với định danh TikTok ghi
+           trong các gói sự kiện khác ("khach.chao", "khachchao"). Lượt
+           khớp mềm chỉ chạy khi lượt khớp chính xác ở dưới trượt hẳn. */
+        function nameKey(s) {
+          return stripTtPrefix(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\u0111/g, "d").replace(/[^a-z0-9]/g, "");
+        }
         function findChatUser(sid, nm) {
           if (sid != null && users[sid]) return users[sid];
           var wantId = stripTtPrefix(sid);
@@ -3741,6 +3897,15 @@
             var u = users[id];
             if (wantId && (stripTtPrefix(id) === wantId || stripTtPrefix(u.name) === wantId)) { found = u; return; }
             if (wantName && stripTtPrefix(u.name) === wantName) found = u;
+          });
+          if (found) return found;
+          var keyId = nameKey(sid), keyName = nameKey(nm);
+          if (!keyId && !keyName) return null;
+          Object.keys(users).forEach(function (id) {
+            if (found || String(id) === String(myId)) return;
+            var u = users[id];
+            var ku = nameKey(u.name), kid = nameKey(id);
+            if ((keyId && (ku === keyId || kid === keyId)) || (keyName && ku === keyName)) found = u;
           });
           return found;
         }
@@ -3904,8 +4069,16 @@
            nhiều kênh cùng phát một lượt lạy thì chống trùng gộp làm một. */
         function remoteBowForUser(u) {
           if (!u || u === users[myId]) return;
-          if (u.pendingBow || u.action === "bowing" || u.queuedBow) return; // đã có một lượt lạy đang chạy/ghi nhớ
           var nowMs = Date.now();
+          if (u.pendingBow || u.action === "bowing" || u.queuedBow) {
+            // Đang có một lượt lạy chạy: nếu lượt đang chạy là CÙNG một
+            // sự kiện phát qua nhiều kênh (rất gần nhau) thì gộp bỏ;
+            // nếu là một lượt lạy MỚI (một món quà khác, một lệnh khác)
+            // đến trong lúc khách còn đang lạy thì GHI NHỚ để lạy tiếp
+            // ngay khi lượt hiện tại xong — không được rơi mất.
+            if (!u.queuedBow && u.lastBowAt && nowMs - u.lastBowAt >= 2500) u.queuedBow = true;
+            return;
+          }
           if (u.lastBowAt && nowMs - u.lastBowAt < 2500) return; // cùng một lượt lạy phát qua nhiều kênh — gộp làm một
           if (u.action === "offering" || u.action === "belling" || u.pendingOffer || u.pendingBell) {
             u.queuedBow = true;
@@ -3959,6 +4132,7 @@
             everConnected = true;
             outageSince = 0;
             outageReloaded = false;
+            snapshotSeenOnce = false; // bản chụp current_users đầu tiên sau mỗi lần nối không tính là khách mới vào
             var oldSelf = users[myId];
             var newUsers = {};
             Object.keys(users).forEach(function (id) { if (id !== myId) newUsers[id] = users[id]; });
@@ -3975,7 +4149,10 @@
             updateCount();
           });
 
+          var snapshotSeenOnce = false;
           socket.on("current_users", function (serverUsers) {
+            var prevUserIds = {};
+            Object.keys(users).forEach(function (id) { prevUserIds[id] = true; });
             var selfState = users[myId];
             var merged = {};
             Object.keys(serverUsers).forEach(function (id, idx) {
@@ -4001,6 +4178,20 @@
             });
             if (!merged[myId]) merged[myId] = selfState || makeUser(270, 918, colorForGender(myGender, 0), myDisplayName, myGender);
             users = merged;
+            // Khách TikTok lần đầu xuất hiện trong một bản chụp danh sách
+            // GỬI LẠI giữa buổi (không phải bản chụp đầu tiên ngay khi
+            // mới nối — bản đó gồm cả khách đã ở chùa từ trước): cũng
+            // hiện bảng chào to như đường new_user, phòng trường hợp
+            // server chỉ đồng bộ qua current_users mà không phát
+            // new_user cho khách đó. Chống trùng theo định danh.
+            if (snapshotSeenOnce) {
+              Object.keys(users).forEach(function (id) {
+                if (id === myId) return;
+                var wu = users[id];
+                if (wu && wu.isTikTok && !prevUserIds[id]) chaoPhatTuMoi(wu.name, wu, id);
+              });
+            }
+            snapshotSeenOnce = true;
             Object.keys(users).forEach(function (id) {
               if (id === myId) return;
               var ru = users[id];
@@ -4034,9 +4225,12 @@
               // mỗi nệm một khách, nệm kín hết thì khách đứng ở sảnh như cũ.
               var ttRawName = String(nu.name || nu.displayName || "");
               if (markTikTok(u, data.id, ttRawName)) {
+                // Bảng chào to dưới lư hương kích hoạt TRƯỚC và độc lập
+                // với việc xếp nệm: xếp nệm có trục trặc cũng không được
+                // nuốt mất lời chào của khách vừa vào.
+                chaoPhatTuMoi(u.name, u, data.id);
                 if (u.action !== "offering" && u.action !== "bowing") assignTikTokSeat(u);
                 else reserveTikTokSeat(u);
-                chaoPhatTuMoi(u.name, u);
               }
             } else if (nu.name || nu.gender) {
               users[data.id].name = nu.name || users[data.id].name;
@@ -4046,6 +4240,11 @@
               // đang đứng rảnh chưa có nệm thì xếp nệm cho khách luôn.
               if (markTikTok(users[data.id], data.id, users[data.id].name)) {
                 var eu = users[data.id];
+                // Nhân vật đã có sẵn trong sảnh nhưng giờ mới lộ diện là
+                // khách TikTok (nhánh tạo mới ở trên không chạy): vẫn
+                // hiện bảng chào to cho khách này — chống trùng theo
+                // định danh nên không lặp với nhánh tạo mới.
+                chaoPhatTuMoi(eu.name, eu, data.id);
                 if ((eu.homeCushion === null || eu.homeCushion === undefined) && eu.action === "walking" && !eu.pendingOffer && !eu.pendingMeditate && !eu.pendingBow && !eu.pendingBell) assignTikTokSeat(eu);
               }
             }
@@ -4162,6 +4361,14 @@
             var evKind = data.event || data.type || data.kind || "";
             if (evKind === "gift") hienLoiChucQuaTang(data.data || data.gift || data);
             else if (evKind === "bow" || evKind === "bowing" || evKind === "chant" || evKind === "niem_phat") remoteBow(data.data || data);
+            else if (evKind === "member" || evKind === "join" || evKind === "member_join" || evKind === "tiktok_member" || evKind === "user_join") {
+              // Sự kiện khách vào phòng đi qua kênh tiktok_event: cũng
+              // hiện bảng chào to dưới lư hương (chống trùng với đường
+              // new_user theo định danh/tên trong chaoPhatTuMoi).
+              var md2 = data.data || data;
+              var mpn = payloadIdName(md2);
+              chaoPhatTuMoi(mpn.name || giftField(md2, ["ten", "name", "username", "userName", "nickname", "displayName", "uniqueId"]), undefined, mpn.id);
+            }
           });
 
           socket.on("disconnect", function () {
@@ -4459,35 +4666,26 @@
         if (!stage || !btnOpen || !btnExit) return;
         var fallbackOn = false;
 
-        /* ---- Chế độ phát live "?full" ----
+        /* ---- Chế độ màn hình phát "?full" (display mode) ----
            Mở bằng địa chỉ …/?full (nguồn liên kết TikTok LIVE Studio):
-           đã có hồ sơ tên/giới tính đã lưu thì tự bật sẵn Full sảnh
-           ngay khi trang tải xong — sau mỗi lần trang tự làm mới, hình
-           phát vẫn chỉ là sảnh chùa kín khung, không quay về cổng vào.
-           Chưa có hồ sơ: trang hiện cổng vào như thường; Phật tử điền
-           tên và bấm "Vào Chùa" xong thì trang mới tự bật Full sảnh. */
+           trang BỎ QUA cổng nhập tên hoàn toàn và bật Full sảnh ngay
+           khi tải xong — KHÔNG cần hồ sơ đã lưu, không cần cú bấm nào.
+           Có hồ sơ đã lưu thì dùng hồ sơ đó; chưa có thì trang chạy ở
+           chế độ chỉ-hiển thị với danh tính trung tính "Sảnh Chùa"
+           (xem script chính). Bố cục "chỉ có sảnh" do CSS theo cờ
+           live-display trên thẻ html đảm nhiệm; ở đây chỉ thêm trạng
+           thái full sảnh + ẩn nút Thoát khỏi hình phát như trước. Sau
+           mỗi lần trang tự làm mới, ?full vẫn vào thẳng Full sảnh. */
         var liveFullParam = false;
         try { liveFullParam = new URLSearchParams(window.location.search).has("full"); } catch (e) {}
-        function savedProfileExists() {
-          try {
-            var raw = window.localStorage.getItem("chuaThanhTinhPrefsV1");
-            if (!raw) return false;
-            var p = JSON.parse(raw);
-            return !!(p && p.hasProfile && p.name && String(p.name).trim());
-          } catch (e) { return false; }
-        }
         function enterLiveFull() {
+          document.documentElement.classList.add("live-display");
           document.body.classList.add("live-full");
           if (!fallbackOn && !fsElement()) enterFallback();
         }
         if (liveFullParam) {
-          if (savedProfileExists()) {
-            if (document.readyState === "complete") setTimeout(enterLiveFull, 350);
-            else window.addEventListener("load", function () { setTimeout(enterLiveFull, 350); });
-          } else {
-            var btnEnterGate = document.getElementById("btnSetIdentity");
-            if (btnEnterGate) btnEnterGate.addEventListener("click", function () { setTimeout(enterLiveFull, 60); });
-          }
+          if (document.readyState === "complete") setTimeout(enterLiveFull, 350);
+          else window.addEventListener("load", function () { setTimeout(enterLiveFull, 350); });
         }
 
         function fsElement() {
