@@ -162,6 +162,20 @@ function addMeritFixed(evt, points) {
     broadcastMerit();
 }
 
+// ---------- LOI CHUC CUA CHUA CHO KHACH BINH LUAN ----------
+// Khach TikTok binh luan thuong (khong phai khau lenh) se nhan lai mot loi chuc
+// hien tren dau nhan vat + dong su kien; moi khach toi da 1 loi chuc moi 45 giay.
+const BLESSINGS = [
+    'Chúc bạn thân tâm thường an lạc 🙏',
+    'Chúc gia đình bạn bình an, vạn sự hanh thông',
+    'Chúc bạn sức khỏe dồi dào, phiền não tiêu tan',
+    'Nguyện chúc bạn một ngày an lành, tâm luôn thanh tịnh',
+    'Chúc bạn cầu được ước thấy, phúc lộc song toàn',
+    'Chúc nhà bạn ấm êm, cha mẹ an khang',
+    'Nguyện ánh sáng Phật pháp soi đường cho bạn',
+    'Chúc bạn gặp nhiều may mắn, quý nhân phù trợ'
+];
+
 // ---------- BO QUE XIN XAM CHO KHACH TIKTOK (lenh chat xin que / xin xam) ----------
 const FORTUNES = [
     { hang: 'Thượng Thượng Cát', tho: 'Sen nở giữa hồ trong, phúc lộc tự nhiên đầy.', giai: 'Rất tốt: mọi việc hanh thông, cầu được ước thấy.' },
@@ -232,6 +246,13 @@ function handleLiveEvent(evt) {
                 users[id].action = 'meditating';
                 io.emit('user_meditating', { id });
             } else {
+                // Binh luan thuong: chua gui lai loi chuc cho khach (chong spam 45s/khach)
+                const nowB = Date.now();
+                if (ttGuests[id] && (!ttGuests[id].lastBlessing || nowB - ttGuests[id].lastBlessing > 45000)) {
+                    ttGuests[id].lastBlessing = nowB;
+                    const bl = BLESSINGS[Math.floor(Math.random() * BLESSINGS.length)];
+                    io.emit('user_blessing', { id, name: users[id].name, text: bl });
+                }
                 ttWander(id);
             }
         }
