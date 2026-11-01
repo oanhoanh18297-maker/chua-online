@@ -46,6 +46,7 @@ app.all('/tf', (req, res) => {
     const q = Object.assign({}, req.query, req.body || {});
     const evt = {
         type: String(q.type || ''),
+        src: String(q.src || 'tt'),
         user: String(q.u || q.user || ''),
         nickname: String(q.n || q.nickname || ''),
         text: String(q.text || ''),
@@ -60,7 +61,7 @@ app.all('/tf', (req, res) => {
         evt.type = 'chat';
         evt.text = acts[String(q.act || '')] || '';
     }
-    if (['member', 'chat', 'gift', 'follow'].includes(evt.type) && evt.user) {
+    if (['member', 'chat', 'gift', 'follow', 'live_end'].includes(evt.type) && (evt.type === 'live_end' || evt.user)) {
         handleLiveEvent(evt);
         console.log('Su kien TikTok qua /tf:', evt.type, '|', evt.nickname || evt.user, '|', evt.text || evt.giftName || '');
         return res.json({ ok: true, received: evt });
@@ -104,20 +105,30 @@ function stripAccents(s) {
     return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
 }
 
+// Nguon khach live: 'tt' (TikTok, mac dinh), 'fb' (Facebook), 'yt' (YouTube).
+// Moi nguon co rieng mot nhom khach (id bat dau bang tt_/fb_/yt_), gioi han va
+// nhuong cho tinh rieng tung nguon, live_end cua nguon nao chi don khach nguon do.
+function guestSrc(evt) {
+    const s = String((evt && evt.src) || 'tt').toLowerCase();
+    return (s === 'fb' || s === 'yt') ? s : 'tt';
+}
+
 function ensureTtGuest(evt) {
+    const src = guestSrc(evt);
     const uname = String(evt.user || '').replace(/[^a-zA-Z0-9_.]/g, '').slice(0, 30);
     if (!uname) return null;
-    const id = 'tt_' + uname;
+    const id = src + '_' + uname;
     if (!users[id]) {
-        if (Object.keys(ttGuests).length >= TT_MAX_GUESTS) {
-            // Sanh day: khach TikTok cu ngoi lau nhat ma khong tuong tac va chua
+        const sameSrc = Object.keys(ttGuests).filter(g => g.startsWith(src + '_'));
+        if (sameSrc.length >= TT_MAX_GUESTS) {
+            // Nguon nay da day: khach cu ngoi lau nhat ma khong tuong tac va chua
             // tung co cong duc (tang qua/dang hoa/cau phuc) se nhuong cho cho
-            // khach moi. Chong ket khach cu khi live ket thuc ma tin hieu
-            // live_end khong toi duoc may chu (chi con cho quet 2 gio).
+            // khach moi cung nguon. Chong ket khach cu khi live ket thuc ma tin
+            // hieu live_end khong toi duoc may chu (chi con cho quet 2 gio).
             let victim = null, victimSeen = Infinity;
-            for (const gid of Object.keys(ttGuests)) {
-                const uname = gid.slice(3).toLowerCase();
-                if (merit[uname] && merit[uname].points > 0) continue;
+            for (const gid of sameSrc) {
+                const mkey = src + ':' + gid.slice(src.length + 1).toLowerCase();
+                if (merit[mkey] && merit[mkey].points > 0) continue;
                 const seen = (ttGuests[gid] && ttGuests[gid].lastSeen) || 0;
                 if (seen < victimSeen) { victimSeen = seen; victim = gid; }
             }
@@ -125,7 +136,7 @@ function ensureTtGuest(evt) {
             delete ttGuests[victim];
             delete users[victim];
             io.emit('user_left', { id: victim });
-            console.log('Sanh day: khach cu', victim, 'nhuong cho cho khach moi');
+            console.log('Sanh', src, 'day: khach cu', victim, 'nhuong cho cho khach moi');
         }
         ttGenderFlip = !ttGenderFlip;
         users[id] = {
@@ -139,7 +150,7 @@ function ensureTtGuest(evt) {
         };
         ttGuests[id] = { lastSeen: Date.now() };
         io.emit('new_user', { id, user: publicUser(users[id]) });
-        console.log('Khach TikTok vao chua:', id, users[id].name);
+        console.log('Khach live vao chua:', id, users[id].name);
     }
     ttGuests[id].lastSeen = Date.now();
     if (evt.nickname) users[id].name = String(evt.nickname).slice(0, 24);
@@ -163,9 +174,13 @@ function meritEntries() {
         .map(e => ({ name: e.name, points: e.points }));
 }
 function broadcastMerit() { io.emit('merit_board', { entries: meritEntries() }); }
+function meritKey(evt) {
+    return guestSrc(evt) + ':' + String(evt.user || '').toLowerCase();
+}
+
 function addMerit(evt, giftCount) {
-    const key = String(evt.user || '').toLowerCase();
-    if (!key) return;
+    const key = meritKey(evt);
+    if (!String(evt.user || '')) return;
     const coins = parseInt(evt.coins, 10) || 0;
     const add = coins > 0 ? coins : Math.max(1, giftCount || 1);
     if (!merit[key]) merit[key] = { name: String(evt.nickname || evt.user).slice(0, 24), points: 0 };
@@ -174,8 +189,8 @@ function addMerit(evt, giftCount) {
     broadcastMerit();
 }
 function addMeritFixed(evt, points) {
-    const key = String(evt.user || '').toLowerCase();
-    if (!key || !points) return;
+    const key = meritKey(evt);
+    if (!String(evt.user || '') || !points) return;
     if (!merit[key]) merit[key] = { name: String(evt.nickname || evt.user).slice(0, 24), points: 0 };
     merit[key].name = String(evt.nickname || evt.user).slice(0, 24);
     merit[key].points += points;
@@ -212,8 +227,11 @@ function handleLiveEvent(evt) {
     if (!evt || typeof evt !== 'object') return;
     const type = evt.type;
     if (type === 'live_end') {
-        // Buoi live ket thuc (cau noi bao): toan bo khach TikTok roi chua, sảnh trong lai
+        // Buoi live ket thuc (cau noi bao): chi khach cua DUNG nguon do roi chua,
+        // khach TikTok/Facebook/YouTube cua cac buoi live khac khong bi anh huong
+        const prefix = guestSrc(evt) + '_';
         for (const gid of Object.keys(ttGuests)) {
+            if (!gid.startsWith(prefix)) continue;
             delete ttGuests[gid];
             if (users[gid]) { delete users[gid]; io.emit('user_left', { id: gid }); }
         }
