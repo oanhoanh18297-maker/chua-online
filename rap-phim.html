@@ -88,8 +88,8 @@
 
       /* ---------- Layout ---------- */
       .layout{
-        display:grid;grid-template-columns:288px minmax(0,1fr)308px;gap:14px;
-        padding:14px;max-width:1720px;margin:0 auto;align-items:start;
+        display:grid;grid-template-columns:248px minmax(0,1fr)268px;gap:12px;
+        padding:10px;max-width:1880px;margin:0 auto;align-items:start;
       }
       .panel{
         background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
@@ -131,7 +131,7 @@
         background:
           radial-gradient(120% 60% at 50% 0%,#131a28 0%,#0a0e16 55%,#06080d 100%);
         border:1px solid #1c2434;
-        padding:26px 30px 0;
+        padding:18px 14px 0;
       }
       /* dải đèn tường hai bên */
       .stage::before,.stage::after{
@@ -142,18 +142,18 @@
       }
       .stage::before{left:0;mask-image:linear-gradient(90deg,#000,transparent)}
       .stage::after{right:0;mask-image:linear-gradient(-90deg,#000,transparent)}
-      .screen-row{display:flex;align-items:stretch;justify-content:center;gap:18px;position:relative;z-index:2}
+      .screen-row{display:flex;align-items:stretch;justify-content:center;gap:10px;position:relative;z-index:2}
       .speaker{
-        width:44px;flex:none;border-radius:9px;background:linear-gradient(180deg,#141a26,#0b0f16);
+        width:32px;flex:none;border-radius:9px;background:linear-gradient(180deg,#141a26,#0b0f16);
         border:1px solid #232c3e;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:12px 0;
       }
       .speaker i{display:block;border-radius:50%;background:radial-gradient(circle at 35% 35%,#39445a,#12161f 70%);border:1px solid #2b3548}
       .speaker i:nth-child(1){width:15px;height:15px}
       .speaker i:nth-child(2){width:24px;height:24px}
-      .speaker i:nth-child(3){width:30px;height:30px}
-      .speaker i:nth-child(4){width:30px;height:30px}
+      .speaker i:nth-child(3){width:26px;height:26px}
+      .speaker i:nth-child(4){width:26px;height:26px}
       .screen-bezel{
-        flex:1;max-width:880px;background:#000;border-radius:10px;padding:9px 9px 4px;
+        flex:1;max-width:1120px;background:#000;border-radius:10px;padding:7px 7px 4px;
         box-shadow:0 0 0 1px #2a3347,0 0 65px rgba(140,180,255,.16),0 24px 50px rgba(0,0,0,.6);
       }
       .screen{position:relative;aspect-ratio:16/9;background:#000;border-radius:4px;overflow:hidden}
@@ -166,7 +166,7 @@
         text-align:center;font-size:10px;font-weight:800;letter-spacing:4.5px;color:#8d99ae;padding:6px 0 3px;
       }
       .stage-floor{
-        height:26px;margin:14px -30px 0;position:relative;z-index:1;
+        height:22px;margin:10px -14px 0;position:relative;z-index:1;
         background:linear-gradient(180deg,rgba(242,181,68,.14),transparent);
         border-top:1px solid rgba(242,181,68,.25);
       }
@@ -177,31 +177,49 @@
 
       /* ---------- Ghế & khán giả ---------- */
       .hall-wrap{position:relative;z-index:2;padding:2px 2px 20px;perspective:880px;perspective-origin:50% 0}
-      .hall{transform:rotateX(34deg);transform-origin:50% 0;display:flex;flex-direction:column;gap:7px;padding:0 6px}
+      .hall{transform:rotateX(34deg);transform-origin:50% 0;display:flex;flex-direction:column;gap:6px;padding:0 6px}
       .seat-row{display:flex;justify-content:center;gap:5px}
       .aisle{flex:0 0 34px}
       .seat{
-        position:relative;flex:1 1 0;max-width:64px;min-width:0;height:52px;
+        position:relative;flex:1 1 0;max-width:68px;min-width:0;height:64px;
         background:linear-gradient(180deg,var(--chair-hi),var(--chair) 55%,#1b2230);
         border-radius:9px 9px 5px 5px;border:1px solid #12161f;
         box-shadow:inset 0 2px 0 rgba(255,255,255,.06),0 3px 5px rgba(0,0,0,.45);
       }
-      .seat.empty{opacity:.5}
+      .seat-num{
+        position:absolute;top:2px;left:4px;z-index:4;font-size:7.5px;font-weight:800;line-height:1;
+        color:rgba(219,228,242,.72);text-shadow:0 1px 2px rgba(0,0,0,.9);letter-spacing:.2px;pointer-events:none;
+      }
+      .seat.taken .seat-num{color:rgba(255,217,122,.85)}
+      .seat.empty{opacity:.55}
       .seat .fig{position:absolute;inset:0;display:none}
       .seat.taken .fig{display:block}
       .seat .head{
-        position:absolute;left:50%;top:1px;transform:translateX(-50%);
-        width:21px;height:21px;border-radius:50%;
+        position:absolute;left:50%;top:0;transform:translateX(-50%);z-index:2;
+        width:29px;height:29px;border-radius:50%;
         background:radial-gradient(circle at 35% 30%,#f3cfa9,#dfa878 75%);
       }
       .seat .head::before{
         content:"";position:absolute;left:-1px;right:-1px;top:-2px;height:11px;border-radius:11px 11px 4px 4px;
         background:var(--hair,#3a2a1c);
       }
+      /* NAM: tóc ngắn gọn */
+      .seat.gender-nam .head::before{height:10px;border-radius:11px 11px 3px 3px}
+      /* NỮ: tóc dài hai bên + phủ trên đầu, nhìn xa cũng nhận ra */
+      .seat.gender-nu .head::before{height:20px;left:-4px;right:-4px;top:-3px;border-radius:16px 16px 7px 7px}
+      .seat.gender-nu .head::after{
+        content:"";position:absolute;left:-5px;top:9px;width:7px;height:17px;border-radius:4px;
+        background:var(--hair,#241610);box-shadow:31px 0 0 var(--hair,#241610);
+      }
       .seat .body{
-        position:absolute;left:50%;bottom:13px;transform:translateX(-50%);
-        width:30px;height:19px;border-radius:8px 8px 3px 3px;background:var(--shirt,#7fb2d9);
-        box-shadow:inset 0 -5px 0 rgba(0,0,0,.14);
+        position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:1;
+        width:42px;height:26px;border-radius:9px 9px 3px 3px;background:var(--shirt,#5b9bd5);
+        box-shadow:inset 0 -6px 0 rgba(0,0,0,.16);
+      }
+      /* NỮ: thân là váy xoè hình thang màu hồng */
+      .seat.gender-nu .body{
+        width:44px;height:28px;bottom:13px;border-radius:4px 4px 3px 3px;
+        clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);
       }
       .seat .tag{
         position:absolute;left:2px;right:2px;bottom:2px;text-align:center;
@@ -333,7 +351,7 @@
       /* ---------- Nhân vật đi bộ vào / ra ---------- */
       .walk-layer{position:absolute;inset:0;pointer-events:none;z-index:7;overflow:hidden}
       .walker{
-        position:absolute;width:56px;transform:translate(-50%,-100%);text-align:center;
+        position:absolute;width:74px;transform:translate(-50%,-100%);text-align:center;
         transition:left 1.6s ease-in-out,top 1.6s ease-in-out;z-index:8;
         filter:drop-shadow(0 8px 10px rgba(0,0,0,.55));
       }
@@ -343,16 +361,26 @@
         margin-bottom:2px;
       }
       .walker .w-head{
-        display:block;margin:0 auto;width:27px;height:27px;border-radius:50%;
+        display:block;margin:0 auto;width:36px;height:36px;border-radius:50%;
         background:radial-gradient(circle at 35% 30%,#f3cfa9,#dfa878 75%);position:relative;
       }
       .walker .w-head::before{
         content:"";position:absolute;left:-1px;right:-1px;top:-2px;height:14px;border-radius:14px 14px 4px 4px;
         background:var(--hair,#3a2a1c);
       }
+      .walker.gender-nam .w-head::before{height:12px}
+      .walker.gender-nu .w-head::before{height:24px;left:-5px;right:-5px;top:-3px;border-radius:18px 18px 7px 7px}
+      .walker.gender-nu .w-head::after{
+        content:"";position:absolute;left:-6px;top:11px;width:8px;height:21px;border-radius:4px;
+        background:var(--hair,#241610);box-shadow:38px 0 0 var(--hair,#241610);
+      }
       .walker .w-body{
-        display:block;margin:-2px auto 0;width:40px;height:25px;border-radius:10px 10px 4px 4px;
-        background:var(--shirt,#7fb2d9);box-shadow:inset 0 -6px 0 rgba(0,0,0,.14);
+        display:block;margin:-2px auto 0;width:54px;height:33px;border-radius:11px 11px 4px 4px;
+        background:var(--shirt,#5b9bd5);box-shadow:inset 0 -6px 0 rgba(0,0,0,.14);
+      }
+      .walker.gender-nu .w-body{
+        width:56px;height:35px;border-radius:4px;
+        clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);
       }
 
       /* ---------- HUD + hướng dẫn trên sân khấu (chế độ phát sóng) ---------- */
@@ -385,7 +413,7 @@
       body.admin #adminPanel{display:block}
 
       @media (max-width:1180px){
-        .layout{grid-template-columns:250px minmax(0,1fr)}
+        .layout{grid-template-columns:228px minmax(0,1fr)}
         .panel-right{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:14px}
         .panel-right .panel{margin-top:0}
         .panel-right .panel.wide{grid-column:1 / -1}
@@ -395,14 +423,17 @@
         .stage-col{order:-1;width:100%}
         .panel-left,.panel-right{width:100%}
         .panel-right{grid-template-columns:1fr}
-        .stage{padding:16px 10px 0}
+        .stage{padding:12px 6px 0}
         .stage::before,.stage::after{width:44px}
         .speaker{display:none}
-        .stage-floor{margin:10px -10px 0}
+        .stage-floor{margin:8px -6px 0}
         .aisle{flex-basis:14px}
-        .seat{height:44px}
-        .seat .head{width:16px;height:16px}
-        .seat .body{width:23px;height:15px;bottom:11px}
+        .seat{height:54px}
+        .seat .head{width:23px;height:23px}
+        .seat.gender-nu .head::after{box-shadow:25px 0 0 var(--hair,#241610);height:14px}
+        .seat .body{width:33px;height:21px;bottom:12px}
+        .seat.gender-nu .body{width:35px;height:23px;bottom:11px}
+        .seat-num{font-size:6.5px;left:3px;top:1px}
         .seat .tag{font-size:6.4px}
         .status-pill{margin-inline:0}
         .bubble{max-width:110px;font-size:10px}
@@ -464,6 +495,8 @@
           <p class="kicker">KHÁN GIẢ TIKTOK LÀM GÌ?</p>
           <ul class="cmd-list">
             <li><code>Bình luận bất kỳ</code><span>để vào rạp — hệ thống tự tìm ghế trống và gắn biển tên của bạn.</span></li>
+            <li><code>ghế 12</code><span>Gõ <b>ghế + số</b> (ví dụ: <b>ghế 12</b>) để chọn ghế — nhân vật sẽ đi sang đúng ghế đó. Ghế đã có người thì chọn ghế khác.</span></li>
+            <li><code>nam / nữ</code><span>Gõ <b>nam</b> hoặc <b>nữ</b> để chọn nhân vật — nam tóc ngắn áo xanh, nữ tóc dài váy hồng, giữ nguyên ghế đang ngồi.</span></li>
             <li><code>skip</code><span>để vote bỏ qua phim đang chiếu. Đủ 35% là chuyển phim.</span></li>
             <li><code>Gửi link YouTube</code><span>để đề xuất phim — link vào hàng chờ, chủ rạp duyệt rồi mới chiếu.</span></li>
             <li><code>Bình luận</code><span>khi đã có ghế: lời chat hiện thành bong bóng ngay trên đầu bạn trong rạp.</span></li>
@@ -506,7 +539,7 @@
             <div class="hall" id="hall" aria-label="Khu vực ghế ngồi"></div>
           </div>
           <div class="walk-layer" id="walkLayer" aria-hidden="true"></div>
-          <p class="stage-guide">Bình luận để vào rạp ngồi xem phim &nbsp;·&nbsp; Gõ <b>SKIP</b> để vote chuyển phim &nbsp;·&nbsp; Dán link YouTube để gửi phim vào hàng chờ</p>
+          <p class="stage-guide">Bình luận để vào rạp ngồi xem phim &nbsp;·&nbsp; Gõ <b>ghế + số</b> (ví dụ: <b>ghế 12</b>) để chọn ghế &nbsp;·&nbsp; Gõ <b>nam</b> hoặc <b>nữ</b> để chọn nhân vật &nbsp;·&nbsp; Gõ <b>SKIP</b> để vote chuyển phim &nbsp;·&nbsp; Dán link YouTube để gửi phim vào hàng chờ</p>
         </section>
 
         <form class="chatbar" id="chatForm">
@@ -596,7 +629,7 @@
         current: { id: null, title: "", by: "" },
         queue: [],           // {id,title,by}
         submissions: [],     // {id,title,by}
-        guests: [],          // {id,name,seat,color,hair}
+        guests: [],          // {id,name,seat(0-based idx),color,hair,gender:'nam'|'nu'}
         guestById: {},
         votes: {},           // local: name -> true
         voteData: null,      // server: {count,needed,percent}
@@ -607,7 +640,37 @@
         guestCounter: 0
       };
       var SHIRTS = ["#a8c8e8","#f2b8c6","#b5dfa8","#f7dc8f","#d3bdf0","#f5b98a","#9adfd4","#e8a8a8","#b8c4e8","#cfe3a1","#f0c8dd","#a5d8c8"];
+      var MALE_SHIRTS = ["#3f7fd0","#2f6fb8","#4a90d9","#3565a8","#2b5f9e","#5b9bd5","#315f8f","#4682c4"];
+      var FEMALE_SHIRTS = ["#ef7fa8","#f28bb4","#e86a9a","#f49ac1","#e75480","#f78fb0","#ec6f9e","#f2a0c0"];
       var HAIRS  = ["#2b2019","#453222","#17130f","#5a4030","#0f0d0b","#6b4a2e"];
+      function normalizeGender(g){
+        if (g == null) return null;
+        var s = String(g).trim().toLowerCase();
+        if (s === "nu" || s === "nữ" || s === "female" || s === "f") return "nu";
+        if (s === "nam" || s === "male" || s === "m") return "nam";
+        return null;
+      }
+      function lookForGender(gender){
+        // NAM: áo xanh dương, tóc ngắn nâu/đen · NỮ: váy/áo hồng, tóc dài đen/nâu
+        if (gender === "nu"){
+          return { color: FEMALE_SHIRTS[Math.floor(Math.random() * FEMALE_SHIRTS.length)], hair: ["#17110d","#241610","#2e1c12","#120d0a"][Math.floor(Math.random() * 4)] };
+        }
+        return { color: MALE_SHIRTS[Math.floor(Math.random() * MALE_SHIRTS.length)], hair: HAIRS[Math.floor(Math.random() * HAIRS.length)] };
+      }
+      function parseSeatCommand(text){
+        if (!text) return null;
+        var m = String(text).match(/(?:ghế|ghe)\s*(\d{1,3})/i);
+        if (!m) return null;
+        var n = parseInt(m[1], 10);
+        return (n >= 1 && n <= 100) ? n : null;
+      }
+      function parseGenderCommand(text){
+        if (!text) return null;
+        var s = String(text).trim().toLowerCase();
+        if (s === "nam") return "nam";
+        if (s === "nữ" || s === "nu") return "nu";
+        return null;
+      }
       var NAME_POOL = ["Minh Anh","Tuấn Kiệt","Thu Hằng","Văn Đức","Phương Linh","Hoàng Nam","Khánh Vy","Đức Anh","Thanh Tùng","Mỹ Duyên","Quốc Bảo","Hồng Nhung","Trí Dũng","Lan Anh","Phúc Hậu","Thảo Nguyên","Hải Đăng","Kim Ngân","Trọng Nghĩa","Yến Nhi","Bảo Trâm","Đình Phong","Như Quỳnh","Thế Vinh","Mai Phương","Anh Thư","Gia Huy","Tuyết Mai","Đông Quân","Hương Giang"];
       var CHAT_POOL = ["phim này hay nè mọi người","coi đoạn này cười xỉu","ghế giữa xem rõ ghê","cho xin tên phim sau với","tối nay chiếu tới mấy giờ ạ","skip đi, phim này coi rồi","đừng skip, đang hay mà","ai mới vào ngồi ghế cạnh mình nè","rạp đông vui quá","phim sau chiếu hoạt hình nha chủ rạp","âm thanh nghe rõ lắm","mình mới vào, đang chiếu phim gì vậy"];
       var usedNames = {};
@@ -683,7 +746,7 @@
             var seat = document.createElement("div");
             seat.className = "seat empty";
             seat.dataset.idx = String(r * PER_ROW + c);
-            seat.innerHTML = '<div class="fig"><span class="head"></span><span class="body"></span></div><div class="tag"></div>';
+            seat.innerHTML = '<span class="seat-num">' + (r * PER_ROW + c + 1) + '</span><div class="fig"><span class="head"></span><span class="body"></span></div><div class="tag"></div>';
             seat.title = "Ghế " + (r * PER_ROW + c + 1);
             (function(el){
               el.addEventListener("click", function(){
@@ -699,6 +762,7 @@
         }
       }
       function seatLabel(idx){ return String.fromCharCode(65 + Math.floor(idx / PER_ROW)) + String((idx % PER_ROW) + 1).padStart(2, "0"); }
+      function seatNumLabel(idx){ return "ghế " + (idx + 1); }
       function updateStats(){
         $("statOnline").textContent = state.guests.length;
         $("statSeats").textContent = state.guests.length + " / " + TOTAL_SEATS + " ghế";
@@ -708,15 +772,18 @@
       function applySeatVisual(guest){
         var el = seatEls[guest.seat];
         el.classList.remove("empty"); el.classList.add("taken");
+        el.classList.remove("gender-nam", "gender-nu");
+        el.classList.add(guest.gender === "nu" ? "gender-nu" : "gender-nam");
         el.style.setProperty("--shirt", guest.color);
         el.style.setProperty("--hair", guest.hair);
         el.querySelector(".tag").textContent = guest.name;
-        el.title = guest.name + " · ghế " + seatLabel(guest.seat);
+        el.title = guest.name + " · " + seatNumLabel(guest.seat) + " (" + seatLabel(guest.seat) + ")";
       }
       function clearSeatVisual(idx){
         var el = seatEls[idx];
-        el.classList.add("empty"); el.classList.remove("taken");
+        el.classList.add("empty"); el.classList.remove("taken", "gender-nam", "gender-nu");
         el.querySelector(".tag").textContent = "";
+        el.title = "Ghế " + (idx + 1);
         var b = el.querySelector(".bubble"); if (b) b.remove();
       }
 
@@ -735,7 +802,7 @@
       }
       function makeWalker(guest){
         var w = document.createElement("div");
-        w.className = "walker";
+        w.className = "walker " + (guest.gender === "nu" ? "gender-nu" : "gender-nam");
         w.style.setProperty("--shirt", guest.color);
         w.style.setProperty("--hair", guest.hair);
         w.innerHTML = '<div class="w-name">' + esc(guest.name) + '</div><span class="w-head"></span><span class="w-body"></span>';
@@ -765,6 +832,57 @@
         w.style.left = to.x + "px"; w.style.top = to.y + "px";
         setTimeout(function(){ if (w.parentNode) w.remove(); if (done) done(); }, 1700);
       }
+      /* Đổi ghế: đứng dậy ở ghế cũ, đi qua lối đi sang ghế mới rồi ngồi xuống */
+      function walkMove(guest, fromIdx, toIdx){
+        var layer = $("walkLayer");
+        var from = seatPoint(fromIdx), to = seatPoint(toIdx);
+        clearSeatVisual(fromIdx);
+        var w = makeWalker(guest);
+        w.style.left = from.x + "px"; w.style.top = from.y + "px";
+        layer.appendChild(w);
+        void w.offsetWidth;
+        w.style.left = to.x + "px"; w.style.top = to.y + "px";
+        setTimeout(function(){
+          if (w.parentNode) w.remove();
+          if (state.guestById[guest.id] && guest.seat === toIdx) applySeatVisual(guest);
+        }, 1700);
+      }
+      function guestAtSeat(idx, exceptId){
+        return state.guests.filter(function(g){ return g.seat === idx && g.id !== exceptId; })[0] || null;
+      }
+      /* seatNum: số ghế 1..100 do máy chủ (hoặc lệnh chat tại chỗ) chọn */
+      function moveGuestToSeat(guest, seatNum, opts){
+        opts = opts || {};
+        var idx = Number(seatNum) - 1;
+        if (!(idx >= 0 && idx < TOTAL_SEATS)) return false;
+        if (guest.seat === idx) return true;
+        if (guestAtSeat(idx, guest.id)){
+          showBubble(guest, "Ghế đó có người rồi");
+          return false;
+        }
+        var fromIdx = guest.seat;
+        guest.seat = idx;
+        walkMove(guest, fromIdx, idx);
+        if (!opts.silent) feed("<b>" + esc(guest.name) + "</b> chuyển sang <span class='hl'>" + seatNumLabel(idx) + "</span>");
+        updateStats();
+        return true;
+      }
+      function showSeatTaken(guest){
+        if (guest) showBubble(guest, "Ghế đó có người rồi");
+      }
+      function setGuestGender(guest, gender, opts){
+        opts = opts || {};
+        var g = normalizeGender(gender);
+        if (!g || !guest) return false;
+        guest.gender = g;
+        var look = lookForGender(g);
+        guest.color = look.color; guest.hair = look.hair;
+        // Chỉ vẽ lại nếu khách đang ngồi yên trên ghế (không phải đang đi)
+        var el = seatEls[guest.seat];
+        if (el && el.classList.contains("taken")) applySeatVisual(guest);
+        if (!opts.silent) feed("<b>" + esc(guest.name) + "</b> chọn nhân vật <span class='hl'>" + (g === "nu" ? "nữ" : "nam") + "</span>");
+        return true;
+      }
 
       function addGuest(name, opts){
         opts = opts || {};
@@ -774,15 +892,26 @@
         if (state.guestById[id]) return state.guestById[id];
         var taken = {};
         state.guests.forEach(function(g){ taken[g.seat] = true; });
-        var free = seatOrder.filter(function(i){ return !taken[i]; });
-        if (!free.length){ if (!opts.silent) toast("Rạp đã kín 100 ghế!"); return null; }
+        // Máy chủ gửi seat (1..100): đặt ĐÚNG ô ghế đó, không tự xếp lại
+        var chosenSeat = null;
+        if (opts.seat != null && opts.seat !== ""){
+          var sn = Number(opts.seat);
+          if (sn >= 1 && sn <= TOTAL_SEATS && !taken[sn - 1]) chosenSeat = sn - 1;
+        }
+        if (chosenSeat === null){
+          var free = seatOrder.filter(function(i){ return !taken[i]; });
+          if (!free.length){ if (!opts.silent) toast("Rạp đã kín 100 ghế!"); return null; }
+          chosenSeat = free[0];
+        }
         var displayName = name;
         if (usedNames[displayName] && !opts.id) displayName = displayName + " " + (Math.floor(Math.random() * 90) + 10);
         usedNames[displayName] = true;
+        var gender = normalizeGender(opts.gender) || (Math.random() < 0.5 ? "nam" : "nu");
+        var look = lookForGender(gender);
         var guest = {
-          id: id, name: displayName, seat: free[0],
-          color: SHIRTS[Math.floor(Math.random() * SHIRTS.length)],
-          hair: HAIRS[Math.floor(Math.random() * HAIRS.length)]
+          id: id, name: displayName, seat: chosenSeat, gender: gender,
+          color: look.color,
+          hair: look.hair
         };
         state.guests.push(guest);
         state.guestById[id] = guest;
@@ -793,7 +922,7 @@
           el.classList.add("arriving");
           setTimeout(function(){ el.classList.remove("arriving"); }, 750);
         }
-        if (!opts.silent) feed("<b>" + esc(displayName) + "</b> vừa vào rạp, ngồi ghế <span class='hl'>" + seatLabel(guest.seat) + "</span>");
+        if (!opts.silent) feed("<b>" + esc(displayName) + "</b> vừa vào rạp, ngồi <span class='hl'>" + seatNumLabel(guest.seat) + "</span>");
         updateStats(); renderVotes();
         return guest;
       }
@@ -825,6 +954,12 @@
       }
       function guestSay(guest, text){
         var msg = text || CHAT_POOL[Math.floor(Math.random() * CHAT_POOL.length)];
+        if (!state.server){
+          var seatCmd = parseSeatCommand(msg);
+          if (seatCmd !== null){ moveGuestToSeat(guest, seatCmd); return; }
+          var genderCmd = parseGenderCommand(msg);
+          if (genderCmd){ setGuestGender(guest, genderCmd); showBubble(guest, msg); return; }
+        }
         showBubble(guest, msg);
         if (!state.server && /\bskip\b/i.test(msg)) addVote(guest.name);
       }
@@ -1110,13 +1245,28 @@
           if (st.thresholdPercent){ state.threshold = st.thresholdPercent; }
           if (st.votes){ state.voteData = st.votes; }
           clearGuests(true);
-          (st.guests || []).forEach(function(g){ addGuest(g.name, { id: g.id, silent: true }); });
+          (st.guests || []).forEach(function(g){ addGuest(g.name, { id: g.id, seat: g.seat, gender: g.gender, silent: true }); });
           applyQueueData(st.queue, st.submissions);
           if (st.nowPlaying){ playVideo(st.nowPlaying.videoId, st.nowPlaying.byName || "", st.nowPlaying.title || "", st.nowPlaying.startedAt); }
           else { showWaiting(); }
           renderVotes(); updateStats();
         });
-        s.on("new_user", function(u){ if (u) addGuest(u.name, { id: u.id, walk: true }); });
+        s.on("new_user", function(u){ if (u) addGuest(u.name, { id: u.id, seat: u.seat, gender: u.gender, walk: true }); });
+        s.on("seat_changed", function(d){
+          if (!d) return;
+          var g = state.guestById[d.id];
+          if (g && d.seat != null) moveGuestToSeat(g, Number(d.seat));
+        });
+        s.on("seat_taken", function(d){
+          if (!d) return;
+          var g = state.guestById[d.id];
+          showSeatTaken(g);
+        });
+        s.on("user_profile", function(d){
+          if (!d) return;
+          var g = state.guestById[d.id];
+          if (g && d.gender) setGuestGender(g, d.gender);
+        });
         s.on("user_left", function(u){ if (u) removeGuest(u.id, true); });
         s.on("chat_message", function(m){
           if (!m) return;
@@ -1216,9 +1366,24 @@
         if (!state.meSeated){
           var me = addGuest("Chủ rạp", { id: "local-host", silent: true });
           state.meSeated = !!me;
-          if (me) feed("<b>Chủ rạp</b> đã vào ngồi ghế <span class='hl'>" + seatLabel(me.seat) + "</span>");
+          if (me) feed("<b>Chủ rạp</b> đã vào ngồi <span class='hl'>" + seatNumLabel(me.seat) + "</span>");
         }
         var mine = state.guestById["local-host"];
+        if (mine && !state.server){
+          var seatCmd = parseSeatCommand(msg);
+          if (seatCmd !== null){
+            moveGuestToSeat(mine, seatCmd);
+            feed("<b>Chủ rạp:</b> " + esc(msg));
+            return;
+          }
+          var genderCmd = parseGenderCommand(msg);
+          if (genderCmd){
+            setGuestGender(mine, genderCmd);
+            showBubble(mine, msg);
+            feed("<b>Chủ rạp:</b> " + esc(msg));
+            return;
+          }
+        }
         if (mine) showBubble(mine, msg);
         feed("<b>Chủ rạp:</b> " + esc(msg));
         if (!state.server && /\bskip\b/i.test(msg)) addVote("Chủ rạp");

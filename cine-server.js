@@ -34,6 +34,7 @@ app.get('/', (req, res, next) => {
 
 // Man hinh phat song (dung lam nguon TikTok Live Studio): /?rap=1
 app.get('/phong-chieu.html', (req, res) => res.redirect('/?rap=1'));
+app.get('/admin.html', (req, res) => res.redirect('/?admin=1'));
 
 app.get('/health', (req, res) => res.type('text').send('ok'));
 
@@ -52,7 +53,7 @@ const CHAT_FLOOD_MS = 1500;             // chat_message: toi da 1 tin / 1.5 giay
 const LINK_COOLDOWN_MS = 5 * 60 * 1000; // gui link: toi da 1 link / khach / 5 phut
 const DEFAULT_THRESHOLD = 35;           // % khach dang ngoi vote skip thi chuyen phim
 
-const guests = {};        // id -> { id, name, joinedAt, lastSeen, lastChatAt, lastLinkAt }
+const guests = {};        // id -> { id, name, seat, gender, joinedAt, lastSeen, lastChatAt, lastLinkAt }
 let nowPlaying = null;    // { videoId, title, startedAt } | null
 const queue = [];         // [{ videoId, title, byName }] — hang cho DA DUYET
 const submissions = [];   // [{ videoId, byName, at }]   — khan gia gui, cho duyet
@@ -79,7 +80,7 @@ function broadcastQueue() { io.emit('queue_update', { queue, submissions }); }
 
 function stateSnapshot() {
     return {
-        guests: Object.values(guests).map(g => ({ id: g.id, name: g.name, joinedAt: g.joinedAt })),
+        guests: Object.values(guests).map(g => ({ id: g.id, name: g.name, seat: g.seat, gender: g.gender, joinedAt: g.joinedAt })),
         nowPlaying,
         queue: queue.slice(),
         submissions: submissions.slice(),
@@ -96,6 +97,15 @@ function stripAccents(s) {
 // ============================================================================
 // KHACH TIKTOK
 // ============================================================================
+// Ghe trong co so NHO NHAT (hang truoc truoc); rap day thi tra null
+function smallestFreeSeat() {
+    const taken = new Set(Object.values(guests).map(g => g.seat));
+    for (let s = 1; s <= MAX_GUESTS; s++) {
+        if (!taken.has(s)) return s;
+    }
+    return null;
+}
+
 function ensureGuest(evt) {
     const uname = String(evt.user || '').replace(/[^a-zA-Z0-9_.]/g, '').slice(0, 30);
     if (!uname) return null;
@@ -117,13 +127,15 @@ function ensureGuest(evt) {
         guests[id] = {
             id,
             name: String(evt.nickname || uname).slice(0, 24) || uname,
+            seat: smallestFreeSeat(),
+            gender: 'nam',
             joinedAt: Date.now(),
             lastSeen: Date.now(),
             lastChatAt: 0,
             lastLinkAt: 0
         };
-        io.emit('new_user', { id, name: guests[id].name });
-        console.log('Khach vao rap:', id, guests[id].name);
+        io.emit('new_user', { id, name: guests[id].name, seat: guests[id].seat, gender: guests[id].gender });
+        console.log('Khach vao rap:', id, guests[id].name, '| ghe', guests[id].seat);
     }
     guests[id].lastSeen = Date.now();
     if (evt.nickname) guests[id].name = String(evt.nickname).slice(0, 24);
@@ -146,6 +158,33 @@ const VOTE_WORDS = new Set(['skip', 'bo qua', 'skip di', 'chuyen phim']);
 function handleChat(guest, rawText) {
     const text = String(rawText || '').trim();
     if (!text) return;
+    const plain = stripAccents(text);
+
+    // 0a) Lenh chon ghe: "ghe 12", "ghe12", "chon ghe 12", "ghe so 12"
+    const seatMatch = plain.match(/^(?:chon\s+)?ghe\s*(?:so\s*)?(\d{1,3})$/);
+    if (seatMatch) {
+        const target = parseInt(seatMatch[1], 10);
+        if (target < 1 || target > MAX_GUESTS) return; // ngoai 1..100: bo qua
+        if (target === guest.seat) return; // dang ngoi dung ghe do: coi nhu xong, khong phat su kien thua
+        const occupied = Object.values(guests).some(g => g.id !== guest.id && g.seat === target);
+        if (occupied) {
+            io.emit('seat_taken', { id: guest.id, seat: target });
+            console.log('Chon ghe that bai (da co nguoi):', guest.name, '-> ghe', target);
+            return;
+        }
+        guest.seat = target;
+        io.emit('seat_changed', { id: guest.id, seat: target });
+        console.log('Khach doi ghe:', guest.name, '-> ghe', target);
+        return;
+    }
+
+    // 0b) Lenh chon nhan vat: "nam" / "nu" (go khong dau "nu" cung tinh)
+    if (plain === 'nam' || plain === 'nu') {
+        guest.gender = plain;
+        io.emit('user_profile', { id: guest.id, gender: guest.gender });
+        console.log('Khach chon nhan vat:', guest.name, '->', guest.gender);
+        return;
+    }
 
     // 1) Lenh vote bo qua phim hien tai
     if (VOTE_WORDS.has(stripAccents(text))) {
