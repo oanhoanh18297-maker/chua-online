@@ -20,8 +20,11 @@ function fullPage() {
     let html = fs.readFileSync(file, 'utf8');
     html = html.replace('<input id="serverUrl" type="url" value="http://localhost:3000"', '<input id="serverUrl" type="url" value="" placeholder="Dia chi server chua"');
     html = html.replace('serverUrlInput.value || "http://localhost:3000"', 'serverUrlInput.value || location.origin');
-    const auto = '\n<script>\nwindow.addEventListener(\'load\', function () {\n  if (location.protocol !== \'http:\' && location.protocol !== \'https:\') return;\n  setTimeout(function () {\n    var inp = document.getElementById(\'serverUrl\');\n    var btn = document.getElementById(\'btnConnect\');\n    if (inp && btn) { inp.value = location.origin; btn.click(); }\n  }, 900);\n});\n</script>\n</body>';
-    html = html.replace('</body>', auto);
+    // DA GO doan tu dong bam nut Ket noi (ban .36): nut Ket noi la nut gat hai chieu,
+    // cu bam tu dong o 900ms dap trung luc trang vua tu ket noi xong se NGAT ket noi
+    // va khoa che do tu noi lai — nguyen nhan goc loi "live chi co 1 nhan vat",
+    // nang nhat o che do dai sanh (man hinh phat khong nguoi trong). Trang tu .33
+    // da tu ket noi cung nguon + co giam sat tu noi lai, khong can cu bam nay nua.
     fullPageCache = html;
     return html;
 }

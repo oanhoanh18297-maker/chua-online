@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.35" />
+    <meta name="chua-build" content="2026-11-01.36" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -8750,9 +8750,34 @@
           });
         }
 
-        btnConnect.addEventListener("click", function () {
+        btnConnect.addEventListener("click", function (ev) {
           tryStartMusic();
           if (connected && socket) {
+            /* CHỐNG TỰ NGẮT KẾT NỐI Ở MÀN HÌNH PHÁT (bản .36) — nguyên
+               nhân gốc của lỗi "đại sảnh chỉ có 1 nhân vật": nút này là
+               nút GẠT hai chiều, đang nối mà bấm lại là NGẮT hẳn, đồng
+               thời ghi dấu manualDisconnect khiến vòng giám sát tôn
+               trọng không bao giờ tự nối lại. Phía máy chủ thật lại chèn
+               thêm một đoạn tự bấm đúng nút này 900ms sau khi trang tải
+               xong; trang nặng + mạng live chậm làm sự kiện tải xong tới
+               muộn, cú bấm tự động rơi đúng lúc trang VỪA nối xong là
+               sảnh đang đầy khách bị ngắt sạch, đứng một mình cả buổi.
+               Chế độ thường và ?full có người ngồi trước màn hình nên
+               còn bấm nối lại được; riêng ĐẠI SẢNH (?daisanh=1) là nguồn
+               phát không người trông, panel kết nối đã ẩn hẳn — ngắt là
+               KHÔNG CÓ ĐƯỜNG NỐI LẠI, nên ở đó lỗi này là án tử.
+               Luật mới:
+               - Màn hình phát (?full / ?daisanh): nút này KHÔNG BAO GIỜ
+                 ngắt kết nối, dù ai/cái gì bấm.
+               - Mọi chế độ: cú bấm không do người thật thực hiện
+                 (ev.isTrusted === false — cú bấm tự động của máy chủ,
+                 kịch bản chèn…) cũng không được ngắt khi đang nối.
+               Người dùng thật ở chế độ thường bấm nút vẫn ngắt/nối như
+               cũ; cú bấm khi CHƯA nối (kể cả tự động) vẫn nối như cũ. */
+            if (LIVE_FULL_MODE || (ev && ev.isTrusted === false)) {
+              setConnUI("live", "Đang đồng hành cùng mọi người", "Đã bỏ qua một lệnh ngắt kết nối tự động — màn hình phát giữ kết nối liên tục với máy chủ chùa.");
+              return;
+            }
             manualDisconnect = true;
             connWanted = false;
             outageSince = 0;
@@ -8805,6 +8830,13 @@
            chủ động ngắt kết nối (nút bấm) thì giám sát tôn trọng,
            không tự nối lại. */
         setInterval(function () {
+          /* Màn hình phát (?full / ?daisanh) là nguồn live KHÔNG NGƯỜI
+             TRÔNG (bản .36): không tôn trọng dấu "chủ động ngắt" — dù
+             dấu đó bị đặt bởi bất kỳ đường nào, giám sát cũng xóa đi và
+             dựng lại kết nối. Màn hình phát đứng một mình là mất cả
+             buổi live; giữ kết nối liên tục luôn là ý muốn đúng ở đây.
+             Chế độ thường giữ nguyên luật tôn trọng người dùng. */
+          if (LIVE_FULL_MODE && manualDisconnect) manualDisconnect = false;
           if (manualDisconnect || !connWanted) return;
           if (!(location.protocol === "https:" || location.protocol === "http:")) return;
           if (connected) return;
