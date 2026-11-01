@@ -109,7 +109,24 @@ function ensureTtGuest(evt) {
     if (!uname) return null;
     const id = 'tt_' + uname;
     if (!users[id]) {
-        if (Object.keys(ttGuests).length >= TT_MAX_GUESTS) return null;
+        if (Object.keys(ttGuests).length >= TT_MAX_GUESTS) {
+            // Sanh day: khach TikTok cu ngoi lau nhat ma khong tuong tac va chua
+            // tung co cong duc (tang qua/dang hoa/cau phuc) se nhuong cho cho
+            // khach moi. Chong ket khach cu khi live ket thuc ma tin hieu
+            // live_end khong toi duoc may chu (chi con cho quet 2 gio).
+            let victim = null, victimSeen = Infinity;
+            for (const gid of Object.keys(ttGuests)) {
+                const uname = gid.slice(3).toLowerCase();
+                if (merit[uname] && merit[uname].points > 0) continue;
+                const seen = (ttGuests[gid] && ttGuests[gid].lastSeen) || 0;
+                if (seen < victimSeen) { victimSeen = seen; victim = gid; }
+            }
+            if (!victim) return null;
+            delete ttGuests[victim];
+            delete users[victim];
+            io.emit('user_left', { id: victim });
+            console.log('Sanh day: khach cu', victim, 'nhuong cho cho khach moi');
+        }
         ttGenderFlip = !ttGenderFlip;
         users[id] = {
             x: Math.floor(Math.random() * 300) + 250,
