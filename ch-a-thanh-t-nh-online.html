@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện đứng thành đội hình vái lạy Phật liên tục, dâng hương, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.48" />
+    <meta name="chua-build" content="2026-11-01.49" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1685,6 +1685,53 @@
         .stage-merit-mini li { font-size: 9.5px; }
         .stage-merit-mini .mm-empty { font-size: 9px; }
       }
+      /* ---- ICON HOA SEN VÀNG CHUYỂN ĐỘNG LIÊN TỤC ngay DƯỚI BẢNG
+         CÔNG ĐỨC THU NHỎ (chủ chùa yêu cầu để khung hình luôn có
+         chuyển động, tránh bị quét là khung tĩnh): hoa sen vẽ SVG
+         nội tuyến sắc nét (không emoji), neo theo chân bảng bằng
+         top:100% nên bảng dài thêm dòng thì icon tự xuống theo,
+         luôn nằm ngay dưới bảng. Ba nhịp chuyển động CSS thuần,
+         chạy không ngừng và KHÔNG phụ thuộc JS hay khách trong
+         sảnh — sảnh trống vẫn chuyển động: (1) hoa sen QUAY chậm
+         đều 30 giây/vòng; (2) HÀO QUANG vàng sau hoa pulse nhẹ
+         (phồng–xẹp + sáng–mờ) mỗi 3,2 giây; (3) cả icon NHẤP NHÔ
+         rất nhẹ lên–xuống mỗi 4,6 giây. Cỡ 10cqw, neo lệch
+         phải dưới bảng (tâm ở 63% bề ngang bảng, tức ~20cqw từ
+         mép trái sảnh): kể cả khi bảng đầy 8 dòng và icon xuống
+         thấp nhất, mép trái của hoa vẫn cách mép phải của câu
+         đối trái (tâm 9cqw, rộng ~8cqw) một khoảng rõ — không
+         che câu đối, không lấn vùng giữa/tượng Phật. Hiện ở
+         mọi chế độ xem, gồm ?daisanh=1. ---- */
+      .merit-lotus {
+        position: absolute; top: calc(100% + 1.3cqw); left: 63%;
+        width: 10cqw; height: 10cqw;
+        transform: translateX(-50%);
+        pointer-events: none; line-height: 0;
+        animation: lotusBob 4.6s ease-in-out infinite;
+      }
+      .merit-lotus .lotus-halo {
+        position: absolute; inset: -22%; border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 216, 110, 0.6) 0%, rgba(255, 192, 64, 0.3) 46%, rgba(255, 192, 64, 0) 70%);
+        animation: lotusPulse 3.2s ease-in-out infinite;
+      }
+      .merit-lotus .lotus-svg {
+        position: relative; display: block; width: 100%; height: 100%;
+        filter: drop-shadow(0 0.5cqw 0.9cqw rgba(10, 5, 0, 0.4));
+        animation: lotusSpin 30s linear infinite;
+      }
+      @keyframes lotusSpin { to { transform: rotate(360deg); } }
+      @keyframes lotusPulse {
+        0%, 100% { transform: scale(1); opacity: 0.72; }
+        50% { transform: scale(1.16); opacity: 1; }
+      }
+      @keyframes lotusBob {
+        0%, 100% { transform: translate(-50%, 0); }
+        50% { transform: translate(-50%, -0.8cqw); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .merit-lotus, .merit-lotus .lotus-svg { animation: none; }
+        .merit-lotus .lotus-halo { animation-duration: 6s; }
+      }
       /* ---- HAI BĂNG CÂU ĐỐI ĐỎ treo SÁT HAI MÉP NGOÀI của sảnh
          (ghi đè vị trí cũ 20%/80% vốn lấn vào vùng tượng): băng ép
          vào vùng cột/tường hai bên, treo DƯỚI hai bảng góc (top
@@ -1881,6 +1928,28 @@
             <h3>BẢNG CÔNG ĐỨC</h3>
             <ol id="meritMiniList"></ol>
             <p class="mm-empty" id="meritMiniEmpty">Chưa có Phật tử nào tặng quà</p>
+            <div class="merit-lotus" aria-hidden="true">
+              <span class="lotus-halo"></span>
+              <svg class="lotus-svg" viewBox="0 0 120 120" focusable="false" aria-hidden="true">
+                <defs>
+                  <linearGradient id="lotusGold" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#ffedb0" />
+                    <stop offset="0.55" stop-color="#f7c948" />
+                    <stop offset="1" stop-color="#d99a26" />
+                  </linearGradient>
+                  <linearGradient id="lotusGoldDeep" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#f7c948" />
+                    <stop offset="1" stop-color="#b97a16" />
+                  </linearGradient>
+                </defs>
+                <path d="M56 68 C40 66 24 54 18 36 C36 38 50 50 56 68 Z" fill="url(#lotusGoldDeep)" stroke="#9c6a12" stroke-width="1.6" stroke-linejoin="round" />
+                <path d="M64 68 C80 66 96 54 102 36 C84 38 70 50 64 68 Z" fill="url(#lotusGoldDeep)" stroke="#9c6a12" stroke-width="1.6" stroke-linejoin="round" />
+                <path d="M58 66 C46 60 36 46 34 28 C50 34 58 48 58 66 Z" fill="url(#lotusGold)" stroke="#9c6a12" stroke-width="1.6" stroke-linejoin="round" />
+                <path d="M62 66 C74 60 84 46 86 28 C70 34 62 48 62 66 Z" fill="url(#lotusGold)" stroke="#9c6a12" stroke-width="1.6" stroke-linejoin="round" />
+                <path d="M60 22 C70 38 70 56 60 68 C50 56 50 38 60 22 Z" fill="url(#lotusGold)" stroke="#9c6a12" stroke-width="1.6" stroke-linejoin="round" />
+                <path d="M28 74 C42 88 78 88 92 74 C84 96 36 96 28 74 Z" fill="url(#lotusGoldDeep)" stroke="#9c6a12" stroke-width="1.6" stroke-linejoin="round" />
+              </svg>
+            </div>
           </aside>
           <button class="station-label sl-bell" id="btnBellStation" type="button" aria-label="Gõ chuông chùa" title="Gõ chuông">🔔</button>
           <span class="station-label sl-xam" aria-hidden="true">🎋 Xin Xăm</span>
@@ -1959,7 +2028,7 @@
           <div class="yt-holder" aria-hidden="true"><div id="ytPlayer"></div></div>
         </div>
 
-        <p class="action-note" id="actionNote">Sảnh đường được làm mới theo khung hình live của bộ chùa RPC: nền sảnh là một bức tranh chánh điện gỗ chạm khắc tối màu với <strong>một tượng Phật vàng khổng lồ</strong> ngự giữa trên đài sen hồng nhiều lớp, hào quang vàng chạm trổ tỏa tia sau lưng, hai bình hoa sen hồng lớn hai bên, đèn lồng vàng treo cao và ban thờ có lư hương rồng bốc khói. Sảnh <strong>không còn cửa ra vào, không còn ghế ngồi</strong>: hội chúng <strong>đứng thành đội hình ngay ngắn nhìn từ phía sau</strong> thành hai khối hai bên <strong>thảm đỏ trung tâm hoa văn sen vàng</strong>, nhân vật <strong>to rõ</strong>, hướng về Phật và <strong>vái lạy liên tục</strong>, mỗi người lệch nhịp nhau như đang hành lễ thật. Khách mới vào chùa <strong>hiện dần ngay tại một vị trí đứng còn trống trong đội hình</strong> kèm <strong>biển tên lớn đọc rõ trên đầu</strong> — không đi từ cửa vào, không tìm ghế; mỗi người giữ đúng một vị trí đứng suốt buổi, hàng trước mang biển tên và huy hiệu hạng, khách TikTok hiện đúng tên của mình tại vị trí được cấp. Khi đội hình kín chỗ, người đứng lâu nhất, lâu không tương tác và chưa tặng quà sẽ mờ dần rời chùa nhường vị trí cho người mới. Khi có lệnh <strong>dâng hương</strong> (nút bấm, sự kiện server hay chat “dâng hương”), <strong>chính nhân vật của khách đó từ vị trí đứng bước ra thảm lễ trước lư hương dâng hương, vái đúng 3 vái rồi quay về đúng vị trí đứng cũ</strong> và tiếp tục vái lạy cùng đội hình. Giữa hàng trước, <strong>Phật tử trung tâm</strong> mang tên khách đang có sự kiện (vái lạy, thỉnh chuông, tọa thiền, niệm Phật hay tặng quà) bước ra làm lễ thay khách đó, hiện biển lớn có avatar tròn, tên và dòng hành động “Tên — Hành động (+N CĐ)”, cùng bong bóng lời khấn ngay trên sân khấu; nhiều sự kiện thì xếp hàng lần lượt. Mỗi lượt dâng hương cắm thêm ba nén lên lư lớn trước ban thờ và hương tích lũy ở lại trên lư suốt buổi lễ. Trên cùng khung hình là thanh “🟢 LIVE @chuaonline12 • số mắt” và đếm “🔥 tổng hương • ✨ tổng CĐ”; vùng trên–giữa sảnh để trống cho <strong>tượng Phật và vầng hào quang hiện trọn vẹn</strong>: <strong>BẢNG CÔNG ĐỨC</strong> thu nhỏ gọn ở <strong>góc trên–trái</strong> ngay dưới thanh LIVE (thẻ hướng dẫn tương tác cũ ở góc này đã gỡ hẳn để nhường chỗ) — mỗi dòng chỉ gồm tên người tặng và tổng số xu người đó đã tặng, hiện dạng con số thuần cộng dồn từ các sự kiện quà, không hạng mục, không lời cầu — và đối diện là <strong>BẢNG HƯỚNG DẪN</strong> cố định ở <strong>góc trên–phải</strong> ghi đúng 5 dòng cố định, mỗi dòng là icon của quà kèm nhãn lời cầu (🌹 Sức khỏe · 🎵 Công việc · ❤️ Tình duyên · 🍀 Giàu có · 🎁 An khang phú quý) để khách xem live biết tặng quà nào thì cầu điều gì; hai bảng ép sát hai góc trên, vùng giữa–trên để trống hoàn toàn cho hoành phi, tượng Phật và hào quang; <strong>hai băng câu đối đỏ chữ vàng</strong> treo dọc sát hai mép ngoài của sảnh, dưới hai bảng góc, trên vùng cột/tường hai bên, tự xoay vòng đổi cặp mỗi khoảng 25 giây kèm hiệu ứng mờ chuyển (“Gieo hạt giống thiện lành / Gặt quả ngọt bình an”, “Tâm an vạn sự an / Lòng tĩnh đời thảnh thơi”, “Phúc sinh do tâm thiện / Lộc đến bởi lòng thành”, “Buông bỏ lòng nhẹ nhõm / Từ bi đời an vui”, “Một niệm lành gieo xuống / Muôn phúc tốt nảy mầm”), chữ lớn rõ nét để đọc được ngay trên khung phát sóng, khung tri ân quà treo ngay dưới ban thờ; đáy sảnh <strong>không còn khung chữ nào</strong> — thảm đỏ chạy thẳng xuống đáy sảnh, lối giữa luôn thông thoáng để nhìn rõ đội hình; <strong>hòm công đức đã gỡ hẳn khỏi sảnh</strong> — phía trái sảnh chỉ còn trạm Thỉnh Chuông, không còn trạm hay cửa sổ mã QR công đức nào trong khung sảnh nữa. Nhạc nền mặc định là <strong>🧘 Nhạc thiền tĩnh tâm an lạc (YouTube)</strong> (bài “Nhạc Thiền Tĩnh Tâm An Lạc - Lắng Nghe Và Cảm Nhận Sự Bình An Trong Tâm Hồn - HAY TUYỆT” của kênh Nhạc Thiền Tịnh Tâm, phát qua YouTube, tự lặp lại liên tục ở âm lượng mặc định 80%); pháp thoại trước khi ngủ, nhạc tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút, các bản tụng kinh Phật pháp, thiền tịnh tâm, Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo và nhạc thiền An Nhiên vẫn có trong menu chọn nhạc để ai muốn nghe thì tự chọn; nhạc sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng); riêng màn hình live nhạc tự khởi động ngay khi trang tải xong. Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và khu <strong>Xem Tử Vi Lý Số · Xem Bói · Xem Ngày Đẹp</strong> (phí tùy tâm, mở khóa một lần xem cả ba). <strong>Luật đội hình đứng:</strong> thảm đỏ ở giữa là lối lễ thông thoáng — không nhân vật nào dừng lại, đứng yên hay xếp hàng chờ trong lối giữa ở bất kỳ thời điểm nào; khách chờ lượt dâng hương thì <strong>chờ ngay tại vị trí đứng của mình trong đội hình</strong>, chỉ rời vị trí khi thảm lễ có chỗ đứng trống và tới lượt; nhân vật làm lễ đứng trên <strong>thảm lễ trước lư hương</strong> — khu riêng ở đầu trên của lối giữa, không tính là lối đi. Hai bên khu lễ trước ban thờ có <strong>hai vị sư cố định của chùa ngồi gõ mõ</strong> — một vị bên trái, một vị bên phải, đối xứng qua lối giữa, <strong>quay mặt về phía người xem</strong> (góc chính diện, thấy rõ mặt) và <strong>to hơn nhân vật khách thường một bậc</strong>, mõ đặt ngay phía trước ở phía dưới, không chiếm vị trí đứng nào của hội chúng: dùi gõ <strong>khớp với từng tiếng mõ phát ra</strong> khi nhạc đang chạy, và khi nhạc tắt hai vị vẫn gõ hình ảnh theo nhịp chậm đều khoảng 2 giây một tiếng nên khung hình live luôn có chuyển động người rõ ràng ở cả hai bên. Sảnh còn có <strong>gói chuyển động sống nhẹ chạy liên tục</strong> ở mọi chế độ xem: <strong>khói hương bay lên không ngớt</strong> từ lư lớn và từ chính các nén hương đang cháy trên miệng lư, <strong>lửa đèn lồng và nến trên ban thờ lay động</strong> không đều nhịp, hai đèn lồng treo đu đưa cực nhẹ, hội chúng <strong>vái lạy liên tục lệch pha nhau</strong>, <strong>hào quang sau tượng Phật gợn sáng chậm</strong> và thỉnh thoảng một <strong>cánh sen nhỏ rơi chậm</strong> qua sảnh — tất cả đều chậm và nhẹ để khung hình live không bao giờ đứng yên mà vẫn giữ không khí trang nghiêm.</p>
+        <p class="action-note" id="actionNote">Sảnh đường được làm mới theo khung hình live của bộ chùa RPC: nền sảnh là một bức tranh chánh điện gỗ chạm khắc tối màu với <strong>một tượng Phật vàng khổng lồ</strong> ngự giữa trên đài sen hồng nhiều lớp, hào quang vàng chạm trổ tỏa tia sau lưng, hai bình hoa sen hồng lớn hai bên, đèn lồng vàng treo cao và ban thờ có lư hương rồng bốc khói. Sảnh <strong>không còn cửa ra vào, không còn ghế ngồi</strong>: hội chúng <strong>đứng thành đội hình ngay ngắn nhìn từ phía sau</strong> thành hai khối hai bên <strong>thảm đỏ trung tâm hoa văn sen vàng</strong>, nhân vật <strong>to rõ</strong>, hướng về Phật và <strong>vái lạy liên tục</strong>, mỗi người lệch nhịp nhau như đang hành lễ thật. Khách mới vào chùa <strong>hiện dần ngay tại một vị trí đứng còn trống trong đội hình</strong> kèm <strong>biển tên lớn đọc rõ trên đầu</strong> — không đi từ cửa vào, không tìm ghế; mỗi người giữ đúng một vị trí đứng suốt buổi, hàng trước mang biển tên và huy hiệu hạng, khách TikTok hiện đúng tên của mình tại vị trí được cấp. Khi đội hình kín chỗ, người đứng lâu nhất, lâu không tương tác và chưa tặng quà sẽ mờ dần rời chùa nhường vị trí cho người mới. Khi có lệnh <strong>dâng hương</strong> (nút bấm, sự kiện server hay chat “dâng hương”), <strong>chính nhân vật của khách đó từ vị trí đứng bước ra thảm lễ trước lư hương dâng hương, vái đúng 3 vái rồi quay về đúng vị trí đứng cũ</strong> và tiếp tục vái lạy cùng đội hình. Giữa hàng trước, <strong>Phật tử trung tâm</strong> mang tên khách đang có sự kiện (vái lạy, thỉnh chuông, tọa thiền, niệm Phật hay tặng quà) bước ra làm lễ thay khách đó, hiện biển lớn có avatar tròn, tên và dòng hành động “Tên — Hành động (+N CĐ)”, cùng bong bóng lời khấn ngay trên sân khấu; nhiều sự kiện thì xếp hàng lần lượt. Mỗi lượt dâng hương cắm thêm ba nén lên lư lớn trước ban thờ và hương tích lũy ở lại trên lư suốt buổi lễ. Trên cùng khung hình là thanh “🟢 LIVE @chuaonline12 • số mắt” và đếm “🔥 tổng hương • ✨ tổng CĐ”; vùng trên–giữa sảnh để trống cho <strong>tượng Phật và vầng hào quang hiện trọn vẹn</strong>: <strong>BẢNG CÔNG ĐỨC</strong> thu nhỏ gọn ở <strong>góc trên–trái</strong> ngay dưới thanh LIVE (thẻ hướng dẫn tương tác cũ ở góc này đã gỡ hẳn để nhường chỗ) — mỗi dòng chỉ gồm tên người tặng và tổng số xu người đó đã tặng, hiện dạng con số thuần cộng dồn từ các sự kiện quà, không hạng mục, không lời cầu — ngay dưới bảng là một <strong>icon hoa sen vàng vẽ SVG</strong> chuyển động liên tục không ngừng bằng CSS thuần (quay chậm đều, hào quang vàng pulse nhẹ, nhấp nhô rất nhẹ) để khung hình lúc nào cũng có chuyển động kể cả khi sảnh trống — và đối diện là <strong>BẢNG HƯỚNG DẪN</strong> cố định ở <strong>góc trên–phải</strong> ghi đúng 5 dòng cố định, mỗi dòng là icon của quà kèm nhãn lời cầu (🌹 Sức khỏe · 🎵 Công việc · ❤️ Tình duyên · 🍀 Giàu có · 🎁 An khang phú quý) để khách xem live biết tặng quà nào thì cầu điều gì; hai bảng ép sát hai góc trên, vùng giữa–trên để trống hoàn toàn cho hoành phi, tượng Phật và hào quang; <strong>hai băng câu đối đỏ chữ vàng</strong> treo dọc sát hai mép ngoài của sảnh, dưới hai bảng góc, trên vùng cột/tường hai bên, tự xoay vòng đổi cặp mỗi khoảng 25 giây kèm hiệu ứng mờ chuyển (“Gieo hạt giống thiện lành / Gặt quả ngọt bình an”, “Tâm an vạn sự an / Lòng tĩnh đời thảnh thơi”, “Phúc sinh do tâm thiện / Lộc đến bởi lòng thành”, “Buông bỏ lòng nhẹ nhõm / Từ bi đời an vui”, “Một niệm lành gieo xuống / Muôn phúc tốt nảy mầm”), chữ lớn rõ nét để đọc được ngay trên khung phát sóng, khung tri ân quà treo ngay dưới ban thờ; đáy sảnh <strong>không còn khung chữ nào</strong> — thảm đỏ chạy thẳng xuống đáy sảnh, lối giữa luôn thông thoáng để nhìn rõ đội hình; <strong>hòm công đức đã gỡ hẳn khỏi sảnh</strong> — phía trái sảnh chỉ còn trạm Thỉnh Chuông, không còn trạm hay cửa sổ mã QR công đức nào trong khung sảnh nữa. Nhạc nền mặc định là <strong>🧘 Nhạc thiền tĩnh tâm an lạc (YouTube)</strong> (bài “Nhạc Thiền Tĩnh Tâm An Lạc - Lắng Nghe Và Cảm Nhận Sự Bình An Trong Tâm Hồn - HAY TUYỆT” của kênh Nhạc Thiền Tịnh Tâm, phát qua YouTube, tự lặp lại liên tục ở âm lượng mặc định 80%); pháp thoại trước khi ngủ, nhạc tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút, các bản tụng kinh Phật pháp, thiền tịnh tâm, Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo và nhạc thiền An Nhiên vẫn có trong menu chọn nhạc để ai muốn nghe thì tự chọn; nhạc sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng); riêng màn hình live nhạc tự khởi động ngay khi trang tải xong. Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và khu <strong>Xem Tử Vi Lý Số · Xem Bói · Xem Ngày Đẹp</strong> (phí tùy tâm, mở khóa một lần xem cả ba). <strong>Luật đội hình đứng:</strong> thảm đỏ ở giữa là lối lễ thông thoáng — không nhân vật nào dừng lại, đứng yên hay xếp hàng chờ trong lối giữa ở bất kỳ thời điểm nào; khách chờ lượt dâng hương thì <strong>chờ ngay tại vị trí đứng của mình trong đội hình</strong>, chỉ rời vị trí khi thảm lễ có chỗ đứng trống và tới lượt; nhân vật làm lễ đứng trên <strong>thảm lễ trước lư hương</strong> — khu riêng ở đầu trên của lối giữa, không tính là lối đi. Hai bên khu lễ trước ban thờ có <strong>hai vị sư cố định của chùa ngồi gõ mõ</strong> — một vị bên trái, một vị bên phải, đối xứng qua lối giữa, <strong>quay mặt về phía người xem</strong> (góc chính diện, thấy rõ mặt) và <strong>to hơn nhân vật khách thường một bậc</strong>, mõ đặt ngay phía trước ở phía dưới, không chiếm vị trí đứng nào của hội chúng: dùi gõ <strong>khớp với từng tiếng mõ phát ra</strong> khi nhạc đang chạy, và khi nhạc tắt hai vị vẫn gõ hình ảnh theo nhịp chậm đều khoảng 2 giây một tiếng nên khung hình live luôn có chuyển động người rõ ràng ở cả hai bên. Sảnh còn có <strong>gói chuyển động sống nhẹ chạy liên tục</strong> ở mọi chế độ xem: <strong>khói hương bay lên không ngớt</strong> từ lư lớn và từ chính các nén hương đang cháy trên miệng lư, <strong>lửa đèn lồng và nến trên ban thờ lay động</strong> không đều nhịp, hai đèn lồng treo đu đưa cực nhẹ, hội chúng <strong>vái lạy liên tục lệch pha nhau</strong>, <strong>hào quang sau tượng Phật gợn sáng chậm</strong> và thỉnh thoảng một <strong>cánh sen nhỏ rơi chậm</strong> qua sảnh — tất cả đều chậm và nhẹ để khung hình live không bao giờ đứng yên mà vẫn giữ không khí trang nghiêm.</p>
 
         <div class="guide">
           <span><b>Vị trí đứng:</b> sảnh không có cửa ra vào, không có ghế ngồi — mỗi Phật tử đứng tại một vị trí cố định trong đội hình, hướng về Phật; khách mới hiện dần ngay tại vị trí đứng còn trống kèm biển tên trên đầu</span>
