@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện đứng thành đội hình vái lạy Phật liên tục, dâng hương, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.45" />
+    <meta name="chua-build" content="2026-11-01.46" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -7188,10 +7188,16 @@
            và chạy ngay khi lễ trước xong; cùng một lượt dâng phát qua
            nhiều kênh (sự kiện server + dòng chat) được gộp làm một nhờ
            mốc lastOfferAt. */
-        function startPersonalOffer(u) {
+        function startPersonalOffer(u, force) {
           if (!u || u.leaving || u.leavePending) return false;
           var now = Date.now();
-          if (u.lastOfferAt && now - u.lastOfferAt < 9000) return false; // cùng một lượt dâng phát qua nhiều kênh — gộp làm một
+          // force: SỔ CHỜ DÂNG HƯƠNG (pendingOfferRequests) gọi khi
+          // một yêu cầu dâng ĐÃ GHI NHỚ mà vẫn chưa được thực thi —
+          // lúc đó cổng chống trùng 9 giây không được chặn nữa: mốc
+          // lastOfferAt có thể còn sót từ một lượt khởi lễ trước bị
+          // bản chụp/đồng bộ giật ngược về ghế, chặn luôn cả lượt
+          // dâng lại sau đó dù khách đã gửi lại lệnh.
+          if (!force && u.lastOfferAt && now - u.lastOfferAt < 9000) return false; // cùng một lượt dâng phát qua nhiều kênh — gộp làm một
           if (u.returningHome) {
             // LUẬT VỀ GHẾ TRƯỚC LỄ MỚI: đang trên đường về ghế gốc thì
             // lượt dâng mới chỉ được GHI NHỚ (queuedOffer) — không
@@ -7248,6 +7254,16 @@
             if (u._toSpot || u._atSpot) return; // đang trong lượt trình diện quà ở giữa sảnh: quà khép + về yên vị mới tới lượt lễ
             if (u.pendingSit || u.waitingGate) return; // chưa yên vị trên ghế / chưa có ghế: đợi ngồi xuống đã
             if (u.returningHome) return; // đang trên đường về ghế gốc: chưa ngồi yên thì chưa nhận lễ mới
+            if (u.action === "walking" && !u.path && !u.pendingOffer && !u.pendingBow && !u.pendingBell) {
+              // Kẹt ở trạng thái "đang đi" dù KHÔNG còn đường đi và đã
+              // ở ngay vị trí đứng gốc (gói di chuyển của server /
+              // bản chụp chen vào làm mất chặng ngồi xuống cuối):
+              // chốt yên vị ngay tại đây rồi mới xét nhận lễ — trước
+              // đây nhánh này rơi thẳng xuống cổng kiểm tra hành động
+              // ở dưới và lượt chờ bị kẹt vĩnh viễn trong im lặng.
+              var hIdx = (u.homeCushion !== null && u.homeCushion !== undefined) ? u.homeCushion : u.cushion;
+              if (hIdx !== null && hIdx !== undefined && CUSHIONS[hIdx] && Math.hypot(u.x - CUSHIONS[hIdx].x, u.y - CUSHIONS[hIdx].y) <= 8) beginSit(u);
+            }
             if (u.action !== "seated" && u.action !== "meditating" && u.action !== "standing") return; // LUẬT CỨNG: chỉ nhận lễ mới khi đã YÊN VỊ ở vị trí đứng gốc (đội hình đứng dùng cả action "standing" — bản trước thiếu nhánh này nên lượt chờ của khách đứng yên bị kẹt vĩnh viễn, đúng lỗi "dâng hương không khởi động được lễ")
             if (!anyOfferSpotFree(u)) return; // thảm lễ vẫn kín: tiếp tục chờ ngay tại ghế
             if (u.queuedBow && !u.queuedOffer) {
@@ -7267,6 +7283,83 @@
             if (u.path && u.path.length) { u.tx = u.path[0].x; u.ty = u.path[0].y; }
           });
         }
+        /* ---- SỔ CHỜ DÂNG HƯƠNG ĐỘC LẬP (sửa gốc rễ lỗi "chat dâng
+           hương mà nhân vật không ra thảm lễ") ----
+           Cờ chờ cũ (queuedOffer) sống TRÊN đối tượng nhân vật: bản
+           chụp current_users dựng lại đối tượng, các đường đồng bộ
+           (user_meditating / user_moved / xếp ghế) ghi đè trạng thái,
+           và promoteQueuedOffers chỉ chạy theo nhịp vòng lặp chính —
+           một lượt chờ rơi khỏi đối tượng, hoặc khách kẹt ở trạng
+           thái không được promote xét (đang "walking" không đường đi
+           ngay tại ghế, mốc lastOfferAt còn sót…), là lệnh dâng bị
+           nuốt lặng lẽ dù máy chủ đã ghi nhận chat (chỉ số hương vẫn
+           tăng). Sổ chờ này nằm NGOÀI đối tượng nhân vật, khóa theo
+           định danh/tên của khách, và có ĐỒNG HỒ CANH RIÊNG 500ms:
+           - yêu cầu tới mà nhân vật CHƯA có mặt trong sảnh (sự kiện
+             lễ tới trước bản chụp khách) vẫn được ghi nhớ, khách hiện
+             ra là chạy;
+           - mỗi nhịp canh, yêu cầu chưa được thực thi được gắn lại
+             cờ queuedOffer lên ĐÚNG đối tượng nhân vật hiện tại;
+           - khách đã YÊN VỊ (ngồi/đứng tại vị trí gốc, kể cả ngay
+             sau khi lượt quà của chính họ khép và đã về đúng vị trí)
+             mà lượt dâng vẫn chưa khởi thì đồng hồ canh khởi lễ NGAY
+             bằng đường force (bỏ cổng chống trùng 9 giây) — không
+             cần khách gửi lại lệnh, không chờ vòng lặp chính;
+           - yêu cầu chỉ rời sổ khi lễ thật sự đã khởi (đang trên
+             đường ra thảm / đang dâng) hoặc quá 3 phút hết hạn. */
+        var pendingOfferRequests = {}; // khóa -> {id, name, prayer, at}
+        function registerPendingOffer(data) {
+          if (!data || typeof data !== "object") return;
+          var pn = payloadIdName(data);
+          var nm = pn.name || giftField(data, ["name", "ten", "username", "userName", "nickname", "displayName", "uniqueId"]) || "";
+          if (!pn.id && !nm) return;
+          var key = pn.id ? ("id:" + pn.id) : ("nm:" + nameKey(nm));
+          if (key === "nm:") return;
+          var prayer = data.prayer || data.text || data.message || "";
+          var prev = pendingOfferRequests[key];
+          pendingOfferRequests[key] = { id: pn.id, name: nm || (prev ? prev.name : ""), prayer: prayer ? String(prayer).slice(0, 140) : (prev ? prev.prayer : ""), at: prev ? prev.at : Date.now() };
+        }
+        function pendingOfferWatchdogTick() {
+          var keys = Object.keys(pendingOfferRequests);
+          if (!keys.length) return;
+          var now = Date.now();
+          keys.forEach(function (key) {
+            var req = pendingOfferRequests[key];
+            if (!req) return;
+            if (now - req.at > 180000) { delete pendingOfferRequests[key]; return; }
+            var u = null;
+            if (req.id != null && users[req.id]) u = users[req.id];
+            if (!u) u = findChatUser(req.id, req.name);
+            if (!u) return; // khách chưa hiện trong sảnh: giữ sổ chờ, bản chụp tới là thử lại ngay
+            if (u === users[myId] || u.leaving || u.leavePending) { delete pendingOfferRequests[key]; return; }
+            if (u.pendingOffer || u.action === "offering" || u.action === "bowing") { delete pendingOfferRequests[key]; return; } // lễ đã thật sự khởi: yêu cầu đã được thực thi
+            // Đang bận chặng khác (lượt trình diện quà của chính
+            // khách, lễ khác, đang về vị trí gốc, chưa yên vị): gắn
+            // lại cờ chờ lên đối tượng hiện tại và chờ tiếp — lượt
+            // quà khép / lễ khác xong là các nhịp canh sau khởi ngay.
+            if (u._toSpot || u._atSpot || u.returningHome || u.action === "belling" || u.pendingBow || u.pendingBell || u.pendingSit || u.waitingGate) { u.queuedOffer = true; return; }
+            if (u.action === "walking" && !u.path) {
+              var hIdx2 = (u.homeCushion !== null && u.homeCushion !== undefined) ? u.homeCushion : u.cushion;
+              if (hIdx2 !== null && hIdx2 !== undefined && CUSHIONS[hIdx2] && Math.hypot(u.x - CUSHIONS[hIdx2].x, u.y - CUSHIONS[hIdx2].y) <= 8) beginSit(u);
+            }
+            if (u.action === "seated" || u.action === "meditating" || u.action === "standing") {
+              u.queuedOffer = false;
+              if (req.prayer && !isTempleCommand(req.prayer)) { u.chatText = req.prayer; u.chatUntil = clockT + 14; }
+              startPersonalOffer(u, true);
+              if (u.pendingOffer || u.action === "offering") delete pendingOfferRequests[key];
+              else u.queuedOffer = true; // thảm lễ đang kín chỗ: giữ cả sổ chờ lẫn cờ chờ tại ghế
+              return;
+            }
+            u.queuedOffer = true;
+          });
+        }
+        setInterval(pendingOfferWatchdogTick, 500);
+        window.chuaPendingOffers = function () {
+          return Object.keys(pendingOfferRequests).map(function (k) {
+            var r = pendingOfferRequests[k];
+            return { id: r.id, name: r.name, ageMs: Date.now() - r.at };
+          });
+        };
         window.khachDangHuong = function (data) { remoteOffer(data); }; // cầu nối / kiểm thử gọi trực tiếp: khách tự lên dâng hương + vái 3 vái + về ghế
         /* Móc kiểm chứng chỉ-đọc (bản chốt live): chụp nhanh trạng
            thái mọi nhân vật (hành động, ghế gốc, ghế đang ngồi, cờ
@@ -7274,7 +7367,7 @@
            đối chiếu "lễ xong phải ngồi đúng ghế gốc" trên trang thật.
            Không sửa được gì qua móc này. */
         window.__chuaTestState = function () {
-          var out = { users: {}, central: { mode: centralState.mode, action: centralUser.action, x: Math.round(centralUser.x), y: Math.round(centralUser.y) }, watchdog: window.__chuaWatchdog };
+          var out = { users: {}, central: { mode: centralState.mode, action: centralUser.action, x: Math.round(centralUser.x), y: Math.round(centralUser.y) }, watchdog: window.__chuaWatchdog, pendingOffers: (typeof pendingOfferRequests !== "undefined") ? Object.keys(pendingOfferRequests).length : 0 };
           Object.keys(users).forEach(function (id) {
             var u = users[id];
             out.users[id] = { name: u.name, action: u.action, x: Math.round(u.x), y: Math.round(u.y), cushion: u.cushion, homeCushion: u.homeCushion, ritualSeat: u.ritualSeat, returningHome: !!u.returningHome, pendingSit: !!u.pendingSit, pendingOffer: !!u.pendingOffer, pendingBow: !!u.pendingBow, queuedOffer: !!u.queuedOffer };
@@ -8631,6 +8724,42 @@
           keys.forEach(function (k) { giftSeenMap[k] = now; });
           giftSeenSave();
         }
+        /* ---- SỔ XU ĐÃ CỘNG THEO TỪNG SỰ KIỆN QUÀ ----
+           Khóa ỔN ĐỊNH của một sự kiện (định danh tường minh nếu có,
+           không thì tổ hợp người tặng + quà + số lượng — KHÔNG gồm số
+           xu) -> tổng xu của sự kiện đó ĐÃ được cộng vào bảng công
+           đức nhỏ. Cùng một món quà tới qua nhiều kênh: bản qua kênh
+           rút gọn có thể mang 0 xu (không có trường xu) tới TRƯỚC và
+           ghi dấu chống trùng, bản đầy đủ mang số xu thật tới sau bị
+           cổng chống trùng chặn — trước đây bảng nhỏ mất luôn số xu
+           đó (đúng lỗi Rose 10 xu hiện 0). Nay bản sao bị chặn vẫn
+           được đối chiếu sổ này: số xu nó mang LỚN HƠN phần đã cộng
+           thì cộng BÙ đúng phần chênh vào bảng nhỏ (không trình diện
+           lại, không đọc lại). Sổ gương qua sessionStorage như sổ
+           chống trùng để sống qua lần trang tự làm mới trong phiên. */
+        var GIFT_CREDIT_STORE_KEY = "chuaGiftCreditV1";
+        var giftCreditedMap = {};
+        function giftStableKey(data, name, gift, count) {
+          var idFields = ["eventId", "event_id", "uniqueEventId", "msgId", "messageId", "message_id", "logId", "log_id", "txId", "transactionId"];
+          for (var i = 0; i < idFields.length; i++) {
+            var v = data ? data[idFields[i]] : null;
+            if (v !== null && v !== undefined && String(v).trim() !== "") return "id:" + String(v).trim();
+          }
+          return "cmp:" + giftNormKeyPart(name) + "|" + giftNormKeyPart(gift) + "|" + (count || 1);
+        }
+        function giftCreditLoad() {
+          try {
+            var raw = window.sessionStorage.getItem(GIFT_CREDIT_STORE_KEY);
+            if (!raw) return;
+            var m = JSON.parse(raw);
+            if (!m || typeof m !== "object") return;
+            Object.keys(m).forEach(function (k) { if (typeof m[k] === "number" && m[k] > 0) giftCreditedMap[k] = m[k]; });
+          } catch (e) {}
+        }
+        function giftCreditSave() {
+          try { window.sessionStorage.setItem(GIFT_CREDIT_STORE_KEY, JSON.stringify(giftCreditedMap)); } catch (e) {}
+        }
+        giftCreditLoad();
         // Tay nắm tự kiểm chống trùng quà: seen = khóa sự kiện đã ghi
         // nhớ, spoken = khóa đã xếp vào hàng đọc, queue = số lời chúc
         // quà đang chờ hiện/đọc.
@@ -8638,6 +8767,8 @@
           return {
             seen: Object.keys(giftSeenMap),
             spoken: Object.keys(giftSpokenKeys),
+            credited: giftCreditedMap,
+            donorCoins: window._donorCoins || {},
             windowMs: GIFT_DEDUP_WINDOW_MS,
             queueLength: giftQueue.length,
             showing: giftShowing
@@ -8739,11 +8870,41 @@
            - Lớn (từ 100 xu): ĐẠI LỄ riêng — mưa sen vàng + hào quang
              quanh ban thờ + thỉnh chuông + khung tri ân đặc biệt.
            Điểm công đức vẫn do server tính như cũ, trang không đổi. */
-        function giftCoinsValue(data, count) {
-          var keys = ["coins", "coin", "totalCoins", "coinAmount", "diamonds", "diamond", "diamondCount", "diamond_count", "xu", "so_xu", "giftCoins", "price"];
-          for (var i = 0; i < keys.length; i++) {
-            var v = parseFloat(data ? data[keys[i]] : NaN);
-            if (isFinite(v) && v > 0) return v;
+        function giftCoinsValue(data, count, giftObj) {
+          /* ĐỌC SỐ XU — SỬA LỖI BẢNG CÔNG ĐỨC NHỎ HIỆN 0 XU (kiểm
+             chứng trên địa chỉ thật: quà Rose mang 10 xu vào, thanh
+             trên cùng hiện đúng "10 CĐ" do máy chủ tính, nhưng bảng
+             nhỏ hiện 0). Ba đường đọc trượt cũ: (1) hàm cũ CHỈ đọc
+             vài trường ở lớp ngoài của gói — gói quà của máy chủ/cầu
+             có thể ghi số xu ở trường khác (points/diem/total…) hoặc
+             LỒNG trong data.data / chính đối tượng quà; (2) trường
+             kiểu diamondCount là ĐƠN GIÁ một món — combo ×N phải
+             nhân với số lượng mới ra TỔNG xu như máy chủ cộng;
+             (3) xem giftCreditedMap ở cửa nhận quà: bản sao rút gọn
+             mang 0 xu tới trước đã bị cổng chống trùng chặn mất bản
+             đầy đủ mang số xu thật. Nay đọc theo ba nhóm trường —
+             TỔNG XU trước, ĐƠN GIÁ × số lượng sau, ĐIỂM/CÔNG ĐỨC làm
+             phương án cuối — và dò cả các lớp lồng của gói. */
+          var containers = [];
+          if (data && typeof data === "object") containers.push(data);
+          if (giftObj && typeof giftObj === "object") containers.push(giftObj);
+          if (data && typeof data === "object") {
+            if (data.data && typeof data.data === "object") containers.push(data.data);
+            if (data.gift && typeof data.gift === "object") containers.push(data.gift);
+            if (data.payload && typeof data.payload === "object") containers.push(data.payload);
+          }
+          var totalKeys = ["coins", "coin", "totalCoins", "totalCoin", "total_coins", "coinTotal", "coinAmount", "xu", "so_xu", "totalXu", "giftCoins"];
+          var unitKeys = ["diamondCount", "diamond_count", "diamonds", "diamond", "diamondValue", "price", "unitPrice", "giftPrice"];
+          var fallbackKeys = ["points", "point", "diem", "merit", "congDuc", "cong_duc", "total", "score"];
+          var groups = [totalKeys, unitKeys, fallbackKeys];
+          for (var gi = 0; gi < groups.length; gi++) {
+            for (var ci = 0; ci < containers.length; ci++) {
+              var keys = groups[gi];
+              for (var i = 0; i < keys.length; i++) {
+                var v = parseFloat(containers[ci][keys[i]]);
+                if (isFinite(v) && v > 0) return gi === 1 ? v * (count > 0 ? count : 1) : v;
+              }
+            }
           }
           return 0;
         }
@@ -8962,17 +9123,57 @@
         }, 300);
         function hienLoiChucQuaTang(data) {
           if (!data || typeof data !== "object") return;
-          var name = giftField(data, ["ten", "name", "username", "userName", "nickname", "displayName", "uniqueId"]) || "Phật tử hảo tâm";
-          var gift = giftField(data, ["qua", "gift", "giftName", "gift_name", "ten_qua"]) || "món quà yêu thương";
-          var count = parseInt(data.count || data.repeatCount || data.so_luong, 10);
+          // Gói quà có thể LỒNG (lớp bọc data.data / payload mang nội
+          // dung thật, lớp ngoài chỉ là vỏ sự kiện) và chính món quà
+          // có thể là một ĐỐI TƯỢNG {name, diamondCount…} thay vì
+          // chuỗi tên: gộp nông các lớp vào một nguồn đọc thống nhất
+          // (trường lớp ngoài thắng khi có cả hai) để tên người tặng,
+          // tên quà và số xu không đọc trượt vì gói lệch cấu trúc —
+          // giftField đọc trường "gift" dạng đối tượng sẽ ra chuỗi
+          // "[object Object]" vô nghĩa nên tên quà phải lấy từ trong
+          // đối tượng quà khi "gift" không phải chuỗi.
+          var src = data;
+          var nestSrc = (data.data && typeof data.data === "object") ? data.data : ((data.payload && typeof data.payload === "object") ? data.payload : null);
+          if (nestSrc) {
+            src = {};
+            Object.keys(nestSrc).forEach(function (k) { src[k] = nestSrc[k]; });
+            Object.keys(data).forEach(function (k) { if (data[k] !== undefined && data[k] !== null && data[k] !== "") src[k] = data[k]; });
+          }
+          var giftObj = (src.gift && typeof src.gift === "object") ? src.gift : ((src.giftData && typeof src.giftData === "object") ? src.giftData : null);
+          var name = giftField(src, ["ten", "name", "username", "userName", "nickname", "displayName", "uniqueId"]) || "Phật tử hảo tâm";
+          var gift = giftField(src, ["qua", "giftName", "gift_name", "ten_qua"])
+            || (giftObj ? giftField(giftObj, ["name", "giftName", "gift_name", "title", "ten_qua"]) : "")
+            || (typeof src.gift === "string" ? giftField(src, ["gift"]) : "")
+            || "món quà yêu thương";
+          var count = parseInt(src.count || src.repeatCount || src.repeat_count || src.comboCount || src.quantity || src.so_luong || (giftObj ? (giftObj.count || giftObj.repeatCount || giftObj.repeat_count) : null), 10);
           if (!(count > 0)) count = 1;
-          var coins = giftCoinsValue(data, count);
+          var coins = giftCoinsValue(src, count, giftObj);
           // CHỐT CHẶN CHỐNG TRÙNG ngay tại cửa nhận quà: cùng một sự
           // kiện quà tới trùng qua kênh khác / được phát lại thì bỏ
           // qua toàn bộ — không xếp hàng, không đọc lại lần hai.
-          var gKeys = giftEventKeys(data, name, gift, count, coins);
-          if (giftAnyKeySeen(gKeys)) return;
+          var gKeys = giftEventKeys(src, name, gift, count, coins);
+          var stableKey = giftStableKey(src, name, gift, count);
+          if (giftAnyKeySeen(gKeys)) {
+            // Bản sao bị chặn: KHÔNG trình diện lại — nhưng nếu nó
+            // mang số xu LỚN HƠN phần sự kiện này đã cộng vào bảng
+            // công đức nhỏ (bản tới trước qua kênh rút gọn mang 0 xu
+            // đã ghi dấu chống trùng và chặn mất bản đầy đủ), cộng BÙ
+            // đúng phần chênh lệch: cổng chống trùng không được nuốt
+            // mất số xu thật của người tặng.
+            var credited = giftCreditedMap[stableKey] || 0;
+            if (coins > credited) {
+              giftCreditedMap[stableKey] = coins;
+              giftCreditSave();
+              window._donorLastGift[donorGiftKey(name)] = gift;
+              try { pushRecentGift(name, gift, count, coins - credited); } catch (eMg2) {}
+            }
+            return;
+          }
           giftMarkSeen(gKeys);
+          if (coins > 0) {
+            giftCreditedMap[stableKey] = Math.max(giftCreditedMap[stableKey] || 0, coins);
+            giftCreditSave();
+          }
           // Ghi nhớ món quà MỚI NHẤT của người tặng, đồng thời cộng
           // dồn số xu của lượt quà này vào BẢNG CÔNG ĐỨC NHỎ ở góc
           // trên–trái sảnh (mỗi người một dòng: tên + tổng xu thuần).
@@ -8981,9 +9182,9 @@
           // Xác định NGAY nhân vật của người tặng (chưa có mặt thì
           // cho vào ngồi ghế như khách mới) để lượt chiếu sáng có
           // đúng người mà chiếu; định danh được ghi vào lượt chờ.
-          var donorUser = ensureGiftDonor(data, name);
+          var donorUser = ensureGiftDonor(src, name);
           var donorId = userIdOf(donorUser);
-          giftQueue.push({ name: name, gift: gift, count: count, coins: coins, tier: giftTierOf(coins), keys: gKeys, data: data, donorId: donorId });
+          giftQueue.push({ name: name, gift: gift, count: count, coins: coins, tier: giftTierOf(coins), keys: gKeys, data: src, donorId: donorId });
           pushEvent("🎁 " + name + " tặng " + gift + (count > 1 ? " ×" + count : "") + (coins > 0 ? " (" + coins + " xu)" : ""), "gift");
           // Người tặng quà được đánh dấu gifted: khi kín 100 ghế, họ
           // KHÔNG bao giờ bị chọn nhường ghế (mục C).
@@ -9211,9 +9412,11 @@
            trùng, nên mỗi lượt quà thật chỉ cộng đúng một lần). Không
            hạng mục, không lời cầu, không nhãn dài. Dòng xếp theo
            tổng xu giảm dần, hiện tối đa 8 người.
-           Dữ liệu điểm merit_board từ server vẫn được tiếp nhận ở
-           renderMeritBoard bên dưới CHỈ để giữ tổng công đức trên
-           thanh trên cùng và huy hiệu nội bộ — không vẽ lên bảng. */
+           Dữ liệu điểm merit_board từ server được tiếp nhận ở
+           renderMeritBoard bên dưới để giữ tổng công đức trên thanh
+           trên cùng VÀ đối chiếu nâng tổng xu của từng người trong
+           bảng nhỏ này lên đúng tổng phía server (chỉ nâng, không
+           hạ) — lượt quà nào phía trang bị lỡ thì bảng vẫn đúng. */
         var meritMiniListEl = document.getElementById("meritMiniList");
         var meritMiniEmptyEl = document.getElementById("meritMiniEmpty");
         window._donorCoins = window._donorCoins || {}; // khóa tên -> {name, coins} tổng xu cộng dồn
@@ -9252,28 +9455,77 @@
         }
         window.pushRecentGift = pushRecentGift;
         function renderMeritBoard(data) {
-          // Chỉ tiếp nhận dữ liệu điểm của server để giữ TỔNG công đức
-          // (thanh trên cùng + huy hiệu nội bộ); BẢNG CÔNG ĐỨC hiển thị
-          // không vẽ từ dữ liệu này nữa (xem renderCongDucBoard).
+          // Tiếp nhận dữ liệu điểm của server để giữ TỔNG công đức
+          // (thanh trên cùng + huy hiệu nội bộ) VÀ đối chiếu vào BẢNG
+          // CÔNG ĐỨC NHỎ (xem phần đối chiếu cuối hàm): máy chủ giữ
+          // tổng đúng theo từng người tặng (thanh trên cùng hiện đúng
+          // tổng đó), nên bảng nhỏ lấy tổng phía server làm chuẩn tối
+          // thiểu cho mỗi người — lượt quà nào phía trang bị lỡ (cổng
+          // chống trùng nuốt, trang nạp lại giữa buổi, sự kiện chỉ đi
+          // qua kênh bảng điểm) thì bảng nhỏ vẫn hiện đúng tổng xu
+          // theo người tặng, không kẹt ở 0.
           var entries = [];
           if (Array.isArray(data)) entries = data;
-          else if (data && typeof data === "object") entries = data.entries || data.board || data.list || data.rankings || [];
+          else if (data && typeof data === "object") {
+            entries = data.entries || data.board || data.list || data.rankings || [];
+            if (!Array.isArray(entries) || !entries.length) {
+              // Dạng BẢN ĐỒ {tên/định danh: số} hoặc {tên: {điểm/xu…}}
+              entries = [];
+              var mapSrc = (data.totals && typeof data.totals === "object") ? data.totals
+                : ((data.users && typeof data.users === "object") ? data.users
+                : ((data.donors && typeof data.donors === "object") ? data.donors : data));
+              Object.keys(mapSrc).forEach(function (k) {
+                var v = mapSrc[k];
+                if (typeof v === "number") entries.push({ name: k, points: v });
+                else if (v && typeof v === "object" && !("x" in v) && ("points" in v || "coins" in v || "diem" in v || "merit" in v || "name" in v || "ten" in v)) {
+                  var rec = {}; Object.keys(v).forEach(function (kk) { rec[kk] = v[kk]; });
+                  if (!rec.name && !rec.ten) rec.name = k;
+                  entries.push(rec);
+                }
+              });
+            }
+          }
           if (!Array.isArray(entries)) entries = [];
           if (data) window._meritLastData = data;
           var clean = [];
           entries.forEach(function (e) {
             if (!e || typeof e !== "object") return;
-            var nm = e.name || e.ten || e.username || e.displayName || "";
-            var pts = parseFloat(e.points != null ? e.points : (e.score != null ? e.score : (e.diem != null ? e.diem : e.merit)));
+            var nm = e.name || e.ten || e.username || e.displayName || e.nickname || e.uniqueId || "";
+            // Điểm/tổng của server có thể ghi ở nhiều trường: điểm
+            // công đức (points/diem/merit) hoặc chính SỐ XU đã tặng
+            // (coins/totalCoins/xu/diamondCount…) — đọc hết các
+            // trường, trường nào có số dương đầu tiên theo thứ tự
+            // ưu tiên này thì dùng.
+            var pts = NaN;
+            var ptsKeys = ["points", "score", "diem", "merit", "congDuc", "cong_duc", "total", "coins", "totalCoins", "coin", "xu", "so_xu", "diamondCount", "diamonds", "value"];
+            for (var pi = 0; pi < ptsKeys.length; pi++) {
+              var pv = parseFloat(e[ptsKeys[pi]]);
+              if (isFinite(pv)) { pts = pv; break; }
+            }
             nm = String(nm || "").trim().slice(0, 40);
             if (!nm || isNaN(pts)) return;
             var gf = e.gift || e.qua || e.giftName || e.gift_name || e.lastGift || e.ten_qua || e.mon_qua || "";
+            if (typeof gf === "object" && gf) gf = gf.name || gf.giftName || "";
             if (!gf && window._donorLastGift) gf = window._donorLastGift[donorGiftKey(nm)] || "";
             clean.push({ name: nm, points: pts, gift: String(gf || "") });
           });
           clean.sort(function (a, b) { return b.points - a.points; });
           window._meritClean = clean;
           window._meritTotal = clean.reduce(function (s, e) { return s + (e.points || 0); }, 0);
+          // ĐỐI CHIẾU VÀO BẢNG CÔNG ĐỨC NHỎ: tổng phía server là
+          // chuẩn tối thiểu theo từng người (chỉ nâng lên, không hạ
+          // số trang đã cộng dồn được trong phiên).
+          if (clean.length) {
+            var meritChanged = false;
+            clean.forEach(function (e) {
+              if (!(e.points > 0)) return;
+              var key = donorGiftKey(e.name);
+              var rec = window._donorCoins[key];
+              if (!rec) { window._donorCoins[key] = { name: e.name, coins: e.points }; meritChanged = true; }
+              else if (e.points > rec.coins) { rec.coins = e.points; meritChanged = true; }
+            });
+            if (meritChanged) renderCongDucBoard();
+          }
         }
         window.capNhatBangCongDuc = renderMeritBoard;
         renderMeritBoard(null);
@@ -9782,8 +10034,10 @@
           // (bản trước kẹt ở cổng isTtChat là một đường làm lệnh bị
           // nuốt lặng lẽ, khách đứng yên suốt buổi).
           if (flatText.indexOf("dang huong") !== -1) {
-            var offerUser = findChatUser(sid, nm);
-            if (offerUser) remoteOffer({ id: sid, name: nm });
+            // Gọi thẳng remoteOffer kể cả khi CHƯA tra được nhân vật:
+            // remoteOffer tự ghi lệnh vào SỔ CHỜ DÂNG HƯƠNG khi khách
+            // chưa hiện trong sảnh, thay vì bỏ qua lặng lẽ như trước.
+            remoteOffer({ id: sid, name: nm });
           }
           if (isTtChat) {
             if (flatText.indexOf("a di da phat") !== -1 || flatText.indexOf("nam mo") !== -1 || /(^|\s)!?\s*vai lay\b/.test(flatText)) {
@@ -9890,7 +10144,14 @@
 
         function remoteOffer(data) {
           var u = findActionUser(data);
-          if (!u) return;
+          if (!u) {
+            // Nhân vật của khách CHƯA có mặt trong sảnh (sự kiện lễ
+            // tới trước bản chụp khách / định danh lệch hẳn): KHÔNG
+            // bỏ lệnh — ghi vào SỔ CHỜ DÂNG HƯƠNG độc lập, đồng hồ
+            // canh của sổ sẽ khởi lễ ngay khi khách hiện ra và yên vị.
+            registerPendingOffer(data || {});
+            return;
+          }
           pushEvent("🪔 " + displayNameOf(u, false).replace(/^tt_/i, "") + " dâng hương trước lư hương lớn", "offer");
           // Bản .23 (mục A): CHÍNH nhân vật của khách thực hiện nghi
           // thức — đứng dậy khỏi ghế của mình, đi dọc lối giữa ra thảm
@@ -9903,6 +10164,18 @@
           if (!prayer && u.chatText && clockT < (u.chatUntil || 0)) prayer = u.chatText;
           if (prayer && !isTempleCommand(prayer)) { u.chatText = String(prayer).slice(0, 140); u.chatUntil = clockT + 14; }
           startPersonalOffer(u);
+          // Lượt dâng CHƯA thật sự khởi (khách đang trong lượt trình
+          // diện quà của chính mình / đang bận lễ khác / đang về vị
+          // trí gốc / thảm lễ kín chỗ): ghi thêm vào SỔ CHỜ DÂNG
+          // HƯƠNG độc lập — sổ không nằm trên đối tượng nhân vật nên
+          // không bản chụp hay đường đồng bộ nào xóa mất được, và
+          // đồng hồ canh của sổ khởi lễ ngay khi khách yên vị (kể cả
+          // khách gửi lệnh ngay giữa lượt quà: quà khép, khách về
+          // đúng vị trí, lễ chạy ngay — không cần gửi lại).
+          if (!u.pendingOffer && u.action !== "offering") {
+            var opn = payloadIdName(data || {});
+            registerPendingOffer({ id: opn.id || userIdOf(u), name: displayNameOf(u, false), prayer: prayer || "" });
+          }
         }
         /* ---- VÁI LẠY THỐNG NHẤT cho khách TikTok đang ngồi nệm ----
            Mọi đường sự kiện vái lạy đều đi qua cửa này: user_bowing /
@@ -10272,6 +10545,20 @@
             try { if (typeof giftSpotCurrent !== "undefined" && giftSpotCurrent) spotRebindId = userIdOf(giftSpotCurrent); } catch (eRb) {}
             users = merged;
             try { if (spotRebindId && users[spotRebindId] && typeof giftSpotCurrent !== "undefined") giftSpotCurrent = users[spotRebindId]; } catch (eRb2) {}
+            // SỔ CHỜ DÂNG HƯƠNG: bản chụp vừa dựng lại đối tượng nhân
+            // vật — gắn lại cờ chờ dâng lên đối tượng MỚI cho mọi yêu
+            // cầu dâng đang nằm trong sổ, để lượt dâng chờ không bao
+            // giờ mất theo bản chụp; đồng hồ canh của sổ lo chặng
+            // khởi lễ khi khách yên vị.
+            try {
+              if (typeof pendingOfferRequests !== "undefined") {
+                Object.keys(pendingOfferRequests).forEach(function (pk) {
+                  var reqP = pendingOfferRequests[pk];
+                  var ruP = (reqP.id != null && users[reqP.id]) ? users[reqP.id] : findChatUser(reqP.id, reqP.name);
+                  if (ruP && ruP !== users[myId] && !ruP.pendingOffer && ruP.action !== "offering" && ruP.action !== "bowing") ruP.queuedOffer = true;
+                });
+              }
+            } catch (ePo) {}
             // Khách TikTok lần đầu xuất hiện trong một bản chụp danh sách
             // GỬI LẠI giữa buổi (không phải bản chụp đầu tiên ngay khi
             // mới nối — bản đó gồm cả khách đã ở chùa từ trước): cũng
