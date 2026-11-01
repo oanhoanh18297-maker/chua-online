@@ -258,6 +258,54 @@
       }
       .send-btn svg{width:17px;height:17px;fill:#241a02}
       .send-btn:hover{background:var(--gold-2)}
+      .chatbar.flash{animation:chatFlash 1.1s ease}
+      @keyframes chatFlash{0%,100%{box-shadow:none}30%{box-shadow:0 0 0 3px var(--gold),0 0 22px rgba(242,181,68,.45)}}
+
+      /* ---------- Hai nút lớn cho khách web: Chọn ghế / Chat ---------- */
+      .guest-actions{display:flex;gap:10px;margin-top:12px}
+      .guest-actions .btn{
+        flex:1;justify-content:center;padding:13px 14px;font-size:15px;border-radius:12px;min-height:48px;
+      }
+      .guest-actions .btn .ga-ico{font-size:17px;line-height:1}
+
+      /* ---------- Hộp chọn ghế (modal) ---------- */
+      .seat-modal{
+        position:fixed;inset:0;z-index:200;background:rgba(3,5,9,.72);
+        display:flex;align-items:center;justify-content:center;padding:14px;
+      }
+      .seat-modal[hidden]{display:none}
+      .seat-panel{
+        background:var(--panel);border:1px solid var(--line);border-radius:16px;
+        width:min(560px,100%);max-height:92dvh;overflow:auto;padding:16px;
+        box-shadow:0 24px 60px rgba(0,0,0,.6);
+      }
+      .seat-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+      .seat-panel-head h3{margin:0;font-size:17px;color:var(--gold-2);letter-spacing:.3px}
+      .seat-close{
+        width:36px;height:36px;flex:none;border-radius:10px;border:1px solid var(--line);
+        background:var(--panel-2);color:var(--ink);font-size:15px;font-weight:700;cursor:pointer;
+      }
+      .seat-close:hover{border-color:#3a465c;background:#182031}
+      .seat-panel-note{margin:8px 0 12px;font-size:13px;color:var(--muted);line-height:1.45}
+      .pick-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+      .pick-seat{
+        aspect-ratio:1/1;min-height:30px;border-radius:8px;border:1px solid var(--line);
+        background:var(--chair);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer;
+        display:flex;align-items:center;justify-content:center;padding:0;transition:background .12s,transform .1s;
+      }
+      .pick-seat:hover{background:var(--chair-hi);border-color:var(--gold)}
+      .pick-seat:active{transform:scale(.94)}
+      .pick-seat.taken{background:#171d29;color:var(--faint);border-color:#1b2331;cursor:not-allowed}
+      .pick-seat.mine{background:var(--gold);border-color:var(--gold);color:#241a02;cursor:default}
+      .pick-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px;font-size:12px;color:var(--muted)}
+      .pick-legend .lg{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line);background:var(--chair)}
+      .pick-legend .lg.taken{background:#171d29}
+      .pick-legend .lg.mine{background:var(--gold);border-color:var(--gold)}
+      @media (max-width:480px){
+        .pick-grid{gap:4px}
+        .pick-seat{font-size:11px;border-radius:6px}
+        .guest-actions .btn{font-size:14px;padding:12px 8px}
+      }
 
       /* ---------- Cột phải: điều khiển ---------- */
       .field{display:flex;gap:8px}
@@ -310,7 +358,7 @@
         position:fixed;top:12px;right:12px;z-index:90;display:none;opacity:.35;
       }
       .exit-live:hover{opacity:1}
-      body.live .topbar,body.live .panel-left,body.live .panel-right,body.live .chatbar{display:none}
+      body.live .topbar,body.live .panel-left,body.live .panel-right,body.live .chatbar,body.live .guest-actions,body.live .seat-modal{display:none}
       body.live .layout{display:block;padding:0;max-width:none}
       body.live .stage{border-radius:0;border:0;min-height:100dvh;display:flex;flex-direction:column;justify-content:center}
       body.live .exit-live{display:inline-flex}
@@ -558,8 +606,13 @@
             <div class="hall" id="hall" aria-label="Khu vực ghế ngồi"></div>
           </div>
           <div class="walk-layer" id="walkLayer" aria-hidden="true"></div>
-          <p class="stage-guide">Bình luận để vào rạp ngồi xem phim &nbsp;·&nbsp; Gõ <b>ghế + số</b> (ví dụ: <b>ghế 12</b>) để chọn ghế &nbsp;·&nbsp; Gõ <b>nam</b> hoặc <b>nữ</b> để chọn nhân vật &nbsp;·&nbsp; Gõ <b>SKIP</b> để vote chuyển phim &nbsp;·&nbsp; Dán link YouTube để gửi phim vào hàng chờ</p>
+          <p class="stage-guide">Bình luận để vào rạp ngồi xem phim &nbsp;·&nbsp; Gõ <b>ghế + số</b> (ví dụ: <b>ghế 12</b>) để chọn ghế &nbsp;·&nbsp; Gõ <b>nam</b> hoặc <b>nữ</b> để chọn nhân vật &nbsp;·&nbsp; Gõ <b>SKIP</b> để vote chuyển phim &nbsp;·&nbsp; Dán link YouTube để gửi phim vào hàng chờ &nbsp;·&nbsp; Ngay dưới sân khấu có nút <b>Chọn ghế</b> để chọn ghế và nút <b>Chat</b> để trò chuyện</p>
         </section>
+
+        <div class="guest-actions">
+          <button class="btn gold" id="btnPickSeat" type="button"><span class="ga-ico" aria-hidden="true">🪑</span> Chọn ghế</button>
+          <button class="btn" id="btnFocusChat" type="button"><span class="ga-ico" aria-hidden="true">💬</span> Chat</button>
+        </div>
 
         <form class="chatbar" id="chatForm">
           <span class="who">Chat với tên <b>Chủ rạp</b>:</span>
@@ -631,6 +684,23 @@
         </section>
       </div>
     </main>
+
+    <!-- Hộp chọn ghế: bấm ghế trống để vào ngồi / chuyển ghế qua đúng đường chat "ghế N" -->
+    <div class="seat-modal" id="seatModal" hidden role="dialog" aria-modal="true" aria-label="Chọn ghế">
+      <div class="seat-panel">
+        <div class="seat-panel-head">
+          <h3>🪑 Chọn ghế</h3>
+          <button class="seat-close" id="seatModalClose" type="button" aria-label="Đóng hộp chọn ghế">✕</button>
+        </div>
+        <p class="seat-panel-note" id="seatModalNote"></p>
+        <div class="pick-grid" id="pickGrid"></div>
+        <div class="pick-legend">
+          <span><i class="lg free"></i>Ghế trống — bấm để ngồi</span>
+          <span><i class="lg taken"></i>Đã có người</span>
+          <span><i class="lg mine"></i>Ghế của bạn</span>
+        </div>
+      </div>
+    </div>
 
     <div class="toast-zone" id="toastZone" aria-live="polite"></div>
 
@@ -1319,6 +1389,9 @@
               user_left vừa kích hoạt (chưa quá hạn watchdog) thì để
               chuyến đi ra đó kết thúc tự nhiên. */
         state.guests.slice().forEach(function(g){
+          /* Khach web cua chinh trang nay (local-host) song tai cho, may chu
+             khong he biet -> giu nguyen, khong xoa khi doi chieu state. */
+          if (g.id === "local-host") return;
           if (serverMap[g.id]) return;
           var rec = state.walkers[g.id];
           if (rec && rec.kind === "out") return;
@@ -1555,7 +1628,11 @@
           if (me) feed("<b>Chủ rạp</b> đã vào ngồi <span class='hl'>" + seatNumLabel(me.seat) + "</span>");
         }
         var mine = state.guestById["local-host"];
-        if (mine && !state.server){
+        /* Lenh ghe/nhan vat cua khach web xu ly TAI CHO o ca hai che do:
+           nhan vat cua khach web chi ve tren trang nay, con ghe trong/co
+           nguoi thi doi chieu theo state.guests (da gom ca khach may chu)
+           nen khong bao gio ngoi trung ghe khach TikTok. */
+        if (mine){
           var seatCmd = parseSeatCommand(msg);
           if (seatCmd !== null){
             moveGuestToSeat(mine, seatCmd);
@@ -1573,6 +1650,85 @@
         if (mine) showBubble(mine, msg);
         feed("<b>Chủ rạp:</b> " + esc(msg));
         if (!state.server && /\bskip\b/i.test(msg)) addVote("Chủ rạp");
+      });
+
+      /* ================= Nút "Chọn ghế" + "Chat" cho khách web =================
+         Chọn ghế đi qua ĐÚNG đường sẵn có của trang: điền "ghế N" vào ô chat
+         rồi gửi form — handler của form tự cho khách vào rạp (nếu chưa ngồi)
+         rồi chuyển ghế, máy chủ không cần đổi gì. */
+      var seatModal = $("seatModal"), pickGrid = $("pickGrid"), pickTimer = null;
+      function myGuest(){ return state.guestById["local-host"] || null; }
+      function renderSeatPicker(){
+        var mine = myGuest();
+        var occ = {};
+        state.guests.forEach(function(g){ occ[g.seat] = g; });
+        $("seatModalNote").textContent = mine
+          ? "Bạn đang ngồi ghế " + (mine.seat + 1) + ". Bấm vào một ghế trống để chuyển sang ghế đó."
+          : "Bạn chưa vào rạp — bấm vào một ghế trống để vào ngồi ngay ở ghế đó.";
+        pickGrid.innerHTML = "";
+        for (var i = 0; i < TOTAL_SEATS; i++){
+          (function(idx){
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "pick-seat";
+            b.textContent = String(idx + 1);
+            var g = occ[idx];
+            if (mine && idx === mine.seat){
+              b.classList.add("mine");
+              b.title = "Ghế " + (idx + 1) + " — ghế của bạn";
+            } else if (g){
+              b.classList.add("taken");
+              b.disabled = true;
+              b.title = "Ghế " + (idx + 1) + " — " + g.name + " đang ngồi";
+            } else {
+              b.title = "Ghế " + (idx + 1) + " — đang trống, bấm để ngồi";
+              b.addEventListener("click", function(){ pickSeat(idx + 1); });
+            }
+            pickGrid.appendChild(b);
+          })(i);
+        }
+      }
+      function openSeatPicker(){
+        if (document.body.classList.contains("live")) return; // khung phát sóng giữ sạch
+        renderSeatPicker();
+        seatModal.hidden = false;
+        if (pickTimer) clearInterval(pickTimer);
+        pickTimer = setInterval(function(){
+          if (seatModal.hidden){ clearInterval(pickTimer); pickTimer = null; return; }
+          renderSeatPicker();
+        }, 1500);
+      }
+      function closeSeatPicker(){
+        seatModal.hidden = true;
+        if (pickTimer){ clearInterval(pickTimer); pickTimer = null; }
+      }
+      function pickSeat(seatNum){
+        var form = $("chatForm");
+        chatInput.value = "ghế " + seatNum;
+        if (form.requestSubmit) form.requestSubmit();
+        else form.dispatchEvent(new Event("submit", { cancelable: true }));
+        /* Handler của form chạy đồng bộ — kiểm tra kết quả ngay */
+        var mine = myGuest();
+        if (mine && mine.seat === seatNum - 1){
+          closeSeatPicker();
+          toast("Bạn đã ngồi vào ghế " + seatNum, true);
+        } else {
+          /* Ghế vừa bị người khác lấy mất: giữ hộp mở, vẽ lại + báo rõ */
+          renderSeatPicker();
+          toast("Ghế " + seatNum + " vừa có người ngồi rồi — chọn ghế khác nhé");
+        }
+      }
+      $("btnPickSeat").addEventListener("click", openSeatPicker);
+      $("seatModalClose").addEventListener("click", closeSeatPicker);
+      seatModal.addEventListener("click", function(e){ if (e.target === seatModal) closeSeatPicker(); });
+      document.addEventListener("keydown", function(e){
+        if (e.key === "Escape" && !seatModal.hidden) closeSeatPicker();
+      });
+      $("btnFocusChat").addEventListener("click", function(){
+        var bar = $("chatForm");
+        bar.scrollIntoView({ behavior: "smooth", block: "center" });
+        bar.classList.remove("flash"); void bar.offsetWidth; bar.classList.add("flash");
+        setTimeout(function(){ try { chatInput.focus({ preventScroll: true }); } catch (e) { chatInput.focus(); } }, 350);
       });
 
       /* ================= Chủ phòng: panel quản trị (?admin=1) ================= */
