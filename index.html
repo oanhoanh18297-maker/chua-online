@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện đứng thành đội hình vái lạy Phật liên tục, dâng hương, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.46" />
+    <meta name="chua-build" content="2026-11-01.48" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1532,8 +1532,9 @@
       /* ---- Kiểu trình bày TO RÕ kiểu kênh mẫu AN NHIÊN (tiêu đề chữ
          VÀNG LỚN trên dải nền ĐỎ SẪM, dòng to rõ, nền dòng xen kẽ) —
          ngôn ngữ hình ảnh này nay dùng cho BẢNG HƯỚNG DẪN cố định ở
-         góc trên–PHẢI sảnh (.stage-guide-board ở dưới: rộng 38cqw,
-         đúng 5 dòng icon quà + nhãn lời cầu, nội dung tĩnh). Các luật
+         góc trên–PHẢI sảnh (.stage-guide-board ở dưới: rộng 25cqw ép
+         sát mép phải từ bản .48 để không che hoành phi, đúng 5 dòng
+         icon quà + nhãn lời cầu, nội dung tĩnh). Các luật
          .stage-merit ngay dưới là tàn dư của bảng công đức LỚN cũ
          từng ở góc trên–phải — phần tử đó đã gỡ; BẢNG CÔNG ĐỨC hiển
          thị hiện tại là bản THU NHỎ .stage-merit-mini ở góc
@@ -1588,43 +1589,55 @@
          định, mỗi dòng là ICON của quà (thay chữ tên quà) + nhãn lời
          cầu. Nội dung TĨNH, không đổi theo lượt quà; hiện ở mọi chế
          độ xem gồm cả màn hình phát sóng ?daisanh=1 / ?full. ---- */
+      /* THU HẸP + ÉP SÁT MÉP PHẢI (bản .48, lệnh chủ chùa): bản cũ
+         rộng 38cqw, mép trái bảng dừng ở 61% bề ngang sảnh trong khi
+         hoành phi “TÂM AN LẠC TỰ” vẽ trên canvas kéo tới 73,3% bề
+         ngang (x 144–396 trên khung 540) và thân bảng lại cao xuống
+         đúng dải dọc của hoành phi (y 211–261 ≈ 39–48cqw) — bảng che
+         mất chữ “TỰ” cuối hoành phi. Nay bảng rộng 25cqw, ép sát mép
+         phải (right 0,5cqw) nên mép trái dừng ở 74,5% bề ngang: TRỐNG
+         HOÀN TOÀN khỏi hoành phi, đúng nguyên tắc vùng giữa–trên chỉ
+         dành cho hoành phi + tượng Phật + hào quang. Cỡ chữ chỉ thu
+         nhẹ (tiêu đề 3,9cqw, nhãn 2,8cqw) và dòng dài nhất “An khang
+         phú quý” được xuống dòng trong ô của nó, bảng vẫn to rõ dễ
+         đọc trên khung phát sóng. */
       .stage-guide-board {
         position: absolute;
-        top: 8.2cqw; right: 1cqw; z-index: 7;
-        width: 38cqw;
+        top: 8.2cqw; right: 0.5cqw; z-index: 7;
+        width: 25cqw;
         border: 2.5px solid #d9a441; border-radius: 12px;
-        padding: 0 1.6cqw 1.6cqw;
+        padding: 0 1.2cqw 1.3cqw;
         background: linear-gradient(170deg, rgba(52, 26, 10, 0.96), rgba(30, 15, 5, 0.96));
         box-shadow: 0 12px 26px rgba(15, 8, 2, 0.5), inset 0 0 0 2px rgba(0, 0, 0, 0.3);
         color: #f3e3bd; line-height: 1.4;
         pointer-events: none;
       }
       .stage-guide-board h3 {
-        margin: 0 -1.6cqw 1.3cqw;
-        padding: 1.7cqw 1cqw 1.5cqw;
+        margin: 0 -1.2cqw 1.1cqw;
+        padding: 1.4cqw 0.8cqw 1.2cqw;
         font-family: "Playfair Display", serif;
-        font-size: 4.3cqw; letter-spacing: 0.26cqw; font-weight: 700;
+        font-size: 3.9cqw; letter-spacing: 0.2cqw; font-weight: 700;
         color: #ffd968; text-align: center;
         background: linear-gradient(180deg, #8e2413, #671a0c 60%, #571507);
         border-bottom: 2px solid #d9a441;
         text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
       }
-      .stage-guide-board ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55cqw; }
+      .stage-guide-board ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5cqw; }
       .stage-guide-board li {
-        display: flex; flex-direction: row; align-items: center; gap: 1.2cqw;
-        padding: 0.8cqw 1.2cqw; border-radius: 7px;
+        display: flex; flex-direction: row; align-items: center; gap: 0.9cqw;
+        padding: 0.7cqw 0.9cqw; border-radius: 7px;
         background: rgba(255, 214, 120, 0.13);
       }
       .stage-guide-board li:nth-child(even) { background: rgba(0, 0, 0, 0.28); }
-      .stage-guide-board .gb-icon { flex: none; font-size: 4.2cqw; line-height: 1; }
-      .stage-guide-board .gb-arrow { flex: none; font-size: 2.6cqw; color: #ffd968; font-weight: 700; }
-      .stage-guide-board .gb-label { flex: 1 1 auto; font-size: 3.1cqw; font-weight: 700; color: #fff6e0; }
+      .stage-guide-board .gb-icon { flex: none; font-size: 3.8cqw; line-height: 1; }
+      .stage-guide-board .gb-arrow { flex: none; font-size: 2.3cqw; color: #ffd968; font-weight: 700; }
+      .stage-guide-board .gb-label { flex: 1 1 auto; font-size: 2.8cqw; line-height: 1.3; font-weight: 700; color: #fff6e0; }
       @media (max-width: 560px) {
-        .stage-guide-board { width: 38cqw; top: 8.2cqw; padding: 0 1.6cqw 1.4cqw; }
-        .stage-guide-board h3 { font-size: 13px; }
-        .stage-guide-board .gb-label { font-size: 10.5px; }
-        .stage-guide-board .gb-icon { font-size: 14px; }
-        .stage-guide-board .gb-arrow { font-size: 9px; }
+        .stage-guide-board { width: 25cqw; top: 8.2cqw; padding: 0 1.2cqw 1.2cqw; }
+        .stage-guide-board h3 { font-size: 12px; }
+        .stage-guide-board .gb-label { font-size: 10px; }
+        .stage-guide-board .gb-icon { font-size: 13px; }
+        .stage-guide-board .gb-arrow { font-size: 8.5px; }
       }
       /* ---- BẢNG CÔNG ĐỨC NHỎ GỌN góc trên–TRÁI sảnh (chốt gộp của
          chủ chùa): thay đúng chỗ thẻ hướng dẫn tương tác cũ (đã gỡ
@@ -7191,12 +7204,14 @@
         function startPersonalOffer(u, force) {
           if (!u || u.leaving || u.leavePending) return false;
           var now = Date.now();
-          // force: SỔ CHỜ DÂNG HƯƠNG (pendingOfferRequests) gọi khi
-          // một yêu cầu dâng ĐÃ GHI NHỚ mà vẫn chưa được thực thi —
-          // lúc đó cổng chống trùng 9 giây không được chặn nữa: mốc
-          // lastOfferAt có thể còn sót từ một lượt khởi lễ trước bị
-          // bản chụp/đồng bộ giật ngược về ghế, chặn luôn cả lượt
-          // dâng lại sau đó dù khách đã gửi lại lệnh.
+          // Cổng chống trùng 9 giây theo khách (mốc lastOfferAt):
+          // chỉ để GỘP các phát lại của CÙNG một lệnh dâng qua nhiều
+          // kênh (sự kiện server + dòng chat). Khi cổng này chặn,
+          // nơi gọi đã ghi lượt vào SỔ CHỜ DÂNG HƯƠNG độc lập; sổ
+          // chờ thử lại theo nhịp canh 500ms và khởi lễ ngay khi
+          // cổng hết hạn — lượt chờ không bị nuốt vì cooldown
+          // (bản .47: giữ sổ + thử lại thay cho đường force phá
+          // cổng như trước; tham số force còn giữ cho tương thích).
           if (!force && u.lastOfferAt && now - u.lastOfferAt < 9000) return false; // cùng một lượt dâng phát qua nhiều kênh — gộp làm một
           if (u.returningHome) {
             // LUẬT VỀ GHẾ TRƯỚC LỄ MỚI: đang trên đường về ghế gốc thì
@@ -7303,10 +7318,30 @@
            - khách đã YÊN VỊ (ngồi/đứng tại vị trí gốc, kể cả ngay
              sau khi lượt quà của chính họ khép và đã về đúng vị trí)
              mà lượt dâng vẫn chưa khởi thì đồng hồ canh khởi lễ NGAY
-             bằng đường force (bỏ cổng chống trùng 9 giây) — không
-             cần khách gửi lại lệnh, không chờ vòng lặp chính;
+             — không cần khách gửi lại lệnh, không chờ vòng lặp chính;
            - yêu cầu chỉ rời sổ khi lễ thật sự đã khởi (đang trên
-             đường ra thảm / đang dâng) hoặc quá 3 phút hết hạn. */
+             đường ra thảm / đang dâng / đang vái theo lễ).
+           BẢN .47 — LUẬT KHÔNG NUỐT LƯỢT CHỜ (sửa lỗi kiểm chứng
+           .46: cùng một khách dâng hương lần 1 giữa lượt quà thì lễ
+           chạy, vài phút sau dâng lần 2 giữa lượt quà khác thì chat
+           đã tới máy chủ, chỉ số hương tăng, mà lễ không diễn ra):
+           - Mốc "at" của một lượt chờ là mốc của LỆNH MỚI NHẤT: ghi
+             lại lệnh cho khách ĐÃ có lượt trong sổ chỉ GỘP vào lượt
+             sẵn có (mỗi khách tối đa một lượt chờ — chống spam không
+             cộng dồn thành nhiều lượt) nhưng phải làm mới "at"; bản
+             trước giữ nguyên "at" của lượt cũ sót lại trong sổ nên
+             lệnh dâng lặp sau vài phút bị tính là quá hạn.
+           - Khách còn trong sảnh thì lượt chờ KHÔNG hết hạn theo
+             tuổi: đồng hồ canh chỉ dọn lượt khi khách vắng mặt khỏi
+             sảnh quá 10 phút (coi như đã rời buổi live). Bản trước
+             xóa mọi lượt chờ quá 3 phút dù lễ chưa hề chạy — chính
+             là đường nuốt lặng lượt dâng lần 2.
+           - Cổng chống trùng theo khách (mốc lastOfferAt, 9 giây)
+             KHÔNG được nuốt lượt chờ và cũng không cần đường force
+             phá cổng nữa: đồng hồ canh gọi đường thường, cổng còn
+             chặn thì lượt nằm nguyên trong sổ, nhịp canh 500ms sau
+             thử lại — khách đã xong lễ trước + hết cooldown + yên
+             vị là lễ khởi ngay. */
         var pendingOfferRequests = {}; // khóa -> {id, name, prayer, at}
         function registerPendingOffer(data) {
           if (!data || typeof data !== "object") return;
@@ -7317,7 +7352,13 @@
           if (key === "nm:") return;
           var prayer = data.prayer || data.text || data.message || "";
           var prev = pendingOfferRequests[key];
-          pendingOfferRequests[key] = { id: pn.id, name: nm || (prev ? prev.name : ""), prayer: prayer ? String(prayer).slice(0, 140) : (prev ? prev.prayer : ""), at: prev ? prev.at : Date.now() };
+          // Gộp chống spam: khách đã có một lượt đang chờ/đang lễ
+          // thì lệnh lặp chỉ cập nhật vào ĐÚNG lượt đó (không tạo
+          // thêm lượt mới, không cộng dồn), nhưng "at" luôn là mốc
+          // của lệnh MỚI NHẤT — một lệnh dâng lặp lại sau vài phút
+          // là một lượt dâng mới, không được thừa hưởng tuổi của
+          // lượt cũ sót lại trong sổ (gốc rễ lỗi nuốt lượt ở .46).
+          pendingOfferRequests[key] = { id: pn.id || (prev ? prev.id : null), name: nm || (prev ? prev.name : ""), prayer: prayer ? String(prayer).slice(0, 140) : (prev ? prev.prayer : ""), at: Date.now() };
         }
         function pendingOfferWatchdogTick() {
           var keys = Object.keys(pendingOfferRequests);
@@ -7326,11 +7367,18 @@
           keys.forEach(function (key) {
             var req = pendingOfferRequests[key];
             if (!req) return;
-            if (now - req.at > 180000) { delete pendingOfferRequests[key]; return; }
             var u = null;
             if (req.id != null && users[req.id]) u = users[req.id];
             if (!u) u = findChatUser(req.id, req.name);
-            if (!u) return; // khách chưa hiện trong sảnh: giữ sổ chờ, bản chụp tới là thử lại ngay
+            if (!u) {
+              // Khách chưa/không còn hiện trong sảnh: giữ sổ chờ
+              // (bản chụp tới là thử lại ngay); chỉ dọn khi khách
+              // vắng mặt quá 10 phút — coi như đã rời buổi live.
+              // Khách còn trong sảnh thì lượt chờ KHÔNG BAO GIỜ bị
+              // xóa theo tuổi (bản .46 xóa sau 3 phút = nuốt lặng).
+              if (now - req.at > 600000) delete pendingOfferRequests[key];
+              return;
+            }
             if (u === users[myId] || u.leaving || u.leavePending) { delete pendingOfferRequests[key]; return; }
             if (u.pendingOffer || u.action === "offering" || u.action === "bowing") { delete pendingOfferRequests[key]; return; } // lễ đã thật sự khởi: yêu cầu đã được thực thi
             // Đang bận chặng khác (lượt trình diện quà của chính
@@ -7345,9 +7393,15 @@
             if (u.action === "seated" || u.action === "meditating" || u.action === "standing") {
               u.queuedOffer = false;
               if (req.prayer && !isTempleCommand(req.prayer)) { u.chatText = req.prayer; u.chatUntil = clockT + 14; }
-              startPersonalOffer(u, true);
+              // Gọi đường THƯỜNG (không phá cổng chống trùng 9 giây
+              // theo khách bằng force nữa): cổng lastOfferAt còn
+              // chặn thì startPersonalOffer trả về false và lượt
+              // VẪN NẰM NGUYÊN TRONG SỔ — nhịp canh 500ms sau thử
+              // lại, khách xong lễ trước + hết cooldown + yên vị
+              // là lễ khởi ngay, lượt chờ không bị nuốt vì cooldown.
+              startPersonalOffer(u);
               if (u.pendingOffer || u.action === "offering") delete pendingOfferRequests[key];
-              else u.queuedOffer = true; // thảm lễ đang kín chỗ: giữ cả sổ chờ lẫn cờ chờ tại ghế
+              else u.queuedOffer = true; // chưa khởi được (cooldown theo khách / thảm lễ đang kín chỗ): giữ cả sổ chờ lẫn cờ chờ tại ghế, nhịp canh sau khởi tiếp
               return;
             }
             u.queuedOffer = true;
