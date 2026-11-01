@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện đứng thành đội hình vái lạy Phật liên tục, dâng hương, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.44" />
+    <meta name="chua-build" content="2026-11-01.45" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1531,7 +1531,7 @@
       }
       .stage-merit h3 { font-size: 2.9cqw; letter-spacing: 0.18cqw; }
       /* Các lớp phủ của sảnh cũ không còn chỗ trong khung hình mẫu */
-      .altar-head, .couplet, .live-guide { display: none !important; }
+      .altar-head, .live-guide { display: none !important; }
       /* Khung tri ân quà: treo NGAY DƯỚI BAN THỜ (top 97cqw) thay vì
          ngang đầu tượng như trước — tượng Phật và hào quang ở vùng
          trên–giữa luôn hiện trọn vẹn, không khung chữ nào cắt ngang. */
@@ -1561,6 +1561,40 @@
       .breath { bottom: 30cqw; }
       .merit-box { left: 2cqw; top: auto; bottom: 36cqw; }
       .welcome-banner { top: 118cqw; }
+      /* ---- BIỂN VÀNG TRÌNH DIỆN QUÀ lúc camera zoom (chốt cuối của
+         chủ chùa, thay vị trí/kích thước cũ): biển đặt PHÍA TRÊN ĐẦU
+         người tặng đang lạy ở giữa sảnh — lúc cận cảnh (zoom 5.0, tâm
+         khung ở thân người) đầu người hiện ở ~1/3 trên của khung, nên
+         biển treo ở top 16,5cqw (~9% chiều cao khung) với bề ngang
+         VỪA PHẢI 62cqw và chữ hai dòng gọn: đủ đọc rõ trên khung phát
+         sóng nhưng không che nhân vật đang lạy bên dưới. Nền VÀNG
+         trang trọng như biển của kênh mẫu, chữ nâu sẫm tương phản
+         cao. Ghi đè riêng cho .gift-spot-board (specificity cao hơn
+         .welcome-banner ở trên) nên bảng chào khách thường không đổi. */
+      .welcome-banner.gift-spot-board {
+        top: 16.5cqw;
+        width: min(62cqw, calc(100% - 12cqw));
+        padding: 1.5cqw 2.6cqw 1.3cqw;
+        background:
+          radial-gradient(120px 26px at 50% 0, rgba(255, 250, 214, 0.55), transparent 70%),
+          linear-gradient(180deg, #ffd968, #f2b81d 55%, #dda20d);
+        border: 2px solid #8a5a08;
+        border-radius: 10px;
+        color: #5a2d05;
+        box-shadow: 0 10px 26px rgba(24, 8, 2, 0.45), inset 0 0 0 2px rgba(255, 246, 200, 0.6), inset 0 0 0 4px rgba(138, 90, 8, 0.35);
+      }
+      .gift-spot-board .wb-text { font-size: 3.4cqw; line-height: 1.25; }
+      .gift-spot-board .wb-wish {
+        font-size: 4.5cqw;
+        color: #5a2d05;
+        text-shadow: 0 1px 0 rgba(255, 246, 200, 0.75);
+        letter-spacing: 0.2px;
+      }
+      .gift-spot-board .wb-offer {
+        font-size: 3.2cqw;
+        color: #6e3a06;
+        margin-top: 2px;
+      }
       /* ---- NÚT BẬT TIẾNG trên sảnh (bản .32) ----
          Trình duyệt chỉ cho trang phát tiếng SAU một lần chạm/bấm của
          người dùng, nên khi âm thanh CHƯA thực sự chạy, sảnh hiện một
@@ -1631,6 +1665,160 @@
         .stage-merit { width: 24cqw; top: 8.2cqw; bottom: auto; padding: 1.6cqw 1.6cqw 1.4cqw; }
         .stage-merit h3 { font-size: 11.5px; }
       }
+      /* ---- BẢNG CÔNG ĐỨC LỚN kiểu kênh mẫu AN NHIÊN (chốt cuối của
+         chủ chùa: “như này, to rõ dễ thấy”) — ghi đè mọi cỡ cũ ở trên:
+         bảng RỘNG 38cqw giữ nguyên góc trên–phải sảnh, tiêu đề chữ
+         VÀNG LỚN trên dải nền ĐỎ SẪM, mỗi dòng TO RÕ một hàng ngang:
+         số thứ tự trong vòng tròn + tên người tặng + chip icon/quà +
+         nhãn hạng mục; nền dòng XEN KẼ sáng/tối nhẹ cho dễ đọc; hiện
+         tới 14 dòng gần nhất. Cỡ chữ tên 2.9cqw và nhãn 2.5cqw đều
+         KHÔNG nhỏ hơn biển tên nhân vật trên canvas (~2.5cqw) nên đọc
+         rõ ở kích thước khung phát sóng thật 1080×1920. ---- */
+      .stage-merit {
+        top: 8.2cqw; bottom: auto; right: 1cqw; width: 38cqw;
+        max-height: none; overflow: hidden;
+        border: 2.5px solid #d9a441; border-radius: 12px;
+        padding: 0 1.6cqw 1.6cqw;
+        background: linear-gradient(170deg, rgba(52, 26, 10, 0.96), rgba(30, 15, 5, 0.96));
+      }
+      .stage-merit h3 {
+        margin: 0 -1.6cqw 1.3cqw;
+        padding: 1.7cqw 1cqw 1.5cqw;
+        font-size: 4.3cqw; letter-spacing: 0.26cqw; font-weight: 700;
+        color: #ffd968; text-align: center;
+        background: linear-gradient(180deg, #8e2413, #671a0c 60%, #571507);
+        border-bottom: 2px solid #d9a441;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+      }
+      .stage-merit ol { gap: 0.55cqw; }
+      .stage-merit li {
+        display: flex; flex-direction: row; align-items: center; gap: 1.2cqw;
+        font-size: 2.9cqw; line-height: 1.3;
+        padding: 0.8cqw 1.2cqw; border-radius: 7px;
+        background: rgba(255, 214, 120, 0.13);
+      }
+      .stage-merit li:nth-child(even) { background: rgba(0, 0, 0, 0.28); }
+      .stage-merit li:first-child { background: rgba(255, 190, 60, 0.3); }
+      .stage-merit .mb-idx {
+        flex: none; width: 3.6cqw; height: 3.6cqw; border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: linear-gradient(180deg, #b3402a, #7c2412);
+        border: 1.5px solid #ffd968;
+        color: #fff6e0; font-size: 2.5cqw; font-weight: 800; line-height: 1;
+      }
+      .stage-merit .mb-name { flex: 1 1 auto; font-size: 2.9cqw; font-weight: 700; color: #fff6e0; }
+      .stage-merit .mb-cat { font-size: 2.5cqw; padding: 0.25cqw 1.5cqw; }
+      .stage-merit .mb-empty { font-size: 2.5cqw; padding: 1cqw 0.6cqw; }
+      .rpc-merit .mb-idx {
+        flex: none; width: 22px; height: 22px; border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: linear-gradient(180deg, #b3402a, #7c2412);
+        border: 1.5px solid #ffd968; color: #fff6e0;
+        font-size: 12px; font-weight: 800; line-height: 1; margin-right: 6px;
+      }
+      /* ---- BẢNG HƯỚNG DẪN CỐ ĐỊNH (chốt của chủ chùa: BỎ HẲN bảng
+         công đức/danh sách người tặng, THAY bằng bảng hướng dẫn tặng
+         quà cầu nguyện) — treo ĐÚNG vị trí cũ của bảng công đức ở góc
+         trên–phải sảnh, cùng cỡ TO RÕ kiểu kênh mẫu AN NHIÊN: tiêu đề
+         “HƯỚNG DẪN” chữ VÀNG LỚN trên dải nền ĐỎ SẪM, đúng 5 dòng cố
+         định, mỗi dòng là ICON của quà (thay chữ tên quà) + nhãn lời
+         cầu. Nội dung TĨNH, không đổi theo lượt quà; hiện ở mọi chế
+         độ xem gồm cả màn hình phát sóng ?daisanh=1 / ?full. ---- */
+      .stage-guide-board {
+        position: absolute;
+        top: 8.2cqw; right: 1cqw; z-index: 7;
+        width: 38cqw;
+        border: 2.5px solid #d9a441; border-radius: 12px;
+        padding: 0 1.6cqw 1.6cqw;
+        background: linear-gradient(170deg, rgba(52, 26, 10, 0.96), rgba(30, 15, 5, 0.96));
+        box-shadow: 0 12px 26px rgba(15, 8, 2, 0.5), inset 0 0 0 2px rgba(0, 0, 0, 0.3);
+        color: #f3e3bd; line-height: 1.4;
+        pointer-events: none;
+      }
+      .stage-guide-board h3 {
+        margin: 0 -1.6cqw 1.3cqw;
+        padding: 1.7cqw 1cqw 1.5cqw;
+        font-family: "Playfair Display", serif;
+        font-size: 4.3cqw; letter-spacing: 0.26cqw; font-weight: 700;
+        color: #ffd968; text-align: center;
+        background: linear-gradient(180deg, #8e2413, #671a0c 60%, #571507);
+        border-bottom: 2px solid #d9a441;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+      }
+      .stage-guide-board ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55cqw; }
+      .stage-guide-board li {
+        display: flex; flex-direction: row; align-items: center; gap: 1.2cqw;
+        padding: 0.8cqw 1.2cqw; border-radius: 7px;
+        background: rgba(255, 214, 120, 0.13);
+      }
+      .stage-guide-board li:nth-child(even) { background: rgba(0, 0, 0, 0.28); }
+      .stage-guide-board .gb-icon { flex: none; font-size: 4.2cqw; line-height: 1; }
+      .stage-guide-board .gb-arrow { flex: none; font-size: 2.6cqw; color: #ffd968; font-weight: 700; }
+      .stage-guide-board .gb-label { flex: 1 1 auto; font-size: 3.1cqw; font-weight: 700; color: #fff6e0; }
+      @media (max-width: 560px) {
+        .stage-guide-board { width: 38cqw; top: 8.2cqw; padding: 0 1.6cqw 1.4cqw; }
+        .stage-guide-board h3 { font-size: 13px; }
+        .stage-guide-board .gb-label { font-size: 10.5px; }
+        .stage-guide-board .gb-icon { font-size: 14px; }
+        .stage-guide-board .gb-arrow { font-size: 9px; }
+      }
+      /* ---- BẢNG CÔNG ĐỨC NHỎ GỌN góc trên–TRÁI sảnh (chốt gộp của
+         chủ chùa): thay đúng chỗ thẻ hướng dẫn tương tác cũ (đã gỡ
+         hẳn), ĐỐI DIỆN bảng HƯỚNG DẪN ở góc trên–phải. Thu nhỏ gọn:
+         mỗi dòng CHỈ gồm tên người tặng + TỔNG SỐ XU đã tặng (con số
+         thuần, cộng dồn từ các sự kiện quà trong buổi) — không hạng
+         mục, không lời cầu, không nhãn dài. Ép sát góc trái (mép phải
+         dừng ở ~31% bề ngang) để vùng giữa–trên luôn trống cho hoành
+         phi, tượng Phật và hào quang. ---- */
+      .stage-merit-mini {
+        position: absolute; left: 1cqw; top: 8.2cqw; z-index: 8;
+        width: 30cqw; pointer-events: none;
+        border: 2px solid #d9a441; border-radius: 10px;
+        padding: 0 1.4cqw 1.2cqw;
+        background: linear-gradient(170deg, rgba(52, 26, 10, 0.94), rgba(30, 15, 5, 0.94));
+        box-shadow: 0 10px 22px rgba(15, 8, 2, 0.45), inset 0 0 0 2px rgba(0, 0, 0, 0.3);
+        color: #f3e3bd; line-height: 1.35;
+      }
+      .stage-merit-mini h3 {
+        margin: 0 -1.4cqw 1cqw;
+        padding: 1.1cqw 0.8cqw 0.9cqw;
+        font-family: "Playfair Display", serif;
+        font-size: 2.7cqw; letter-spacing: 0.18cqw; font-weight: 700;
+        color: #ffd968; text-align: center;
+        background: linear-gradient(180deg, #8e2413, #671a0c 60%, #571507);
+        border-bottom: 1.5px solid #d9a441;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+      }
+      .stage-merit-mini ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.45cqw; }
+      .stage-merit-mini li {
+        display: flex; flex-direction: row; align-items: baseline; gap: 1cqw;
+        font-size: 2.35cqw; line-height: 1.3;
+        padding: 0.45cqw 0.9cqw; border-radius: 6px;
+        background: rgba(255, 214, 120, 0.12);
+      }
+      .stage-merit-mini li:nth-child(even) { background: rgba(0, 0, 0, 0.26); }
+      .stage-merit-mini .mm-name {
+        flex: 1 1 auto; font-weight: 700; color: #fff6e0;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      }
+      .stage-merit-mini .mm-coins { flex: none; font-weight: 800; color: #ffd968; font-variant-numeric: tabular-nums; }
+      .stage-merit-mini .mm-empty { margin: 0; font-size: 2.1cqw; font-style: italic; color: rgba(243, 227, 189, 0.85); text-align: center; line-height: 1.4; }
+      @media (max-width: 560px) {
+        .stage-merit-mini h3 { font-size: 11px; }
+        .stage-merit-mini li { font-size: 9.5px; }
+        .stage-merit-mini .mm-empty { font-size: 9px; }
+      }
+      /* ---- HAI BĂNG CÂU ĐỐI ĐỎ treo SÁT HAI MÉP NGOÀI của sảnh
+         (ghi đè vị trí cũ 20%/80% vốn lấn vào vùng tượng): băng ép
+         vào vùng cột/tường hai bên, treo DƯỚI hai bảng góc (top
+         54cqw — dưới hẳn mép dưới của cả hai bảng), vùng giữa phía
+         trên để trống hoàn toàn cho hoành phi + tượng Phật + hào
+         quang. Chữ vàng trên nền đỏ sơn son giữ nguyên từ khối
+         .couplet gốc; cặp câu đối tự xoay vòng mỗi ~25 giây kèm
+         hiệu ứng mờ chuyển (JS bên dưới). ---- */
+      .couplet { top: 54cqw; z-index: 6; }
+      .couplet.left { left: 9cqw; }
+      .couplet.right { left: 91cqw; }
       /* ---- Nút Full sảnh Cầu Bình An: mở riêng chánh điện lên toàn màn hình ---- */
       .hall-bar {
         display: flex; align-items: center; justify-content: space-between;
@@ -1815,11 +2003,11 @@
             <span class="tb-pill">🔥 <b id="liveIncenseTotal">0</b> hương • ✨ <b id="liveMeritTotal">0</b> CĐ</span>
           </div>
           <div class="stage-conn-banner" id="stageConnBanner" role="status" hidden>🟡 Đang kết nối tới máy chủ chùa…</div>
-          <div class="stage-guide-card" aria-hidden="true">
-            <p>💬 Bình luận bất kỳ để vào chùa lễ Phật</p>
-            <p>👤 Gõ <b>nam</b> · <b>nữ</b> để chọn nhân vật</p>
-            <p class="guide-url">🌐 Tương tác với chùa tại <b>chua-thanh-tinh.onrender.com</b></p>
-          </div>
+          <aside class="stage-merit-mini" id="meritMiniBoard" aria-label="Bảng công đức nhỏ — tên người tặng và tổng số xu đã tặng">
+            <h3>BẢNG CÔNG ĐỨC</h3>
+            <ol id="meritMiniList"></ol>
+            <p class="mm-empty" id="meritMiniEmpty">Chưa có Phật tử nào tặng quà</p>
+          </aside>
           <button class="station-label sl-merit" id="btnMerit" type="button" aria-label="Mở hòm công đức để xem mã QR lớn">🧧 Hòm Công Đức</button>
           <button class="station-label sl-bell" id="btnBellStation" type="button" aria-label="Gõ chuông chùa" title="Gõ chuông">🔔</button>
           <span class="station-label sl-xam" aria-hidden="true">🎋 Xin Xăm</span>
@@ -1836,12 +2024,17 @@
             <p class="ah-title">Cầu Bình An</p>
             <p class="ah-hint">Khách trên live TikTok bình luận để vào lễ Phật cùng mọi người</p>
           </div>
-          <div class="couplet left" id="coupletLeft" aria-hidden="true"><span>Gieo</span><span>hạt</span><span>thiện</span><span>lành</span></div>
-          <div class="couplet right" id="coupletRight" aria-hidden="true"><span>Gặt</span><span>quả</span><span>bình</span><span>an</span></div>
-          <aside class="stage-merit" id="meritBoard" aria-label="Bảng công đức — các lượt tặng quà gần nhất">
-            <h3>BẢNG CÔNG ĐỨC</h3>
-            <ol id="meritBoardList"></ol>
-            <p class="mb-empty" id="meritBoardEmpty">Chưa có lượt quà nào — tặng quà trên live TikTok để ghi danh công đức</p>
+          <div class="couplet left" id="coupletLeft" aria-hidden="true"><span>Gieo</span><span>hạt</span><span>giống</span><span>thiện</span><span>lành</span></div>
+          <div class="couplet right" id="coupletRight" aria-hidden="true"><span>Gặt</span><span>quả</span><span>ngọt</span><span>bình</span><span>an</span></div>
+          <aside class="stage-guide-board" aria-label="Bảng hướng dẫn tặng quà cầu nguyện">
+            <h3>HƯỚNG DẪN</h3>
+            <ul>
+              <li><span class="gb-icon">🌹</span><span class="gb-arrow">→</span><span class="gb-label">Sức khỏe</span></li>
+              <li><span class="gb-icon">🎵</span><span class="gb-arrow">→</span><span class="gb-label">Công việc</span></li>
+              <li><span class="gb-icon">❤️</span><span class="gb-arrow">→</span><span class="gb-label">Tình duyên</span></li>
+              <li><span class="gb-icon">🍀</span><span class="gb-arrow">→</span><span class="gb-label">Giàu có</span></li>
+              <li><span class="gb-icon">🎁</span><span class="gb-arrow">→</span><span class="gb-label">An khang phú quý</span></li>
+            </ul>
           </aside>
           <div class="gift-tag" id="giftTag" role="status" aria-live="polite"></div>
           <div class="welcome-banner" id="welcomeBanner" role="status" aria-live="polite" aria-hidden="true">
@@ -1859,7 +2052,7 @@
             <span class="tier-box"><em>5 COINS / TIM</em><b>🏮 Cầu phúc</b></span>
             <span class="tier-box"><em>10+ COINS</em><b>🪷 Hoa sen</b></span>
           </div>
-          <div class="live-guide" aria-label="Hướng dẫn cho khách xem live">🙏 Khách trên live gõ <b>!dang huong</b> để dâng hương · <b>!vai lay</b> để vái lạy · <b>!thinh chuong</b> để thỉnh chuông · gõ <b>a di đà phật</b> để niệm Phật · ghi <b>lời cầu nguyện</b> để thả đèn hoa đăng · tặng quà để ghi danh <b>Bảng Công Đức</b></div>
+          <div class="live-guide" aria-label="Hướng dẫn cho khách xem live">🙏 Khách trên live gõ <b>!dang huong</b> để dâng hương · <b>!vai lay</b> để vái lạy · <b>!thinh chuong</b> để thỉnh chuông · gõ <b>a di đà phật</b> để niệm Phật · ghi <b>lời cầu nguyện</b> để thả đèn hoa đăng · tặng quà để cầu nguyện theo <b>Bảng Hướng Dẫn</b> ở góc trên–phải sảnh</div>
           <div class="sound-gate" id="soundGate">
             <button class="sound-gate-btn" id="btnSoundGate" type="button">🔊 Chạm để bật tiếng nhạc</button>
             <p class="sound-gate-msg" id="soundGateMsg" role="status" aria-live="polite" hidden>Tiếng chưa lên — trình duyệt vẫn đang giữ tiếng. Hãy chạm lại nút này một lần nữa.</p>
@@ -1893,7 +2086,7 @@
           <div class="yt-holder" aria-hidden="true"><div id="ytPlayer"></div></div>
         </div>
 
-        <p class="action-note" id="actionNote">Sảnh đường được làm mới theo khung hình live của bộ chùa RPC: nền sảnh là một bức tranh chánh điện gỗ chạm khắc tối màu với <strong>một tượng Phật vàng khổng lồ</strong> ngự giữa trên đài sen hồng nhiều lớp, hào quang vàng chạm trổ tỏa tia sau lưng, hai bình hoa sen hồng lớn hai bên, đèn lồng vàng treo cao và ban thờ có lư hương rồng bốc khói. Sảnh <strong>không còn cửa ra vào, không còn ghế ngồi</strong>: hội chúng <strong>đứng thành đội hình ngay ngắn nhìn từ phía sau</strong> thành hai khối hai bên <strong>thảm đỏ trung tâm hoa văn sen vàng</strong>, nhân vật <strong>to rõ</strong>, hướng về Phật và <strong>vái lạy liên tục</strong>, mỗi người lệch nhịp nhau như đang hành lễ thật. Khách mới vào chùa <strong>hiện dần ngay tại một vị trí đứng còn trống trong đội hình</strong> kèm <strong>biển tên lớn đọc rõ trên đầu</strong> — không đi từ cửa vào, không tìm ghế; mỗi người giữ đúng một vị trí đứng suốt buổi, hàng trước mang biển tên và huy hiệu hạng, khách TikTok hiện đúng tên của mình tại vị trí được cấp. Khi đội hình kín chỗ, người đứng lâu nhất, lâu không tương tác và chưa tặng quà sẽ mờ dần rời chùa nhường vị trí cho người mới. Khi có lệnh <strong>dâng hương</strong> (nút bấm, sự kiện server hay chat “dâng hương”), <strong>chính nhân vật của khách đó từ vị trí đứng bước ra thảm lễ trước lư hương dâng hương, vái đúng 3 vái rồi quay về đúng vị trí đứng cũ</strong> và tiếp tục vái lạy cùng đội hình. Giữa hàng trước, <strong>Phật tử trung tâm</strong> mang tên khách đang có sự kiện (vái lạy, thỉnh chuông, tọa thiền, niệm Phật hay tặng quà) bước ra làm lễ thay khách đó, hiện biển lớn có avatar tròn, tên và dòng hành động “Tên — Hành động (+N CĐ)”, cùng bong bóng lời khấn ngay trên sân khấu; nhiều sự kiện thì xếp hàng lần lượt. Mỗi lượt dâng hương cắm thêm ba nén lên lư lớn trước ban thờ và hương tích lũy ở lại trên lư suốt buổi lễ. Trên cùng khung hình là thanh “🟢 LIVE @chuaonline12 • số mắt” và đếm “🔥 tổng hương • ✨ tổng CĐ”; vùng trên–giữa sảnh để trống cho <strong>tượng Phật và vầng hào quang hiện trọn vẹn</strong>: thẻ hướng dẫn thu gọn ở góc trên–trái, hộp <strong>BẢNG CÔNG ĐỨC</strong> ở <strong>góc trên–phải</strong> ngay dưới thanh LIVE liệt kê các lượt tặng quà gần nhất — mới nhất lên đầu, mỗi dòng là tên người tặng kèm icon và nhãn hạng mục theo loại quà, không xếp hạng, không cột điểm, chữ lớn rõ nét để đọc được ngay trên khung phát sóng, khung tri ân quà treo ngay dưới ban thờ; đáy sảnh <strong>không còn khung chữ nào</strong> — thảm đỏ chạy thẳng xuống đáy sảnh, lối giữa luôn thông thoáng để nhìn rõ đội hình; phía trái sảnh, ngay trên trạm Thỉnh Chuông là <strong>trạm 🧧 Hòm Công Đức</strong> nhỏ gọn, chạm vào là phóng to mã QR Timo lên giữa màn hình để quét. Nhạc nền mặc định là <strong>🧘 Nhạc thiền tĩnh tâm an lạc (YouTube)</strong> (bài “Nhạc Thiền Tĩnh Tâm An Lạc - Lắng Nghe Và Cảm Nhận Sự Bình An Trong Tâm Hồn - HAY TUYỆT” của kênh Nhạc Thiền Tịnh Tâm, phát qua YouTube, tự lặp lại liên tục ở âm lượng mặc định 80%); pháp thoại trước khi ngủ, nhạc tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút, các bản tụng kinh Phật pháp, thiền tịnh tâm, Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo và nhạc thiền An Nhiên vẫn có trong menu chọn nhạc để ai muốn nghe thì tự chọn; nhạc sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng); riêng màn hình live nhạc tự khởi động ngay khi trang tải xong. Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và khu <strong>Xem Tử Vi Lý Số · Xem Bói · Xem Ngày Đẹp</strong> (phí tùy tâm, mở khóa một lần xem cả ba). <strong>Luật đội hình đứng:</strong> thảm đỏ ở giữa là lối lễ thông thoáng — không nhân vật nào dừng lại, đứng yên hay xếp hàng chờ trong lối giữa ở bất kỳ thời điểm nào; khách chờ lượt dâng hương thì <strong>chờ ngay tại vị trí đứng của mình trong đội hình</strong>, chỉ rời vị trí khi thảm lễ có chỗ đứng trống và tới lượt; nhân vật làm lễ đứng trên <strong>thảm lễ trước lư hương</strong> — khu riêng ở đầu trên của lối giữa, không tính là lối đi. Hai bên khu lễ trước ban thờ có <strong>hai vị sư cố định của chùa ngồi gõ mõ</strong> — một vị bên trái, một vị bên phải, đối xứng qua lối giữa, <strong>quay mặt về phía người xem</strong> (góc chính diện, thấy rõ mặt) và <strong>to hơn nhân vật khách thường một bậc</strong>, mõ đặt ngay phía trước ở phía dưới, không chiếm vị trí đứng nào của hội chúng: dùi gõ <strong>khớp với từng tiếng mõ phát ra</strong> khi nhạc đang chạy, và khi nhạc tắt hai vị vẫn gõ hình ảnh theo nhịp chậm đều khoảng 2 giây một tiếng nên khung hình live luôn có chuyển động người rõ ràng ở cả hai bên. Sảnh còn có <strong>gói chuyển động sống nhẹ chạy liên tục</strong> ở mọi chế độ xem: <strong>khói hương bay lên không ngớt</strong> từ lư lớn và từ chính các nén hương đang cháy trên miệng lư, <strong>lửa đèn lồng và nến trên ban thờ lay động</strong> không đều nhịp, hai đèn lồng treo đu đưa cực nhẹ, hội chúng <strong>vái lạy liên tục lệch pha nhau</strong>, <strong>hào quang sau tượng Phật gợn sáng chậm</strong> và thỉnh thoảng một <strong>cánh sen nhỏ rơi chậm</strong> qua sảnh — tất cả đều chậm và nhẹ để khung hình live không bao giờ đứng yên mà vẫn giữ không khí trang nghiêm.</p>
+        <p class="action-note" id="actionNote">Sảnh đường được làm mới theo khung hình live của bộ chùa RPC: nền sảnh là một bức tranh chánh điện gỗ chạm khắc tối màu với <strong>một tượng Phật vàng khổng lồ</strong> ngự giữa trên đài sen hồng nhiều lớp, hào quang vàng chạm trổ tỏa tia sau lưng, hai bình hoa sen hồng lớn hai bên, đèn lồng vàng treo cao và ban thờ có lư hương rồng bốc khói. Sảnh <strong>không còn cửa ra vào, không còn ghế ngồi</strong>: hội chúng <strong>đứng thành đội hình ngay ngắn nhìn từ phía sau</strong> thành hai khối hai bên <strong>thảm đỏ trung tâm hoa văn sen vàng</strong>, nhân vật <strong>to rõ</strong>, hướng về Phật và <strong>vái lạy liên tục</strong>, mỗi người lệch nhịp nhau như đang hành lễ thật. Khách mới vào chùa <strong>hiện dần ngay tại một vị trí đứng còn trống trong đội hình</strong> kèm <strong>biển tên lớn đọc rõ trên đầu</strong> — không đi từ cửa vào, không tìm ghế; mỗi người giữ đúng một vị trí đứng suốt buổi, hàng trước mang biển tên và huy hiệu hạng, khách TikTok hiện đúng tên của mình tại vị trí được cấp. Khi đội hình kín chỗ, người đứng lâu nhất, lâu không tương tác và chưa tặng quà sẽ mờ dần rời chùa nhường vị trí cho người mới. Khi có lệnh <strong>dâng hương</strong> (nút bấm, sự kiện server hay chat “dâng hương”), <strong>chính nhân vật của khách đó từ vị trí đứng bước ra thảm lễ trước lư hương dâng hương, vái đúng 3 vái rồi quay về đúng vị trí đứng cũ</strong> và tiếp tục vái lạy cùng đội hình. Giữa hàng trước, <strong>Phật tử trung tâm</strong> mang tên khách đang có sự kiện (vái lạy, thỉnh chuông, tọa thiền, niệm Phật hay tặng quà) bước ra làm lễ thay khách đó, hiện biển lớn có avatar tròn, tên và dòng hành động “Tên — Hành động (+N CĐ)”, cùng bong bóng lời khấn ngay trên sân khấu; nhiều sự kiện thì xếp hàng lần lượt. Mỗi lượt dâng hương cắm thêm ba nén lên lư lớn trước ban thờ và hương tích lũy ở lại trên lư suốt buổi lễ. Trên cùng khung hình là thanh “🟢 LIVE @chuaonline12 • số mắt” và đếm “🔥 tổng hương • ✨ tổng CĐ”; vùng trên–giữa sảnh để trống cho <strong>tượng Phật và vầng hào quang hiện trọn vẹn</strong>: <strong>BẢNG CÔNG ĐỨC</strong> thu nhỏ gọn ở <strong>góc trên–trái</strong> ngay dưới thanh LIVE (thẻ hướng dẫn tương tác cũ ở góc này đã gỡ hẳn để nhường chỗ) — mỗi dòng chỉ gồm tên người tặng và tổng số xu người đó đã tặng, hiện dạng con số thuần cộng dồn từ các sự kiện quà, không hạng mục, không lời cầu — và đối diện là <strong>BẢNG HƯỚNG DẪN</strong> cố định ở <strong>góc trên–phải</strong> ghi đúng 5 dòng cố định, mỗi dòng là icon của quà kèm nhãn lời cầu (🌹 Sức khỏe · 🎵 Công việc · ❤️ Tình duyên · 🍀 Giàu có · 🎁 An khang phú quý) để khách xem live biết tặng quà nào thì cầu điều gì; hai bảng ép sát hai góc trên, vùng giữa–trên để trống hoàn toàn cho hoành phi, tượng Phật và hào quang; <strong>hai băng câu đối đỏ chữ vàng</strong> treo dọc sát hai mép ngoài của sảnh, dưới hai bảng góc, trên vùng cột/tường hai bên, tự xoay vòng đổi cặp mỗi khoảng 25 giây kèm hiệu ứng mờ chuyển (“Gieo hạt giống thiện lành / Gặt quả ngọt bình an”, “Tâm an vạn sự an / Lòng tĩnh đời thảnh thơi”, “Phúc sinh do tâm thiện / Lộc đến bởi lòng thành”, “Buông bỏ lòng nhẹ nhõm / Từ bi đời an vui”, “Một niệm lành gieo xuống / Muôn phúc tốt nảy mầm”), chữ lớn rõ nét để đọc được ngay trên khung phát sóng, khung tri ân quà treo ngay dưới ban thờ; đáy sảnh <strong>không còn khung chữ nào</strong> — thảm đỏ chạy thẳng xuống đáy sảnh, lối giữa luôn thông thoáng để nhìn rõ đội hình; phía trái sảnh, ngay trên trạm Thỉnh Chuông là <strong>trạm 🧧 Hòm Công Đức</strong> nhỏ gọn, chạm vào là phóng to mã QR Timo lên giữa màn hình để quét. Nhạc nền mặc định là <strong>🧘 Nhạc thiền tĩnh tâm an lạc (YouTube)</strong> (bài “Nhạc Thiền Tĩnh Tâm An Lạc - Lắng Nghe Và Cảm Nhận Sự Bình An Trong Tâm Hồn - HAY TUYỆT” của kênh Nhạc Thiền Tịnh Tâm, phát qua YouTube, tự lặp lại liên tục ở âm lượng mặc định 80%); pháp thoại trước khi ngủ, nhạc tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút, các bản tụng kinh Phật pháp, thiền tịnh tâm, Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo và nhạc thiền An Nhiên vẫn có trong menu chọn nhạc để ai muốn nghe thì tự chọn; nhạc sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng); riêng màn hình live nhạc tự khởi động ngay khi trang tải xong. Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và khu <strong>Xem Tử Vi Lý Số · Xem Bói · Xem Ngày Đẹp</strong> (phí tùy tâm, mở khóa một lần xem cả ba). <strong>Luật đội hình đứng:</strong> thảm đỏ ở giữa là lối lễ thông thoáng — không nhân vật nào dừng lại, đứng yên hay xếp hàng chờ trong lối giữa ở bất kỳ thời điểm nào; khách chờ lượt dâng hương thì <strong>chờ ngay tại vị trí đứng của mình trong đội hình</strong>, chỉ rời vị trí khi thảm lễ có chỗ đứng trống và tới lượt; nhân vật làm lễ đứng trên <strong>thảm lễ trước lư hương</strong> — khu riêng ở đầu trên của lối giữa, không tính là lối đi. Hai bên khu lễ trước ban thờ có <strong>hai vị sư cố định của chùa ngồi gõ mõ</strong> — một vị bên trái, một vị bên phải, đối xứng qua lối giữa, <strong>quay mặt về phía người xem</strong> (góc chính diện, thấy rõ mặt) và <strong>to hơn nhân vật khách thường một bậc</strong>, mõ đặt ngay phía trước ở phía dưới, không chiếm vị trí đứng nào của hội chúng: dùi gõ <strong>khớp với từng tiếng mõ phát ra</strong> khi nhạc đang chạy, và khi nhạc tắt hai vị vẫn gõ hình ảnh theo nhịp chậm đều khoảng 2 giây một tiếng nên khung hình live luôn có chuyển động người rõ ràng ở cả hai bên. Sảnh còn có <strong>gói chuyển động sống nhẹ chạy liên tục</strong> ở mọi chế độ xem: <strong>khói hương bay lên không ngớt</strong> từ lư lớn và từ chính các nén hương đang cháy trên miệng lư, <strong>lửa đèn lồng và nến trên ban thờ lay động</strong> không đều nhịp, hai đèn lồng treo đu đưa cực nhẹ, hội chúng <strong>vái lạy liên tục lệch pha nhau</strong>, <strong>hào quang sau tượng Phật gợn sáng chậm</strong> và thỉnh thoảng một <strong>cánh sen nhỏ rơi chậm</strong> qua sảnh — tất cả đều chậm và nhẹ để khung hình live không bao giờ đứng yên mà vẫn giữ không khí trang nghiêm.</p>
 
         <div class="guide">
           <span><b>Vị trí đứng:</b> sảnh không có cửa ra vào, không có ghế ngồi — mỗi Phật tử đứng tại một vị trí cố định trong đội hình, hướng về Phật; khách mới hiện dần ngay tại vị trí đứng còn trống kèm biển tên trên đầu</span>
@@ -1905,7 +2098,7 @@
         </div>
       </section>
 
-      <aside class="rpc-side" aria-label="Bảng điều khiển chùa — Phật tử đang làm lễ, bảng công đức và dòng sự kiện">
+      <aside class="rpc-side" aria-label="Bảng điều khiển chùa — Phật tử đang làm lễ và dòng sự kiện">
         <section class="rpc-panel" aria-label="Phật tử đang làm lễ tại chánh điện">
           <h3>🙏 Đang Làm Lễ Tại Chánh Điện</h3>
           <p class="spot-name" id="spotName">Chưa có Phật tử nào đang làm lễ</p>
@@ -1916,11 +2109,6 @@
             <span>🙏 Tổng số nén hương đã dâng: <strong id="incenseTotal">0</strong> nén</span>
             <span>🧘 Hội chúng đang ở chùa: <strong id="sideOnlineCount">1</strong> người</span>
           </div>
-        </section>
-        <section class="rpc-panel" aria-label="Bảng công đức — các lượt tặng quà gần nhất">
-          <h3>🙏 BẢNG CÔNG ĐỨC</h3>
-          <ol class="rpc-merit" id="meritBoardListSide"></ol>
-          <p class="rpc-empty" id="meritBoardEmptySide">Chưa có lượt quà nào — tặng quà trên live TikTok để ghi danh công đức</p>
         </section>
         <section class="rpc-panel" aria-label="Dòng sự kiện trong chùa">
           <h3>📰 Dòng Sự Kiện Trong Chùa</h3>
@@ -1959,20 +2147,20 @@
           <strong>nhân vật của người tặng được đưa ra GIỮA SẢNH đứng một mình</strong> (đúng kiểu video mẫu AN NHIÊN) và <strong>camera của sảnh sẽ zoom mượt vào cận cảnh người đó</strong> trong khoảng 1,2 giây, giữ cận cảnh vài giây trong lúc họ quỳ lạy một lạy,
           đồng thời <strong>bảng trình diện giữa sảnh hiện hai dòng kiểu mẫu: dòng lớn là lời cầu theo loại quà</strong> (Hoa hồng → “Cầu Sức Khỏe Bình An”, TikTok → “Cầu Gia Đạo Hạnh Phúc”, Táo → “Cầu Công Việc Thuận Lợi”, Cỏ 4 lá → “Cầu May Mắn An Nhàn”, quà khác → “Cầu Phú Quý Giàu Sang”) <strong>và dòng dưới “{Tên} dâng {Tên quà}”</strong> kèm tiếng chuông để cả phòng live cùng đọc được —
           quà tặng <strong>không đọc thành tiếng</strong>. Sau đó camera zoom ra lại toàn cảnh và nhân vật trở về đúng vị trí đứng của mình. Nhiều quà đến cùng lúc sẽ xử lý lần lượt từng người, không chồng lượt zoom, không mất lượt nào.
-          Trên <strong>BẢNG CÔNG ĐỨC</strong> (góc trên–phải sảnh), mỗi lượt quà hiện thành một dòng riêng — <strong>mới nhất lên đầu</strong> — gồm <strong>tên người tặng + icon + nhãn hạng mục</strong> theo loại quà: 🌹 Sức khỏe bình an · 🎵 Gia đình · ❤️ Tình duyên · 🍀 Công việc · 💰 Phú quý giàu sang. Bảng không còn xếp hạng, không còn cột điểm.
-          Kèm theo đó, một nhãn nhỏ <strong>“Cầu Bình An – {tên} tặng {quà}”</strong> hiện trong sân chùa ngay dưới chánh điện.
+          Ở <strong>góc trên–phải sảnh</strong> nay là <strong>BẢNG HƯỚNG DẪN</strong> cố định: bảng chỉ ghi đúng 5 dòng tĩnh — mỗi dòng là <strong>icon của quà + nhãn lời cầu</strong>: 🌹 Sức khỏe · 🎵 Công việc · ❤️ Tình duyên · 🍀 Giàu có · 🎁 An khang phú quý — để khách xem live biết tặng quà nào thì cầu điều gì. Bảng hướng dẫn không thay đổi theo lượt quà. Đối diện ở <strong>góc trên–trái</strong> là <strong>BẢNG CÔNG ĐỨC thu nhỏ gọn</strong> (thay đúng chỗ thẻ hướng dẫn tương tác cũ đã gỡ hẳn): mỗi dòng chỉ gồm <strong>tên người tặng + tổng số xu đã tặng</strong> hiện dạng con số thuần, cộng dồn giá trị xu từ các sự kiện quà trong buổi — không hạng mục, không lời cầu, không nhãn dài.
+          Lượt trình diện quà chỉ chạy đúng MỘT luồng này — nhãn nhỏ kiểu cũ <strong>“Cầu Bình An – {tên} tặng {quà}”</strong> và cuốn thư tri ân cũ đã gỡ hẳn, không còn đường nào hiện song song. Camera zoom cận cảnh 5.0 lần vào thân người đang lạy (người tặng chiếm phần lớn chiều cao khung), biển trình diện là <strong>biển VÀNG vừa phải treo phía trên đầu người tặng</strong> với đúng hai dòng chữ như trên.
         </p>
         <p style="margin-top:10px">
           <strong>Chào khách TikTok mới vào sảnh:</strong> khi server đưa một khách từ phòng live vào chùa qua sự kiện
           <em>new_user</em> với định danh hoặc tên mang tiền tố <em>tt_</em> (nhân vật khách TikTok), trang sẽ hiện một bảng chào trang trọng
           <strong>“🙏 {Tên khách} vừa vào chùa”</strong> với <strong>cỡ chữ lớn, treo ngay dưới lư hương ở khu trung tâm phía trước chánh điện</strong>
-          (không che tượng Phật, không che lư hương, không đè lên Bảng Công Đức hay dòng hướng dẫn dưới sảnh) trong ít giây rồi mờ đi — nhiều khách vào cùng lúc thì xếp hàng hiện lần lượt,
+          (không che tượng Phật, không che lư hương, không đè lên Bảng Hướng Dẫn hay dòng hướng dẫn dưới sảnh) trong ít giây rồi mờ đi — nhiều khách vào cùng lúc thì xếp hàng hiện lần lượt,
           khách vào quá đông sẽ gộp chung một lời chào — và <strong>nhân vật của khách hiện dần ngay tại một vị trí đứng còn trống trong đội hình hai bên sảnh, kèm biển tên trên đầu, rồi bắt đầu vái lạy cùng hội chúng</strong>:
           mỗi vị trí đứng chỉ một khách và khách giữ đúng vị trí đó suốt buổi (người khác rời đi không ai bị xô chỗ), khách rời chùa thì nhân vật mờ dần ngay tại chỗ rồi khuất, vị trí trống lại cho khách vào sau hiện đúng vào đó; đội hình đứng kín chỗ thì người đứng lâu nhất, lâu không tương tác và chưa tặng quà mờ dần rời chùa nhường vị trí nên khách mới luôn có chỗ đứng.
           Khi khách nhận lệnh <em>dâng hương</em> qua TikTok (sự kiện <em>user_offering_incense</em> hoặc chat “dâng hương”), <strong>chính nhân vật của khách từ vị trí đứng của mình bước ra trước lư hương dâng hương, vái đúng 3 vái rồi quay về đúng vị trí đứng cũ</strong>; các lệnh <em>vái lạy / thỉnh chuông</em> còn lại vẫn do <strong>Phật tử trung tâm giữa sảnh mang đúng tên của khách đó bước ra làm lễ thay</strong> (bảng tên, nhãn hành động và bong bóng lời khấn hiện ngay tại nhân vật trung tâm), còn nhân vật của khách vẫn đứng dự lễ tại vị trí của mình, tiếp tục vái lạy cùng đội hình.
           Cầu nối cũng có thể gọi trực tiếp <em>window.chaoPhatTuMoi({ ten: "Tên khách" })</em> hoặc <em>postMessage</em> một gói
           <em>{ type: "tiktok_member", name }</em>. Ở sát đáy khung sảnh luôn có sẵn <strong>dòng hướng dẫn cố định cho khách xem live</strong>:
-          gõ <em>!dang huong</em> để dâng hương · <em>!vai lay</em> để vái lạy · <em>!thinh chuong</em> để thỉnh chuông · tặng quà để ghi danh Bảng Công Đức —
+          gõ <em>!dang huong</em> để dâng hương · <em>!vai lay</em> để vái lạy · <em>!thinh chuong</em> để thỉnh chuông · tặng quà để cầu nguyện theo Bảng Hướng Dẫn —
           luồng dâng hương qua bình luận vẫn do server và TikFinity đảm nhiệm như trước, trang chỉ chào khách và hướng dẫn rõ ràng.
         </p>
         <p style="margin-top:10px">
@@ -1989,7 +2177,7 @@
           <strong>Bảng công đức (treo ở góc trên–phải sảnh, hiện cả trong màn hình phát ?full):</strong> bảng hiện
           <strong>danh sách các lượt tặng quà gần nhất</strong> trong buổi live — mỗi lượt quà đi qua trang (sự kiện
           <em>tiktok_gift</em> / <em>gift</em>) được ghi thêm một dòng lên đầu bảng: tên người tặng kèm icon và nhãn
-          hạng mục theo loại quà (🌹 Sức khỏe bình an · 🎵 Gia đình · ❤️ Tình duyên · 🍀 Công việc · 💰 Phú quý giàu sang),
+          hạng mục theo loại quà (🌹 Sức khỏe · 🎵 Công việc · ❤️ Tình duyên · 🍀 Giàu có · 🎁 An khang phú quý),
           tối đa 5 dòng trong sảnh và 10 dòng ở bảng dưới sảnh. Bảng không xếp hạng, không hiện điểm; dữ liệu điểm
           <em>merit_board</em> từ server chỉ còn dùng cho tổng công đức trên thanh trên cùng.
         </p>
@@ -6247,7 +6435,7 @@
             if (u.action === "walking") imgH = 78;
             if (u.action === "offering" || u.action === "belling") imgH = 76;
             if (u.action === "bowing") imgH = 70;
-            if (isSpot) imgH = (spotElapsed < spotDur - 1.1) ? 80 : 76; // lượt tri ân: ảnh nhỉnh hơn thường một chút — độ phóng to chính do CAMERA ZOOM của khung sảnh đảm nhiệm
+            if (isSpot) imgH = (spotElapsed < spotDur - 1.1) ? 92 : 86; // lượt tri ân: ảnh to hơn thường + CAMERA ZOOM 5.0 của khung sảnh → người tặng chiếm phần lớn chiều cao khung lúc cận cảnh, động tác lạy bằng dải khung nhìn rõ ràng
             if (u === centralUser) imgH *= 1.12;
             if (u.action === "meditating") {
               var mPulse = (Math.sin(t * 1.6 + u.phase) + 1) / 2;
@@ -7165,6 +7353,18 @@
             u.queuedOffer = true;
             return true;
           }
+          if (u._toSpot || u._atSpot) {
+            // Đang trong LƯỢT TRÌNH DIỆN QUÀ của chính khách này (đang
+            // ra giữa sảnh / đang ở điểm trình diện cho camera zoom):
+            // lệnh dâng hương GHI NHỚ (queuedOffer), KHÔNG giật nhân
+            // vật khỏi cảnh zoom giữa chừng và KHÔNG bị nuốt — lượt
+            // quà khép lại, khách về đúng vị trí đứng gốc, yên vị là
+            // promoteQueuedOffers cho đi dâng hương ngay. (Luân phiên
+            // công bằng: quà đang chạy thì lễ chờ, lễ đang chạy thì
+            // quà chờ ở giftPendingTurn.)
+            u.queuedOffer = true;
+            return true;
+          }
           if (u.action === "offering" || u.action === "bowing" || u.action === "belling" || u.pendingOffer || u.pendingBow || u.pendingBell) {
             u.queuedOffer = true; // đang bận lễ khác: dâng hương ngay khi lễ đó xong
             return true;
@@ -7198,9 +7398,10 @@
             var u = users[id];
             if (!u || (!u.queuedOffer && !u.queuedBow) || u.leaving || u.leavePending) return;
             if (u.action === "offering" || u.action === "bowing" || u.action === "belling" || u.pendingOffer || u.pendingBow || u.pendingBell) return;
+            if (u._toSpot || u._atSpot) return; // đang trong lượt trình diện quà ở giữa sảnh: quà khép + về yên vị mới tới lượt lễ
             if (u.pendingSit || u.waitingGate) return; // chưa yên vị trên ghế / chưa có ghế: đợi ngồi xuống đã
             if (u.returningHome) return; // đang trên đường về ghế gốc: chưa ngồi yên thì chưa nhận lễ mới
-            if (u.action !== "seated" && u.action !== "meditating") return; // LUẬT CỨNG: chỉ nhận lễ mới khi đã NGỒI YÊN ở ghế gốc
+            if (u.action !== "seated" && u.action !== "meditating" && u.action !== "standing") return; // LUẬT CỨNG: chỉ nhận lễ mới khi đã YÊN VỊ ở vị trí đứng gốc (đội hình đứng dùng cả action "standing" — bản trước thiếu nhánh này nên lượt chờ của khách đứng yên bị kẹt vĩnh viễn, đúng lỗi "dâng hương không khởi động được lễ")
             if (!anyOfferSpotFree(u)) return; // thảm lễ vẫn kín: tiếp tục chờ ngay tại ghế
             if (u.queuedBow && !u.queuedOffer) {
               u.queuedBow = false;
@@ -8351,25 +8552,46 @@
            zoom theo, vẫn đọc rõ. Mọi cơ chế khác chạy bình thường
            bên dưới trong lúc zoom. ---- */
         var GIFT_SPOT = { x: 270, y: 622 };
+        /* Tâm zoom KHÔNG lấy ngay điểm chân (GIFT_SPOT.y) mà nâng lên
+           ~64px: khung cận cảnh phải ôm trọn THÂN NGƯỜI đang lạy —
+           đầu người ở trên điểm chân ~115px, chân chạm đáy vùng zoom.
+           Hệ số 5.0: nhân vật chiếm ~55–60% chiều cao khung hình lúc
+           cận cảnh (bản trước 2.35 chỉ ~26% — zoom hời hợt từ xa,
+           đúng lỗi chủ chùa bắt sửa). */
+        var GIFT_ZOOM_PT = { x: 270, y: 558 };
+        var GIFT_ZOOM_S = 5.0;
         var giftZoomTimer = null;
-        function applyGiftZoom(u) {
+        function giftZoomCanvases() {
+          var list = [];
           var cv = document.getElementById("templeCanvas");
-          if (!cv || !u) return;
-          var wd = cv.offsetWidth || 540, hd = cv.offsetHeight || 960;
-          var S = 2.35; // cận cảnh điểm trình diện giữa sảnh: người tặng hiện TO RÕ giữa khung
-          var px = (GIFT_SPOT.x / 540) * wd, py = (GIFT_SPOT.y / 960) * hd;
+          if (cv) list.push(cv);
+          var gl = document.querySelector("canvas.gl3d");
+          if (gl && gl !== cv) list.push(gl); // lớp 3D (nếu bật) zoom CÙNG canvas chính, không lệch khung
+          return list;
+        }
+        function applyGiftZoom(u) {
+          var list = giftZoomCanvases();
+          if (!list.length || !u) return;
+          var cv = list[0];
+          var wd = cv.offsetWidth || cv.clientWidth || 540, hd = cv.offsetHeight || cv.clientHeight || Math.round(wd * 16 / 9);
+          var S = GIFT_ZOOM_S;
+          var px = (GIFT_ZOOM_PT.x / 540) * wd, py = (GIFT_ZOOM_PT.y / 960) * hd;
           var mx = wd / (2 * S), my = hd / (2 * S);
           var cxp = Math.max(mx, Math.min(wd - mx, px));
           var cyp = Math.max(my, Math.min(hd - my, py));
-          cv.style.transition = "transform 1.2s ease";
-          cv.style.transformOrigin = "50% 50%";
-          cv.style.transform = "scale(" + S.toFixed(3) + ") translate(" + (wd / 2 - cxp).toFixed(1) + "px, " + (hd / 2 - cyp).toFixed(1) + "px)";
+          var tr = "scale(" + S.toFixed(3) + ") translate(" + (wd / 2 - cxp).toFixed(1) + "px, " + (hd / 2 - cyp).toFixed(1) + "px)";
+          list.forEach(function (c) {
+            c.style.transition = "transform 1.2s ease";
+            c.style.transformOrigin = "50% 50%";
+            c.style.willChange = "transform";
+            c.style.transform = tr;
+          });
         }
         function resetGiftZoom() {
-          var cv = document.getElementById("templeCanvas");
-          if (!cv) return;
-          cv.style.transition = "transform 1.2s ease";
-          cv.style.transform = "";
+          giftZoomCanvases().forEach(function (c) {
+            c.style.transition = "transform 1.2s ease";
+            c.style.transform = "";
+          });
         }
         // Kết thúc lượt tri ân: zoom ra (nếu còn đang zoom), gỡ cờ
         // chiếu, ẩn bảng giữa sảnh, và đưa nhân vật người tặng từ
@@ -8456,16 +8678,16 @@
            mỗi dòng công đức kèm icon + nhãn ngắn theo loại quà gần
            nhất của người tặng (khớp tên quà không phân biệt hoa
            thường/dấu, cùng bộ gấp chữ giftFoldText). Táo và mọi quà
-           chưa có quy định riêng rơi về nhóm Phú quý giàu sang. */
+           chưa có quy định riêng rơi về nhóm An khang phú quý. */
         function giftCategoryFor(giftName) {
           var g = giftFoldText(giftName);
           if (g) {
-            if (g.indexOf("rose") >= 0 || g.indexOf("hoa hong") >= 0) return { icon: "🌹", label: "Sức khỏe bình an" };
-            if (g.indexOf("tiktok") >= 0 || g.indexOf("tik tok") >= 0) return { icon: "🎵", label: "Gia đình" };
+            if (g.indexOf("rose") >= 0 || g.indexOf("hoa hong") >= 0) return { icon: "🌹", label: "Sức khỏe" };
+            if (g.indexOf("tiktok") >= 0 || g.indexOf("tik tok") >= 0) return { icon: "🎵", label: "Công việc" };
             if (g.indexOf("tha tim") >= 0 || g.indexOf("heart") >= 0 || g.indexOf("trai tim") >= 0) return { icon: "❤️", label: "Tình duyên" };
-            if (g.indexOf("co 4 la") >= 0 || g.indexOf("co bon la") >= 0 || g.indexOf("clover") >= 0 || g.indexOf("4 la") >= 0 || g.indexOf("bon la") >= 0) return { icon: "🍀", label: "Công việc" };
+            if (g.indexOf("co 4 la") >= 0 || g.indexOf("co bon la") >= 0 || g.indexOf("clover") >= 0 || g.indexOf("4 la") >= 0 || g.indexOf("bon la") >= 0) return { icon: "🍀", label: "Giàu có" };
           }
-          return { icon: "💰", label: "Phú quý giàu sang" };
+          return { icon: "🎁", label: "An khang phú quý" };
         }
         // Lượt quà GẦN NHẤT của từng người tặng (khóa = tên đã gấp
         // chữ, bỏ tiền tố tt_): bảng công đức phía server chỉ gửi
@@ -8704,9 +8926,9 @@
           // bộ vào ghế (vừa được cho vào chùa như khách mới), đang
           // làm lễ dâng hương hay đang di chuyển thì lượt này CHỜ —
           // đồng hồ canh 300ms ở dưới bắt đầu lượt ngay khi họ ổn
-          // định; chờ quá lâu khi đang đi vào ghế thì đặt thẳng vào
-          // ghế nhà, còn đang làm lễ quá lâu thì bỏ qua lượt — không
-          // chồng zoom, không mất lượt của người khác.
+          // định; chờ quá lâu khi đang đi vào vị trí đứng thì đặt
+          // thẳng vào vị trí đó, còn đang làm lễ thì chờ lễ khép rồi
+          // mới bắt đầu — không chồng zoom, không nuốt lượt.
           var spotUser = giftSpotUserFor(g);
           if (spotUser && !donorStable(spotUser)) {
             giftPendingTurn = { g: g, user: spotUser, since: Date.now() };
@@ -8723,40 +8945,18 @@
           // giây mọi hạng (hiệu ứng Đại Lễ trên sảnh vẫn chạy riêng
           // ~20 giây như cũ)
           var giftDur = 9500;
-          var donorDisplay = giftDonorDisplayName(g.name);
-          if (giftBanner) {
-            giftBanner.classList.toggle("tier-medium", tier === "medium");
-            giftBanner.classList.toggle("tier-grand", tier === "grand");
-          }
-          if (giftThanksEl) giftThanksEl.textContent = tier === "grand" ? "🙏✨ ĐẠI LỄ TRI ÂN ✨🙏" : (tier === "medium" ? "🙏 Tri ân tấm lòng vàng 🙏" : "🙏 Tri ân tấm lòng vàng");
-          var bless = GIFT_BLESSINGS[giftBlessIdx % GIFT_BLESSINGS.length].split("{ten}").join(g.name);
-          giftBlessIdx++;
-          if (giftWhoEl) {
-            // Tên người tặng + tên quà là dữ liệu từ xa (TikTok Live):
-            // dựng bằng textContent và thẻ <strong> tạo sẵn, tuyệt đối
-            // không đưa chuỗi từ xa qua innerHTML.
-            giftWhoEl.textContent = "";
-            var gwName = document.createElement("strong");
-            gwName.textContent = donorDisplay;
-            giftWhoEl.appendChild(gwName);
-            giftWhoEl.appendChild(document.createTextNode(" vừa tặng "));
-            var gwGift = document.createElement("strong");
-            gwGift.textContent = g.gift;
-            giftWhoEl.appendChild(gwGift);
-            giftWhoEl.appendChild(document.createTextNode((g.count > 1 ? " × " + g.count : "") + " trên TikTok Live 🎁"));
-          }
-          if (giftBlessEl) giftBlessEl.textContent = "“" + bless + "”";
-          if (giftQueueEl) {
-            if (giftQueue.length) {
-              giftQueueEl.textContent = "Còn " + giftQueue.length + " lời chúc đang chờ hiện…";
-              giftQueueEl.classList.add("on");
-            } else giftQueueEl.classList.remove("on");
-          }
-          if (giftBanner) { giftBanner.classList.add("show"); giftBanner.setAttribute("aria-hidden", "false"); }
-          if (giftTagEl) {
-            giftTagEl.textContent = "🪷 Cầu Bình An – " + g.name + " tặng " + g.gift + (g.count > 1 ? " × " + g.count : "");
-            giftTagEl.classList.add("show");
-          }
+          /* ĐƯỜNG TRÌNH DIỆN MỚI LÀ ĐƯỜNG DUY NHẤT (sửa lỗi kiểm chứng
+             trên bản phát sóng thật): các lớp phủ KIỂU CŨ của lượt quà —
+             cuốn thư tri ân giftBanner (“Tri ân tấm lòng vàng” + câu
+             chúc dài) và nhãn nhỏ giftTag (“🪷 Cầu Bình An – <Tên> tặng
+             <quà>”) — bị GỠ HẲN khỏi lượt trình diện: ép ẩn ngay tại
+             đây và không còn điểm nào trong luồng quà bật chúng lên
+             nữa, để không đường cũ nào giành chạy trước/song song với
+             luồng mới (người tặng ra giữa sảnh + camera zoom cận cảnh
+             + biển vàng hai dòng phía trên đầu). Phần tử vẫn nằm trong
+             DOM cho các nút xem thử cũ không vỡ, nhưng luôn ẩn. */
+          if (giftBanner) { giftBanner.classList.remove("show", "tier-medium", "tier-grand"); giftBanner.setAttribute("aria-hidden", "true"); }
+          if (giftTagEl) { giftTagEl.classList.remove("show"); giftTagEl.textContent = ""; }
           // BẢNG TRÌNH DIỆN GIỮA SẢNH KIỂU VIDEO MẪU AN NHIÊN: hai
           // dòng — dòng LỚN là LỜI CẦU theo loại quà (giftWishFor),
           // dòng dưới là "<Tên> dâng <Tên quà>". Bảng này THAY câu
@@ -8873,12 +9073,12 @@
         // hiện và bị xoá ngay khi lượt kết thúc — nên đồng hồ canh
         // không bao giờ chuyển lượt sớm hơn mốc của chính lượt đó.
         setInterval(function () {
-          // Lượt tri ân đang chờ người tặng ỔN ĐỊNH TẠI GHẾ (ngồi yên,
-          // không làm lễ, không di chuyển): ổn định thì zoom ngay.
-          // Quá 6 giây: đang đi vào ghế thì đặt thẳng vào ghế nhà
-          // (beginSit) rồi bắt đầu; đang làm lễ/di chuyển khác thì
-          // BỎ QUA lượt này sang lượt tiếp — lượt không kẹt, lễ của
-          // họ không bị cắt ngang.
+          // Lượt tri ân đang chờ người tặng ỔN ĐỊNH TẠI VỊ TRÍ ĐỨNG
+          // (yên vị, không làm lễ, không di chuyển): ổn định thì bắt
+          // đầu lượt ngay (ra giữa sảnh + zoom). Quá 6 giây mà vẫn
+          // đang đi vào vị trí đứng thì đặt thẳng vào vị trí (beginSit)
+          // rồi bắt đầu; đang bận lễ thì CHỜ TIẾP tới khi lễ khép —
+          // không bỏ lượt, không cắt ngang lễ của họ.
           if (giftPendingTurn) {
             var pu = giftPendingTurn.user;
             if (giftPendingTurn.g.donorId && users[giftPendingTurn.g.donorId]) pu = giftPendingTurn.user = users[giftPendingTurn.g.donorId];
@@ -8890,18 +9090,26 @@
               startGiftTurn(pg, pu);
               return;
             }
-            if (Date.now() - giftPendingTurn.since > 6000) {
+            if (Date.now() - giftPendingTurn.since > 6000 && pu.action === "walking" && pu.pendingSit) {
+              // Đang đi bộ vào vị trí đứng quá lâu: đặt thẳng vào vị
+              // trí đứng rồi bắt đầu lượt ngay.
               var pg2 = giftPendingTurn.g;
               giftPendingTurn = null;
-              if (pu.action === "walking" && pu.pendingSit) {
-                var pci = (pu.cushion !== null && pu.cushion !== undefined) ? pu.cushion : pu.homeCushion;
-                if (pci !== null && pci !== undefined && CUSHIONS[pci]) { pu.x = CUSHIONS[pci].x; pu.y = CUSHIONS[pci].y; beginSit(pu); }
-                startGiftTurn(pg2, pu);
-              } else {
-                showNextGift();
-              }
+              var pci = (pu.cushion !== null && pu.cushion !== undefined) ? pu.cushion : pu.homeCushion;
+              if (pci !== null && pci !== undefined && CUSHIONS[pci]) { pu.x = CUSHIONS[pci].x; pu.y = CUSHIONS[pci].y; beginSit(pu); }
+              startGiftTurn(pg2, pu);
               return;
             }
+            /* Đang bận LỄ (dâng hương / vái / thỉnh chuông) hoặc đang
+               trên đường về vị trí đứng: lượt quà CHỜ TIẾP — KHÔNG bỏ
+               lượt như bản trước (bản trước chờ 6 giây là showNextGift
+               nuốt mất lượt: quà tới mà không zoom, không biển, đúng
+               lỗi kiểm chứng). Lễ nào rồi cũng khép (thời lượng lễ +
+               chó săn chống kẹt), khách yên vị là đồng hồ canh này bắt
+               đầu lượt ngay ở nhịp 300ms kế tiếp. Luân phiên công bằng
+               hai chiều với hàng đợi dâng hương: lễ đang chạy thì quà
+               chờ, quà đang chạy thì lễ chờ (startPersonalOffer ghi
+               queuedOffer), không phía nào bị nuốt lệnh. */
           }
           if (giftShowing && giftHideAt && Date.now() >= giftHideAt) showNextGift();
         }, 300);
@@ -8918,12 +9126,11 @@
           var gKeys = giftEventKeys(data, name, gift, count, coins);
           if (giftAnyKeySeen(gKeys)) return;
           giftMarkSeen(gKeys);
-          // Ghi nhớ món quà MỚI NHẤT của người tặng, đồng thời thêm
-          // lượt quà này lên ĐẦU BẢNG CÔNG ĐỨC (danh sách lượt quà gần
-          // nhất kiểu kênh mẫu: tên + icon + nhãn hạng mục, mới nhất
-          // lên đầu, không xếp hạng, không điểm).
+          // Ghi nhớ món quà MỚI NHẤT của người tặng, đồng thời cộng
+          // dồn số xu của lượt quà này vào BẢNG CÔNG ĐỨC NHỎ ở góc
+          // trên–trái sảnh (mỗi người một dòng: tên + tổng xu thuần).
           window._donorLastGift[donorGiftKey(name)] = gift;
-          try { pushRecentGift(name, gift, count); } catch (eMg) {}
+          try { pushRecentGift(name, gift, count, coins); } catch (eMg) {}
           // Xác định NGAY nhân vật của người tặng (chưa có mặt thì
           // cho vào ngồi ghế như khách mới) để lượt chiếu sáng có
           // đúng người mà chiếu; định danh được ghi vào lượt chờ.
@@ -9064,7 +9271,8 @@
         // Kênh 2: postMessage từ cửa sổ cầu nối TikTok Live chạy cùng máy
         window.addEventListener("message", function (e) {
           var d = e && e.data;
-          if (d && typeof d === "object" && (d.type === "tiktok_gift" || d.type === "gift")) hienLoiChucQuaTang(d);
+          if (d && typeof d === "object" && (d.type === "tiktok_gift" || d.type === "gift" || d.type === "user_gift")) hienLoiChucQuaTang(d);
+          if (d && typeof d === "object" && (d.type === "user_offering_incense" || d.type === "user_offer_incense" || d.type === "offer_incense")) remoteOffer(d);
           if (d && typeof d === "object" && d.type === "merit_board") renderMeritBoard(d);
           if (d && typeof d === "object" && (d.type === "fortune_result" || d.type === "user_praying" || d.type === "user_lotus" || d.type === "user_lantern")) window.xuLySuKienRPC(d.type, d);
           if (d && typeof d === "object" && d.type === "user_blessing") onUserBlessing(d);
@@ -9104,13 +9312,18 @@
           spawnPrayerLantern({ x: 270, y: 700 }, "Phật tử Tâm An", "Cầu nguyện cho gia đình bình an, sức khỏe dồi dào");
         });
 
-        /* ----- HAI BĂNG CÂU ĐỐI ĐỎ HAI BÊN TƯỢNG PHẬT -----
-           Ba cặp câu đối viết theo tinh thần mẫu live, tự xoay vòng mỗi
-           ~8 giây: chữ vàng trên nền đỏ sơn son, treo dọc hai bên Phật. */
+        /* ----- HAI BĂNG CÂU ĐỐI ĐỎ TREO SÁT HAI MÉP SẢNH -----
+           Năm cặp câu đối do chủ chùa chốt, tự xoay vòng đổi cặp mỗi
+           ~25 giây kèm hiệu ứng mờ chuyển: chữ vàng trên nền đỏ sơn
+           son, treo dọc trên vùng cột/tường sát hai mép ngoài của
+           sảnh (vị trí ở khối CSS .couplet), không lấn vùng trung
+           tâm của tượng Phật và hào quang. */
         var COUPLETS = [
-          ["Gieo hạt thiện lành", "Gặt quả bình an"],
-          ["Tâm an vạn sự an", "Lòng tĩnh phúc tự đến"],
-          ["Một câu niệm Phật", "Một phút an nhiên"]
+          ["Gieo hạt giống thiện lành", "Gặt quả ngọt bình an"],
+          ["Tâm an vạn sự an", "Lòng tĩnh đời thảnh thơi"],
+          ["Phúc sinh do tâm thiện", "Lộc đến bởi lòng thành"],
+          ["Buông bỏ lòng nhẹ nhõm", "Từ bi đời an vui"],
+          ["Một niệm lành gieo xuống", "Muôn phúc tốt nảy mầm"]
         ];
         var coupletLeftEl = document.getElementById("coupletLeft");
         var coupletRightEl = document.getElementById("coupletRight");
@@ -9137,59 +9350,57 @@
               coupletLeftEl.classList.remove("fade");
               coupletRightEl.classList.remove("fade");
             }, 380);
-          }, 8000);
+          }, 25000);
         }
 
-        /* ----- BẢNG CÔNG ĐỨC (góc trên–phải sảnh, kiểu kênh mẫu AN NHIÊN) -----
-           Bảng KHÔNG còn là bảng xếp hạng điểm: nội dung là danh sách
-           CÁC LƯỢT TẶNG QUÀ GẦN NHẤT trong buổi live, MỚI NHẤT LÊN ĐẦU.
-           Mỗi dòng chỉ gồm: tên người tặng + icon quà + nhãn hạng mục
-           theo loại quà (giftCategoryFor: 🌹 Sức khỏe bình an · 🎵 Gia
-           đình · ❤️ Tình duyên · 🍀 Công việc · 💰 Phú quý giàu sang) —
-           không số hạng, không cột điểm. Lượt quà được ghi vào danh
-           sách ngay tại cửa nhận quà hienLoiChucQuaTang (sau chốt chống
-           trùng, nên mỗi lượt quà thật chỉ ghi đúng một dòng).
+        /* ----- BẢNG CÔNG ĐỨC NHỎ GỌN (góc trên–TRÁI sảnh) -----
+           Chốt gộp của chủ chùa: bảng công đức KHÔNG bỏ hẳn mà thu
+           NHỎ GỌN, đặt ở góc trên–trái (đúng chỗ thẻ hướng dẫn tương
+           tác cũ đã gỡ), đối diện BẢNG HƯỚNG DẪN ở góc trên–phải.
+           Mỗi dòng CHỈ gồm: tên người tặng + TỔNG SỐ XU người đó đã
+           tặng, hiện dạng con số thuần — cộng dồn giá trị xu
+           (coins/diamond… qua giftCoinsValue) từ chính các sự kiện
+           quà đi qua cửa nhận quà hienLoiChucQuaTang (sau chốt chống
+           trùng, nên mỗi lượt quà thật chỉ cộng đúng một lần). Không
+           hạng mục, không lời cầu, không nhãn dài. Dòng xếp theo
+           tổng xu giảm dần, hiện tối đa 8 người.
            Dữ liệu điểm merit_board từ server vẫn được tiếp nhận ở
-           renderMeritBoard bên dưới CHỈ để giữ tổng công đức trên thanh
-           trên cùng và huy hiệu nội bộ — không vẽ lên bảng này nữa. */
-        var meritListEl = document.getElementById("meritBoardList");
-        var meritEmptyEl = document.getElementById("meritBoardEmpty");
-        window._recentGifts = window._recentGifts || []; // [{name, gift, count}] mới nhất ở đầu
-        function congDucRowEl(rec) {
-          var li = document.createElement("li");
-          var nmEl = document.createElement("span");
-          nmEl.className = "mb-name";
-          nmEl.textContent = rec.name;
-          nmEl.title = rec.name;
-          li.appendChild(nmEl);
-          var cat = giftCategoryFor(rec.gift);
-          var catEl = document.createElement("span");
-          catEl.className = "mb-cat";
-          catEl.textContent = cat.icon + " " + cat.label + (rec.count > 1 ? " ×" + rec.count : "");
-          catEl.title = rec.gift;
-          li.appendChild(catEl);
-          return li;
-        }
+           renderMeritBoard bên dưới CHỈ để giữ tổng công đức trên
+           thanh trên cùng và huy hiệu nội bộ — không vẽ lên bảng. */
+        var meritMiniListEl = document.getElementById("meritMiniList");
+        var meritMiniEmptyEl = document.getElementById("meritMiniEmpty");
+        window._donorCoins = window._donorCoins || {}; // khóa tên -> {name, coins} tổng xu cộng dồn
         function renderCongDucBoard() {
-          var list = window._recentGifts || [];
-          if (meritListEl) {
-            meritListEl.innerHTML = "";
-            list.slice(0, 5).forEach(function (rec) { meritListEl.appendChild(congDucRowEl(rec)); });
+          var recs = [];
+          for (var k in window._donorCoins) {
+            if (Object.prototype.hasOwnProperty.call(window._donorCoins, k)) recs.push(window._donorCoins[k]);
           }
-          if (meritEmptyEl) meritEmptyEl.style.display = list.length ? "none" : "block";
-          var sideMeritList = document.getElementById("meritBoardListSide");
-          if (sideMeritList) {
-            sideMeritList.innerHTML = "";
-            list.slice(0, 10).forEach(function (rec) { sideMeritList.appendChild(congDucRowEl(rec)); });
-            var sideMeritEmpty = document.getElementById("meritBoardEmptySide");
-            if (sideMeritEmpty) sideMeritEmpty.style.display = list.length ? "none" : "block";
+          recs.sort(function (a, b) { return b.coins - a.coins; });
+          if (meritMiniListEl) {
+            meritMiniListEl.innerHTML = "";
+            recs.slice(0, 8).forEach(function (rec) {
+              var li = document.createElement("li");
+              var nmEl = document.createElement("span");
+              nmEl.className = "mm-name";
+              nmEl.textContent = rec.name;
+              nmEl.title = rec.name;
+              li.appendChild(nmEl);
+              var coinEl = document.createElement("span");
+              coinEl.className = "mm-coins";
+              coinEl.textContent = String(Math.round(rec.coins));
+              li.appendChild(coinEl);
+              meritMiniListEl.appendChild(li);
+            });
           }
+          if (meritMiniEmptyEl) meritMiniEmptyEl.style.display = recs.length ? "none" : "block";
         }
         window.renderCongDucBoard = renderCongDucBoard;
-        function pushRecentGift(name, gift, count) {
-          window._recentGifts = window._recentGifts || [];
-          window._recentGifts.unshift({ name: String(name || "").slice(0, 40), gift: String(gift || ""), count: count > 1 ? count : 1 });
-          if (window._recentGifts.length > 12) window._recentGifts.length = 12;
+        function pushRecentGift(name, gift, count, coins) {
+          var key = donorGiftKey(name);
+          var rec = window._donorCoins[key] || { name: String(name || "").slice(0, 40), coins: 0 };
+          rec.name = String(name || "").slice(0, 40);
+          if (isFinite(coins) && coins > 0) rec.coins += coins;
+          window._donorCoins[key] = rec;
           renderCongDucBoard();
         }
         window.pushRecentGift = pushRecentGift;
@@ -9726,17 +9937,23 @@
           // không tra được nhân vật (đã gặp thật với khách niệm Phật:
           // dòng chat tới nơi mà nhân vật ngồi yên không lạy). Nếu sự
           // kiện lạy chính cũng tới, remoteBowForUser tự chống trùng.
+          var flatText = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase();
+          // Chat "dâng hương" (có dấu hay không dấu, có "!" hay không):
+          // chính nhân vật của khách tự lên dâng hương + vái 3 vái +
+          // về đúng vị trí đứng gốc — đường dự phòng khi sự kiện
+          // user_offering_incense đi kèm bị lệch định danh; nếu sự kiện
+          // chính cũng tới, startPersonalOffer tự gộp chống trùng theo
+          // mốc lastOfferAt. Đường này KHÔNG còn giới hạn ở chat mang
+          // tiền tố tt_: gói chat của máy chủ có lúc chỉ mang id số /
+          // tên hiển thị không tiền tố — hễ tra được đúng nhân vật của
+          // người gửi trong sảnh thì lệnh dâng hương của họ phải chạy
+          // (bản trước kẹt ở cổng isTtChat là một đường làm lệnh bị
+          // nuốt lặng lẽ, khách đứng yên suốt buổi).
+          if (flatText.indexOf("dang huong") !== -1) {
+            var offerUser = findChatUser(sid, nm);
+            if (offerUser) remoteOffer({ id: sid, name: nm });
+          }
           if (isTtChat) {
-            var flatText = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase();
-            // Chat "dâng hương" (có dấu hay không dấu, có "!" hay không):
-            // chính nhân vật của khách tự lên dâng hương + vái 3 vái +
-            // về chỗ ngồi — đường dự phòng khi sự kiện user_offering_incense
-            // đi kèm bị lệch định danh; nếu sự kiện chính cũng tới,
-            // startPersonalOffer tự gộp chống trùng theo mốc lastOfferAt.
-            if (flatText.indexOf("dang huong") !== -1) {
-              var offerUser = findChatUser(sid, nm);
-              if (offerUser) remoteOffer({ id: sid, name: nm });
-            }
             if (flatText.indexOf("a di da phat") !== -1 || flatText.indexOf("nam mo") !== -1 || /(^|\s)!?\s*vai lay\b/.test(flatText)) {
               var bowUser = findChatUser(sid, nm);
               if (bowUser) remoteBowForUser(bowUser);
@@ -10164,7 +10381,7 @@
                    trang. Trước đây bản chụp ghi đè khiến lễ bị cắt
                    giữa chừng, mất chặng vái tiếp, hoặc nhân vật bị
                    đóng băng "đã ngồi" ngay tại thảm lễ/lối đi. */
-                if (prev && (prev.action === "offering" || prev.action === "bowing" || prev.action === "belling" || prev.pendingOffer || prev.pendingBow || prev.pendingBell || prev.offerThenBow || prev.returningHome || prev._toSpot || prev._atSpot)) {
+                if (prev && (prev.action === "offering" || prev.action === "bowing" || prev.action === "belling" || prev.pendingOffer || prev.pendingBow || prev.pendingBell || prev.offerThenBow || prev.returningHome || prev._toSpot || prev._atSpot || prev.queuedOffer || prev.queuedBow)) {
                   u.action = prev.action;
                   u.actionT0 = prev.actionT0 || 0;
                   u.actionWallT0 = prev.actionWallT0 || 0;
@@ -10461,6 +10678,7 @@
             var evKind = data.event || data.type || data.kind || "";
             if (evKind === "gift") hienLoiChucQuaTang(data.data || data.gift || data);
             else if (evKind === "user_blessing" || evKind === "blessing") onUserBlessing(data.data || data);
+            else if (evKind === "offer_incense" || evKind === "offering" || evKind === "offer" || evKind === "dang_huong" || evKind === "incense" || evKind === "user_offering_incense") remoteOffer(data.data || data);
             else if (evKind === "bow" || evKind === "bowing" || evKind === "chant" || evKind === "niem_phat") remoteBow(data.data || data);
             else if (evKind === "member" || evKind === "join" || evKind === "member_join" || evKind === "tiktok_member" || evKind === "user_join") {
               // Sự kiện khách vào phòng đi qua kênh tiktok_event: cũng
