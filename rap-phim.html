@@ -656,7 +656,12 @@
         simOn: false, simTimer: null,
         meSeated: false, unmuted: false,
         pendingSeek: 0, seekApplied: true,
-        guestCounter: 0
+        guestCounter: 0,
+        walkers: {},        // id -> {el, kind:'in'|'move'|'out', dest(idx|null), startedAt, token, guest, done}
+        walkerSeq: 0,
+        leaving: {},        // id -> mốc rời rạp hợp lệ do user_left kích hoạt
+        lastServerState: null, // current_state gần nhất của máy chủ, để đối chiếu lại bất cứ lúc nào
+        hasConnected: false
       };
       var SHIRTS = ["#a8c8e8","#f2b8c6","#b5dfa8","#f7dc8f","#d3bdf0","#f5b98a","#9adfd4","#e8a8a8","#b8c4e8","#cfe3a1","#f0c8dd","#a5d8c8"];
       var MALE_SHIRTS = ["#3f7fd0","#2f6fb8","#4a90d9","#3565a8","#2b5f9e","#5b9bd5","#315f8f","#4682c4"];
@@ -806,7 +811,12 @@
         var b = el.querySelector(".bubble"); if (b) b.remove();
       }
 
-      /* ---- Nhân vật đi bộ: cửa vào -> ghế, ghế -> cửa ra ---- */
+      /* ---- Nhân vật đi bộ: cửa vào -> ghế, ghế -> cửa ra ----
+         Mọi chuyến đi đều được GHI SỔ (state.walkers) kèm mốc bắt đầu.
+         Watchdog quét mỗi 2 giây: chuyến nào đi quá 6 giây chưa tới nơi
+         (trang bị ẩn, hẹn giờ bị bóp, sự kiện bị sụt…) thì HỦY hoạt ảnh
+         và đặt thẳng nhân vật vào đúng ghế đích — hoặc xóa hẳn nếu đang
+         đi ra. Không nhân vật nào đứng giữa lối đi quá 6 giây. */
       function layerPoint(x, y){
         var lr = $("walkLayer").getBoundingClientRect();
         return { x: x - lr.left, y: y - lr.top };
@@ -827,44 +837,102 @@
         w.innerHTML = '<div class="w-name">' + esc(guest.name) + '</div><span class="w-head"></span><span class="w-body"></span>';
         return w;
       }
+      function registerWalker(guest, el, kind, destIdx, done){
+        var token = ++state.walkerSeq;
+        el.dataset.walkerToken = String(token);
+        el.dataset.bornAt = String(Date.now());
+        state.walkers[guest.id] = {
+          el: el, kind: kind,
+          dest: (destIdx == null ? null : destIdx),
+          startedAt: Date.now(), token: token, guest: guest, done: done || null
+        };
+        if (kind === "out") state.leaving[guest.id] = Date.now();
+        return token;
+      }
+      function walkerIsCurrent(guestId, token){
+        var rec = state.walkers[guestId];
+        return !!rec && rec.token === token;
+      }
+      /* Hủy chuyến đi của một khách: gỡ hình đang đi, không đặt vào ghế */
+      function dropWalker(guestId){
+        var rec = state.walkers[guestId];
+        if (rec && rec.el && rec.el.parentNode) rec.el.remove();
+        delete state.walkers[guestId];
+        delete state.leaving[guestId];
+      }
+      /* Kết thúc chuyến đi NGAY: đi vào/đổi ghế -> đặt thẳng vào đúng ghế
+         đích hiện tại của khách; đi ra -> xóa hẳn hình đang đi. */
+      function finishWalker(guestId){
+        var rec = state.walkers[guestId];
+        if (!rec) return;
+        if (rec.el && rec.el.parentNode) rec.el.remove();
+        delete state.walkers[guestId];
+        delete state.leaving[guestId];
+        var done = rec.done;
+        if (rec.kind === "out"){ if (done) done(); return; }
+        var g = state.guestById[guestId];
+        if (g){
+          if (rec.dest != null && g.seat !== rec.dest && !guestAtSeat(rec.dest, g.id)){
+            clearSeatVisual(g.seat);
+            g.seat = rec.dest;
+          }
+          applySeatVisual(g);
+          updateStats();
+        }
+        if (done) done();
+      }
+      function watchdogSweep(){
+        var now = Date.now();
+        Object.keys(state.walkers).forEach(function(id){
+          var rec = state.walkers[id];
+          if (rec && now - rec.startedAt > 6000) finishWalker(id);
+        });
+        /* Gỡ mọi hình đi bộ mồ côi trong lớp đi bộ (không còn trong sổ) */
+        var known = {};
+        Object.keys(state.walkers).forEach(function(id){ known[state.walkers[id].el.dataset.walkerToken] = true; });
+        Array.prototype.slice.call($("walkLayer").children).forEach(function(el){
+          if (!known[el.dataset.walkerToken]) el.remove();
+        });
+      }
+      setInterval(watchdogSweep, 2000);
       function walkIn(guest){
+        dropWalker(guest.id); // một khách chỉ có một chuyến đi tại một thời điểm
         var layer = $("walkLayer");
         var from = doorPoint(), to = seatPoint(guest.seat);
         var w = makeWalker(guest);
+        var token = registerWalker(guest, w, "in", guest.seat);
         w.style.left = from.x + "px"; w.style.top = from.y + "px";
         layer.appendChild(w);
         void w.offsetWidth;
         w.style.left = to.x + "px"; w.style.top = to.y + "px";
-        setTimeout(function(){
-          if (w.parentNode) w.remove();
-          if (state.guestById[guest.id]) applySeatVisual(guest);
-        }, 1700);
+        setTimeout(function(){ if (walkerIsCurrent(guest.id, token)) finishWalker(guest.id); }, 1700);
       }
       function walkOut(guest, done){
+        dropWalker(guest.id);
         var layer = $("walkLayer");
         var from = seatPoint(guest.seat), to = doorPoint();
         clearSeatVisual(guest.seat);
         var w = makeWalker(guest);
+        var token = registerWalker(guest, w, "out", null, done);
         w.style.left = from.x + "px"; w.style.top = from.y + "px";
         layer.appendChild(w);
         void w.offsetWidth;
         w.style.left = to.x + "px"; w.style.top = to.y + "px";
-        setTimeout(function(){ if (w.parentNode) w.remove(); if (done) done(); }, 1700);
+        setTimeout(function(){ if (walkerIsCurrent(guest.id, token)) finishWalker(guest.id); }, 1700);
       }
       /* Đổi ghế: đứng dậy ở ghế cũ, đi qua lối đi sang ghế mới rồi ngồi xuống */
       function walkMove(guest, fromIdx, toIdx){
+        dropWalker(guest.id);
         var layer = $("walkLayer");
         var from = seatPoint(fromIdx), to = seatPoint(toIdx);
         clearSeatVisual(fromIdx);
         var w = makeWalker(guest);
+        var token = registerWalker(guest, w, "move", toIdx);
         w.style.left = from.x + "px"; w.style.top = from.y + "px";
         layer.appendChild(w);
         void w.offsetWidth;
         w.style.left = to.x + "px"; w.style.top = to.y + "px";
-        setTimeout(function(){
-          if (w.parentNode) w.remove();
-          if (state.guestById[guest.id] && guest.seat === toIdx) applySeatVisual(guest);
-        }, 1700);
+        setTimeout(function(){ if (walkerIsCurrent(guest.id, token)) finishWalker(guest.id); }, 1700);
       }
       function guestAtSeat(idx, exceptId){
         return state.guests.filter(function(g){ return g.seat === idx && g.id !== exceptId; })[0] || null;
@@ -951,12 +1019,13 @@
         delete state.guestById[id];
         state.guests = state.guests.filter(function(g){ return g.id !== id; });
         delete usedNames[guest.name];
-        if (walk){ walkOut(guest); } else { clearSeatVisual(guest.seat); }
+        if (walk){ walkOut(guest); } else { dropWalker(id); clearSeatVisual(guest.seat); }
         feed("<b>" + esc(guest.name) + "</b> đã rời rạp.");
         updateStats(); renderVotes();
       }
       function clearGuests(silent){
         state.guests = []; state.guestById = {}; state.votes = {}; usedNames = {};
+        state.walkers = {}; state.leaving = {};
         seatEls.forEach(function(el, i){ clearSeatVisual(i); });
         $("walkLayer").innerHTML = "";
         state.meSeated = false;
@@ -1235,6 +1304,103 @@
         feed("<span class='hl'>Quà tặng:</span> <b>" + esc(name) + "</b> tặng " + esc(giftName) + (count && count > 1 ? " ×" + count : ""));
       }
 
+      /* ================= Đối chiếu trạng thái máy chủ (reconcile) =================
+         Máy chủ phát lại current_state TOÀN BỘ mỗi 20 giây, nên handler này
+         phải chạy đúng ở MỌI thời điểm — đối chiếu từng khách, không xóa
+         toàn bộ rồi dựng lại (cách cũ làm khách đang đi bộ biến mất giữa
+         đường, khách mới lỡ nhịp vào thì không bao giờ có hình). */
+      function reconcileGuests(serverGuests){
+        var list = Array.isArray(serverGuests) ? serverGuests : [];
+        var serverMap = {};
+        list.forEach(function(g){ if (g && g.id) serverMap[g.id] = g; });
+
+        /* 1) Hình đang có nhưng KHÔNG còn trong state -> xóa hình.
+              Ngoại lệ: khách đang trong hoạt ảnh rời rạp hợp lệ do
+              user_left vừa kích hoạt (chưa quá hạn watchdog) thì để
+              chuyến đi ra đó kết thúc tự nhiên. */
+        state.guests.slice().forEach(function(g){
+          if (serverMap[g.id]) return;
+          var rec = state.walkers[g.id];
+          if (rec && rec.kind === "out") return;
+          if (state.leaving[g.id] && Date.now() - state.leaving[g.id] < 6000) return;
+          dropWalker(g.id);
+          delete state.guestById[g.id];
+          state.guests = state.guests.filter(function(x){ return x.id !== g.id; });
+          delete usedNames[g.name];
+          clearSeatVisual(g.seat);
+        });
+
+        /* 2) Khách có hình nhưng SAI ghế/giới tính/tên so với state ->
+              đưa về đúng. Hai pha (dọn ghế cũ trước, đặt lại sau) để
+              trường hợp hai khách tráo ghế cho nhau không đè hình. */
+        var toReseat = [];
+        list.forEach(function(sg){
+          var g = state.guestById[sg.id];
+          if (!g) return;
+          var wantIdx = g.seat;
+          if (sg.seat != null){
+            var sn = Number(sg.seat);
+            if (sn >= 1 && sn <= TOTAL_SEATS) wantIdx = sn - 1;
+          }
+          if (sg.name && sg.name !== g.name){
+            delete usedNames[g.name];
+            g.name = sg.name;
+            usedNames[g.name] = true;
+          }
+          if (wantIdx !== g.seat){
+            var rec = state.walkers[g.id];
+            if (rec && rec.kind !== "out" && rec.dest === wantIdx){
+              /* Đang đi bộ và đích đến khớp đúng state -> để đi tiếp,
+                 watchdog lo phần kẹt quá 6 giây. */
+            } else {
+              dropWalker(g.id);
+              toReseat.push({ guest: g, idx: wantIdx });
+            }
+          }
+          if (sg.gender){
+            var ng = normalizeGender(sg.gender);
+            if (ng && ng !== g.gender) setGuestGender(g, ng, { silent: true });
+          }
+        });
+        toReseat.forEach(function(it){ clearSeatVisual(it.guest.seat); it.guest.seat = it.idx; });
+        toReseat.forEach(function(it){
+          if (!guestAtSeat(it.idx, it.guest.id)) applySeatVisual(it.guest);
+        });
+
+        /* 3) Khách có trong state nhưng CHƯA có hình -> tạo hình và đặt
+              NGAY vào đúng ghế của họ (không đi bộ: đã lỡ nhịp vào rồi,
+              ưu tiên có mặt đúng ghế ngay lập tức). */
+        list.forEach(function(sg){
+          if (!state.guestById[sg.id]){
+            addGuest(sg.name, { id: sg.id, seat: sg.seat, gender: sg.gender, silent: true });
+          }
+        });
+        updateStats(); renderVotes();
+      }
+      function reconcileServerState(st){
+        if (!st) return;
+        state.lastServerState = st;
+        if (st.thresholdPercent){ state.threshold = st.thresholdPercent; }
+        if (st.votes){ state.voteData = st.votes; }
+        reconcileGuests(st.guests || []);
+        applyQueueData(st.queue, st.submissions);
+        /* Phim: chỉ phát khi KHÁC phim đang chiếu — state phát lại mỗi
+           20 giây không được khởi động lại phim đang chạy. */
+        if (st.nowPlaying){
+          if (state.current.id !== st.nowPlaying.videoId){
+            playVideo(st.nowPlaying.videoId, st.nowPlaying.byName || "", st.nowPlaying.title || "", st.nowPlaying.startedAt);
+          }
+        } else if (state.current.id){ showWaiting(); }
+        renderVotes(); updateStats();
+      }
+      /* Trang bị ẩn rồi hiện lại: quét watchdog ngay (đặt thẳng mọi nhân
+         vật đang kẹt giữa đường) + đối chiếu lại với state gần nhất. */
+      document.addEventListener("visibilitychange", function(){
+        if (document.visibilityState !== "visible") return;
+        watchdogSweep();
+        if (state.server && state.lastServerState) reconcileGuests(state.lastServerState.guests || []);
+      });
+
       /* ================= Kết nối máy chủ rạp (socket.io) ================= */
       function applyQueueData(q, subs){
         if (Array.isArray(q)){
@@ -1251,25 +1417,26 @@
         try { state.socket = io(); } catch (e) { return; }
         var s = state.socket;
         s.on("connect", function(){
+          var reconnected = state.hasConnected;
+          state.hasConnected = true;
           state.server = true;
           document.body.classList.add("server");
           setSim(false);
-          feed("Đã <b>kết nối máy chủ rạp</b> — khách và phim do máy chủ điều phối.");
+          feed(reconnected
+            ? "Đã <b>nối lại máy chủ rạp</b> — đang đối chiếu lại toàn bộ ghế theo trạng thái mới nhất."
+            : "Đã <b>kết nối máy chủ rạp</b> — khách và phim do máy chủ điều phối.");
+          /* Nối lại: đối chiếu tạm ngay bằng state gần nhất đang có;
+             máy chủ sẽ tự gửi current_state mới ngay sau đó và handler
+             đối chiếu sẽ khớp lại toàn bộ ghế một lần nữa. */
+          if (reconnected){
+            watchdogSweep();
+            if (state.lastServerState) reconcileGuests(state.lastServerState.guests || []);
+          }
         });
         s.on("disconnect", function(){
           toast("Mất kết nối máy chủ rạp — đang thử nối lại…");
         });
-        s.on("current_state", function(st){
-          if (!st) return;
-          if (st.thresholdPercent){ state.threshold = st.thresholdPercent; }
-          if (st.votes){ state.voteData = st.votes; }
-          clearGuests(true);
-          (st.guests || []).forEach(function(g){ addGuest(g.name, { id: g.id, seat: g.seat, gender: g.gender, silent: true }); });
-          applyQueueData(st.queue, st.submissions);
-          if (st.nowPlaying){ playVideo(st.nowPlaying.videoId, st.nowPlaying.byName || "", st.nowPlaying.title || "", st.nowPlaying.startedAt); }
-          else { showWaiting(); }
-          renderVotes(); updateStats();
-        });
+        s.on("current_state", function(st){ reconcileServerState(st); });
         s.on("new_user", function(u){ if (u) addGuest(u.name, { id: u.id, seat: u.seat, gender: u.gender, walk: true }); });
         s.on("seat_changed", function(d){
           if (!d) return;

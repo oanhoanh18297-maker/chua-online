@@ -302,6 +302,13 @@ setInterval(() => {
     }
 }, 30000);
 
+// Phat lai toan bo trang thai moi 20 giay: trang doi chieu va tu sua
+// (khach nao chua co hinh thi dung vao dung ghe, hinh thua thi xoa) —
+// chong giam/mat khach khi trang sut su kien hoac tai lai giua chung.
+setInterval(() => {
+    io.emit('current_state', stateSnapshot());
+}, 20000);
+
 // ============================================================================
 // SU KIEN TU TRANG (chu phong dieu khien qua cac su kien host_*)
 // ============================================================================
