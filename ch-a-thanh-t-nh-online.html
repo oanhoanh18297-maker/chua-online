@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.36" />
+    <meta name="chua-build" content="2026-11-01.37" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1781,23 +1781,23 @@
           <button class="btn-ghost active" id="btnSound" type="button" aria-pressed="true">🎵 Nhạc thiền: Bật</button>
           <button class="btn-ghost" id="btnVoice" type="button" aria-pressed="false" title="Đọc thành tiếng lời cảm tạ khi tặng quà, lời cầu nguyện và tên quẻ bằng giọng của trình duyệt">🔊 Giọng đọc: Tắt</button>
           <select class="music-select" id="musicMode" aria-label="Chọn kiểu nhạc nền">
-            <option value="youtube-batnha" selected>🎵 Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo · mặc định</option>
+            <option value="youtube-sleep" selected>🎧 Pháp thoại trước khi ngủ (YouTube) · mặc định</option>
             <option value="tonghop">🙏 An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút</option>
             <option value="chant">🙏 Tụng kinh · gõ mõ · chuông bát — nhạc Phật pháp</option>
             <option value="ambient">🧘 Thiền tịnh tâm · chuông bát &amp; hơi thở</option>
-            <option value="youtube-sleep">🎧 Pháp thoại trước khi ngủ (YouTube)</option>
+            <option value="youtube-batnha">🎵 Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo</option>
             <option value="youtube">🎧 Nhạc thiền An Nhiên (YouTube)</option>
           </select>
           <label class="music-vol" for="musicVol">Âm lượng thiền
             <input type="range" id="musicVol" min="0" max="100" value="80" aria-label="Âm lượng nhạc thiền" />
           </label>
           <span class="timer" id="medTimer">Đã thiền <strong id="medTime">00:00</strong></span>
-          <p class="music-hint">Nguồn mặc định khi vào chùa là <strong>🎵 Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo</strong>: bản “Nhạc Thiền Phật Giáo - Bát Nhã Diệu Tâm | An nhiên &amp; Giác ngộ” của kênh <strong>Phật Pháp Tu Tâm</strong>, phát qua trình phát YouTube chính thức ở mức âm lượng mặc định <strong>80%</strong> và <strong>tự lặp lại liên tục</strong> hết 33 phút lại quay về đầu, để buổi live dài không đứt nhạc. Cứ đúng <strong>3 phút một lần</strong>, bản nhạc YouTube <strong>tạm dừng hẳn</strong> — đúng luật “khi đọc kinh thì nhạc nền tắt, chỉ có tiếng mõ”: chỉ còn tiếng mõ gõ nhịp đều và giọng đọc của chùa đọc <strong>một đoạn pháp ngắn</strong> (kệ Pháp Cú và lời Phật dạy quen thuộc, xoay vòng từng đoạn khác nhau); đọc xong bản nhạc YouTube <strong>tự phát tiếp</strong>, và nếu đang có thông báo khác thì chùa chờ thông báo xong mới đọc pháp. Các thông báo bằng giọng đọc (mời khách vào chùa, cảm tạ quà…) vẫn nổi trên nhạc như cũ — nhạc tự nhường tiếng trong lúc thông báo. <strong>Nhạc nền tổng hợp 🙏 An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút</strong> vẫn nằm trong menu chọn nhạc phía trên để ai muốn nghe thì tự chọn: nó chạy theo từng pha xen kẽ — lúc nhạc nền thiền An Nhiên vang lên rõ ràng thì tiếng mõ chỉ điểm thưa nhẹ ở phía dưới; tới <strong>đợt tụng kinh</strong> thì <strong>nhạc nền tắt hẳn</strong>, chỉ còn tiếng gõ mõ đều chậm và tiếng tụng kinh xa xa; cứ 3 phút một lần nhạc nền lại tắt hẳn để giọng đọc đọc một đoạn pháp ngắn rồi mới trở lại. Nút bật/tắt và thanh âm lượng ở trên điều khiển chung mọi kiểu nhạc. Ở màn hình live (<strong>?full</strong> / <strong>?daisanh</strong>) nhạc <strong>tự khởi động ngay khi trang tải xong</strong>; ở chế độ thường nhạc bắt đầu sau lần chạm/bấm đầu tiên (quy định của trình duyệt) — bấm nút <strong>“🔊 Chạm để bật tiếng nhạc”</strong> trên sảnh là mở được cả bản nhạc YouTube này trong cùng một lần bấm. Các bản đơn lẻ — <strong>Tụng kinh Phật pháp</strong>, <strong>Thiền tịnh tâm</strong> thuần nhạc cụ không lời, <strong>Pháp thoại trước khi ngủ (YouTube)</strong> — bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ &amp; Chữa Lành Phiền Não | Lời Phật Dạy” của kênh <strong>Gieo Mầm Phước Báu</strong> — và <strong>Nhạc thiền An Nhiên (YouTube)</strong> — vẫn nằm trong menu chọn nhạc phía trên; nếu video bị chủ kênh chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về kiểu <strong>Thiền tịnh tâm</strong> có sẵn.</p>
+          <p class="music-hint">Nguồn mặc định khi vào chùa là <strong>🎧 Pháp thoại trước khi ngủ (YouTube)</strong>: bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ &amp; Chữa Lành Phiền Não | Lời Phật Dạy” của kênh <strong>Gieo Mầm Phước Báu</strong>, phát qua trình phát YouTube chính thức ở mức âm lượng mặc định <strong>80%</strong> và <strong>tự lặp lại liên tục</strong>, để buổi live dài không đứt nhạc. Các thông báo bằng giọng đọc (mời khách vào chùa, cảm tạ quà…) vẫn nổi trên nhạc như cũ — nhạc tự nhường tiếng trong lúc thông báo. <strong>Nhạc nền tổng hợp 🙏 An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút</strong> vẫn nằm trong menu chọn nhạc phía trên để ai muốn nghe thì tự chọn: nó chạy theo từng pha xen kẽ — lúc nhạc nền thiền An Nhiên vang lên rõ ràng thì tiếng mõ chỉ điểm thưa nhẹ ở phía dưới; tới <strong>đợt tụng kinh</strong> thì <strong>nhạc nền tắt hẳn</strong>, chỉ còn tiếng gõ mõ đều chậm và tiếng tụng kinh xa xa; cứ 3 phút một lần nhạc nền lại tắt hẳn để giọng đọc đọc một đoạn pháp ngắn rồi mới trở lại. Nút bật/tắt và thanh âm lượng ở trên điều khiển chung mọi kiểu nhạc. Ở màn hình live (<strong>?full</strong> / <strong>?daisanh</strong>) nhạc <strong>tự khởi động ngay khi trang tải xong</strong>; ở chế độ thường nhạc bắt đầu sau lần chạm/bấm đầu tiên (quy định của trình duyệt) — bấm nút <strong>“🔊 Chạm để bật tiếng nhạc”</strong> trên sảnh là mở được cả bản nhạc YouTube này trong cùng một lần bấm. Các bản đơn lẻ — <strong>Tụng kinh Phật pháp</strong>, <strong>Thiền tịnh tâm</strong> thuần nhạc cụ không lời, <strong>Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo (YouTube)</strong> — bản “Nhạc Thiền Phật Giáo - Bát Nhã Diệu Tâm | An nhiên &amp; Giác ngộ” của kênh <strong>Phật Pháp Tu Tâm</strong>, cứ đúng 3 phút một lần bản nhạc tạm dừng hẳn để chùa đọc một đoạn pháp ngắn, chỉ còn tiếng mõ, đọc xong nhạc tự phát tiếp — và <strong>Nhạc thiền An Nhiên (YouTube)</strong> — vẫn nằm trong menu chọn nhạc phía trên; nếu video bị chủ kênh chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về kiểu <strong>Thiền tịnh tâm</strong> có sẵn.</p>
           <p class="yt-status" id="ytStatus" role="status" aria-live="polite" hidden></p>
           <div class="yt-holder" aria-hidden="true"><div id="ytPlayer"></div></div>
         </div>
 
-        <p class="action-note" id="actionNote">Sảnh đường được làm mới theo khung hình live của bộ chùa RPC: nền sảnh là một bức tranh chánh điện gỗ chạm khắc tối màu với <strong>một tượng Phật vàng khổng lồ</strong> ngự giữa trên đài sen hồng nhiều lớp, hào quang vàng chạm trổ tỏa tia sau lưng, hai bình hoa sen hồng lớn hai bên, đèn lồng vàng treo cao và ban thờ có lư hương rồng bốc khói. Hội chúng <strong>ngồi ngay ngắn nhìn từ phía sau</strong> trên từng <strong>bồ đoàn (ghế) cố định</strong> thành hai khối hai bên <strong>thảm đỏ trung tâm hoa văn sen vàng</strong>: người vào chùa xuất hiện ngay tại <strong>CỔNG CỬA VÀO vẽ rõ ở cuối thảm đỏ</strong> (hai trụ sơn son, biển “CỬA VÀO”, cửa gỗ hé mở hắt sáng ấm), mang <strong>biển tên lớn đọc rõ trên đầu suốt quãng đường</strong>, <strong>tự đi bộ dọc lối đi giữa tới hàng của mình, rẽ vào ghế và ngồi xuống</strong> — lưới ghế cố định <strong>đủ 100 ghế</strong> (10 hàng × 10 cột), lấp ghế theo hàng trước trước, từ lối giữa ra hai bên, mỗi người giữ đúng một ghế suốt buổi; kín 100 ghế thì người ngồi lâu nhất, lâu không tương tác và chưa tặng quà sẽ đứng dậy rời chùa nhường ghế cho người mới; hàng trước mang biển tên và huy hiệu hạng, khách TikTok hiện đúng tên của mình vào các ghế này. Khi có lệnh <strong>dâng hương</strong> (nút bấm, sự kiện server hay chat “dâng hương”), <strong>chính nhân vật của khách đó đứng dậy khỏi ghế, đi ra thảm lễ trước lư hương dâng hương, vái đúng 3 vái rồi quay về đúng ghế cũ ngồi xuống</strong>. Giữa hàng trước, <strong>Phật tử trung tâm</strong> mang tên khách đang có sự kiện (vái lạy, thỉnh chuông, tọa thiền, niệm Phật hay tặng quà) bước ra làm lễ thay khách đó, hiện biển lớn có avatar tròn, tên và dòng hành động “Tên — Hành động (+N CĐ)”, cùng bong bóng lời khấn ngay trên sân khấu; nhiều sự kiện thì xếp hàng lần lượt. Mỗi lượt dâng hương cắm thêm ba nén lên lư lớn trước ban thờ và hương tích lũy ở lại trên lư suốt buổi lễ. Trên cùng khung hình là thanh “🟢 LIVE @chuaonline12 • số mắt” và đếm “🔥 tổng hương • ✨ tổng CĐ”; vùng trên–giữa sảnh để trống cho <strong>tượng Phật và vầng hào quang hiện trọn vẹn</strong>: thẻ hướng dẫn thu gọn ở góc trên–trái, hộp <strong>TẤM LÒNG THÀNH</strong> liệt kê top 4 công đức ở <strong>góc trên–phải</strong> ngay dưới thanh LIVE, khung tri ân quà treo ngay dưới ban thờ; đáy sảnh <strong>không còn khung chữ nào</strong> — vùng giữa đáy để trống cho cổng cửa vào và lối đi giữa luôn nhìn thấy rõ; phía trái sảnh, ngay trên trạm Thỉnh Chuông là <strong>trạm 🧧 Hòm Công Đức</strong> nhỏ gọn, chạm vào là phóng to mã QR Timo lên giữa màn hình để quét. Nhạc nền mặc định là <strong>🎵 Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo</strong> (bản nhạc thiền của kênh Phật Pháp Tu Tâm, phát qua YouTube, tự lặp lại liên tục ở âm lượng mặc định 80%): cứ 3 phút một lần bản nhạc tạm dừng hẳn — chỉ còn tiếng mõ gõ nhịp và giọng đọc của chùa đọc một đoạn pháp ngắn — đọc xong nhạc tự phát tiếp; nhạc tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút, các bản tụng kinh Phật pháp, thiền tịnh tâm, pháp thoại trước khi ngủ và nhạc thiền An Nhiên vẫn có trong menu chọn nhạc để ai muốn nghe thì tự chọn; nhạc sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng); riêng màn hình live nhạc tự khởi động ngay khi trang tải xong. Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và khu <strong>Xem Tử Vi Lý Số · Xem Bói · Xem Ngày Đẹp</strong> (phí tùy tâm, mở khóa một lần xem cả ba). <strong>Luật lối đi giữa (bản .25):</strong> thảm đỏ từ cửa vào lên tới thảm lễ là vùng <strong>chỉ đi qua</strong> — không nhân vật nào dừng lại, đứng yên, ngồi hay xếp hàng chờ trong lối đi ở bất kỳ thời điểm nào; khách chờ lượt dâng hương thì <strong>chờ ngay tại ghế của mình</strong>, chỉ rời ghế khi thảm lễ có chỗ đứng trống và tới lượt; khách mới khi kín 100 ghế mà không ai nhường thì <strong>đứng chờ ở mép cổng ngoài vùng lối đi</strong> tới khi có ghế; nhân vật làm lễ đứng trên <strong>thảm lễ trước lư hương</strong> — khu riêng ở đầu trên của lối đi, không tính là lối đi. Hai bên khu lễ trước ban thờ có <strong>hai vị sư cố định của chùa ngồi gõ mõ</strong> — một vị bên trái, một vị bên phải, đối xứng qua lối đi giữa, <strong>quay mặt về phía người xem</strong> (góc chính diện, thấy rõ mặt) và <strong>to hơn nhân vật khách thường một bậc</strong>, mõ đặt ngay phía trước ở phía dưới, không chiếm ghế nào của hội chúng: dùi gõ <strong>khớp với từng tiếng mõ phát ra</strong> khi nhạc đang chạy, và khi nhạc tắt hai vị vẫn gõ hình ảnh theo nhịp chậm đều khoảng 2 giây một tiếng nên khung hình live luôn có chuyển động người rõ ràng ở cả hai bên. Sảnh còn có <strong>gói chuyển động sống nhẹ chạy liên tục</strong> ở mọi chế độ xem: <strong>khói hương bay lên không ngớt</strong> từ lư lớn và từ chính các nén hương đang cháy trên miệng lư, <strong>lửa đèn lồng và nến trên ban thờ lay động</strong> không đều nhịp, hai đèn lồng treo đu đưa cực nhẹ, người đang ngồi có <strong>nhịp thở khẽ lệch pha nhau</strong>, <strong>hào quang sau tượng Phật gợn sáng chậm</strong> và thỉnh thoảng một <strong>cánh sen nhỏ rơi chậm</strong> qua sảnh — tất cả đều chậm và nhẹ để khung hình live không bao giờ đứng yên mà vẫn giữ không khí thiền.</p>
+        <p class="action-note" id="actionNote">Sảnh đường được làm mới theo khung hình live của bộ chùa RPC: nền sảnh là một bức tranh chánh điện gỗ chạm khắc tối màu với <strong>một tượng Phật vàng khổng lồ</strong> ngự giữa trên đài sen hồng nhiều lớp, hào quang vàng chạm trổ tỏa tia sau lưng, hai bình hoa sen hồng lớn hai bên, đèn lồng vàng treo cao và ban thờ có lư hương rồng bốc khói. Hội chúng <strong>ngồi ngay ngắn nhìn từ phía sau</strong> trên từng <strong>bồ đoàn (ghế) cố định</strong> thành hai khối hai bên <strong>thảm đỏ trung tâm hoa văn sen vàng</strong>: người vào chùa xuất hiện ngay tại <strong>CỔNG CỬA VÀO vẽ rõ ở cuối thảm đỏ</strong> (hai trụ sơn son, biển “CỬA VÀO”, cửa gỗ hé mở hắt sáng ấm), mang <strong>biển tên lớn đọc rõ trên đầu suốt quãng đường</strong>, <strong>tự đi bộ dọc lối đi giữa tới hàng của mình, rẽ vào ghế và ngồi xuống</strong> — lưới ghế cố định <strong>đủ 100 ghế</strong> (10 hàng × 10 cột), lấp ghế theo hàng trước trước, từ lối giữa ra hai bên, mỗi người giữ đúng một ghế suốt buổi; kín 100 ghế thì người ngồi lâu nhất, lâu không tương tác và chưa tặng quà sẽ đứng dậy rời chùa nhường ghế cho người mới; hàng trước mang biển tên và huy hiệu hạng, khách TikTok hiện đúng tên của mình vào các ghế này. Khi có lệnh <strong>dâng hương</strong> (nút bấm, sự kiện server hay chat “dâng hương”), <strong>chính nhân vật của khách đó đứng dậy khỏi ghế, đi ra thảm lễ trước lư hương dâng hương, vái đúng 3 vái rồi quay về đúng ghế cũ ngồi xuống</strong>. Giữa hàng trước, <strong>Phật tử trung tâm</strong> mang tên khách đang có sự kiện (vái lạy, thỉnh chuông, tọa thiền, niệm Phật hay tặng quà) bước ra làm lễ thay khách đó, hiện biển lớn có avatar tròn, tên và dòng hành động “Tên — Hành động (+N CĐ)”, cùng bong bóng lời khấn ngay trên sân khấu; nhiều sự kiện thì xếp hàng lần lượt. Mỗi lượt dâng hương cắm thêm ba nén lên lư lớn trước ban thờ và hương tích lũy ở lại trên lư suốt buổi lễ. Trên cùng khung hình là thanh “🟢 LIVE @chuaonline12 • số mắt” và đếm “🔥 tổng hương • ✨ tổng CĐ”; vùng trên–giữa sảnh để trống cho <strong>tượng Phật và vầng hào quang hiện trọn vẹn</strong>: thẻ hướng dẫn thu gọn ở góc trên–trái, hộp <strong>TẤM LÒNG THÀNH</strong> liệt kê top 4 công đức ở <strong>góc trên–phải</strong> ngay dưới thanh LIVE, khung tri ân quà treo ngay dưới ban thờ; đáy sảnh <strong>không còn khung chữ nào</strong> — vùng giữa đáy để trống cho cổng cửa vào và lối đi giữa luôn nhìn thấy rõ; phía trái sảnh, ngay trên trạm Thỉnh Chuông là <strong>trạm 🧧 Hòm Công Đức</strong> nhỏ gọn, chạm vào là phóng to mã QR Timo lên giữa màn hình để quét. Nhạc nền mặc định là <strong>🎧 Pháp thoại trước khi ngủ (YouTube)</strong> (bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ &amp; Chữa Lành Phiền Não | Lời Phật Dạy” của kênh Gieo Mầm Phước Báu, phát qua YouTube, tự lặp lại liên tục ở âm lượng mặc định 80%); nhạc tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút, các bản tụng kinh Phật pháp, thiền tịnh tâm, Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo và nhạc thiền An Nhiên vẫn có trong menu chọn nhạc để ai muốn nghe thì tự chọn; nhạc sẽ bắt đầu ngay khi bạn chạm vào chánh điện hoặc bấm một nút bất kỳ (trình duyệt chỉ cho phát nhạc sau thao tác của người dùng); riêng màn hình live nhạc tự khởi động ngay khi trang tải xong. Phía dưới chánh điện có thêm mục <strong>Gieo Quẻ</strong> và khu <strong>Xem Tử Vi Lý Số · Xem Bói · Xem Ngày Đẹp</strong> (phí tùy tâm, mở khóa một lần xem cả ba). <strong>Luật lối đi giữa (bản .25):</strong> thảm đỏ từ cửa vào lên tới thảm lễ là vùng <strong>chỉ đi qua</strong> — không nhân vật nào dừng lại, đứng yên, ngồi hay xếp hàng chờ trong lối đi ở bất kỳ thời điểm nào; khách chờ lượt dâng hương thì <strong>chờ ngay tại ghế của mình</strong>, chỉ rời ghế khi thảm lễ có chỗ đứng trống và tới lượt; khách mới khi kín 100 ghế mà không ai nhường thì <strong>đứng chờ ở mép cổng ngoài vùng lối đi</strong> tới khi có ghế; nhân vật làm lễ đứng trên <strong>thảm lễ trước lư hương</strong> — khu riêng ở đầu trên của lối đi, không tính là lối đi. Hai bên khu lễ trước ban thờ có <strong>hai vị sư cố định của chùa ngồi gõ mõ</strong> — một vị bên trái, một vị bên phải, đối xứng qua lối đi giữa, <strong>quay mặt về phía người xem</strong> (góc chính diện, thấy rõ mặt) và <strong>to hơn nhân vật khách thường một bậc</strong>, mõ đặt ngay phía trước ở phía dưới, không chiếm ghế nào của hội chúng: dùi gõ <strong>khớp với từng tiếng mõ phát ra</strong> khi nhạc đang chạy, và khi nhạc tắt hai vị vẫn gõ hình ảnh theo nhịp chậm đều khoảng 2 giây một tiếng nên khung hình live luôn có chuyển động người rõ ràng ở cả hai bên. Sảnh còn có <strong>gói chuyển động sống nhẹ chạy liên tục</strong> ở mọi chế độ xem: <strong>khói hương bay lên không ngớt</strong> từ lư lớn và từ chính các nén hương đang cháy trên miệng lư, <strong>lửa đèn lồng và nến trên ban thờ lay động</strong> không đều nhịp, hai đèn lồng treo đu đưa cực nhẹ, người đang ngồi có <strong>nhịp thở khẽ lệch pha nhau</strong>, <strong>hào quang sau tượng Phật gợn sáng chậm</strong> và thỉnh thoảng một <strong>cánh sen nhỏ rơi chậm</strong> qua sảnh — tất cả đều chậm và nhẹ để khung hình live không bao giờ đứng yên mà vẫn giữ không khí thiền.</p>
 
         <div class="guide">
           <span><b>Đi dạo:</b> chạm / nhấp vào sàn điện hoặc dùng phím mũi tên — lối đi giữa chỉ để đi qua, không ai dừng lại ở đó; chạm vào lối đi là nhân vật đi tiếp tới ghế của mình</span>
@@ -1834,7 +1834,7 @@
         <section class="rpc-panel" aria-label="Âm thanh chùa và nhạc nền">
           <h3>🎵 Âm Thanh Chùa &amp; Nhạc Nền</h3>
           <p class="rpc-music-status" id="musicStatusSide">Nhạc nền đang sẵn sàng — chạm vào chánh điện hoặc bấm một nút bất kỳ để nhạc bắt đầu.</p>
-          <p class="rpc-note">Nút bật/tắt nhạc, menu chọn bản nhạc (tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút — mặc định khi vào chùa · tụng kinh Phật pháp · thiền tịnh tâm · pháp thoại trước khi ngủ · nhạc thiền An Nhiên) và thanh âm lượng nằm ngay dưới chánh điện. Khi có giọng đọc thông báo, nhạc tự nhỏ xuống rồi trở lại như cũ; riêng lúc tụng kinh và lúc đọc pháp, nhạc nền tắt hẳn, chỉ còn tiếng mõ.</p>
+          <p class="rpc-note">Nút bật/tắt nhạc, menu chọn bản nhạc (pháp thoại trước khi ngủ — mặc định khi vào chùa · tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút · tụng kinh Phật pháp · thiền tịnh tâm · Bát Nhã Diệu Tâm · nhạc thiền An Nhiên) và thanh âm lượng nằm ngay dưới chánh điện. Khi có giọng đọc thông báo, nhạc tự nhỏ xuống rồi trở lại như cũ; riêng lúc tụng kinh và lúc đọc pháp, nhạc nền tắt hẳn, chỉ còn tiếng mõ.</p>
         </section>
       </aside>
       </div>
@@ -2125,7 +2125,7 @@
         var btnVoice = document.getElementById("btnVoice");
         var musicModeSel = document.getElementById("musicMode");
         var musicVolEl = document.getElementById("musicVol");
-        var musicMode = "youtube-batnha";
+        var musicMode = "youtube-sleep";
         /* Cờ phân biệt "khách đã TỰ TAY chọn nhạc trong menu" với "đang
            dùng bản mặc định của chùa": chỉ khi khách tự chọn thì lựa
            chọn đó mới được giữ nguyên qua các lần mở sau. Máy nào chưa
@@ -2140,14 +2140,14 @@
         var musicVolumeChosenByUser = false;
         var musicVolume = 0.8; // âm lượng mặc định 80% (chủ chùa chốt: nhạc nền phải nghe TO, RÕ — áp cho cả bản YouTube mặc định mới lẫn mọi chế độ nhạc khác; vẫn dưới giọng đọc thông báo vì giọng đọc là kênh riêng speechSynthesis ở mức tối đa)
         /* MẶC ĐỊNH khi vào chùa (kể cả màn hình phát ?full và ?daisanh)
-           là "youtube-batnha" — bản “Nhạc Thiền Phật Giáo - Bát Nhã
-           Diệu Tâm | An nhiên & Giác ngộ” của kênh Phật Pháp Tu Tâm
-           (yO5xkFovXMY, 33:22), phát qua trình phát YouTube chính
-           thức, LẶP LIÊN TỤC và đi theo thanh âm lượng của trang
-           (mặc định 80%). Chủ chùa chốt giữ luật “khi đọc kinh thì
-           nhạc nền tắt chỉ có tiếng mõ” cho cả chế độ mặc định mới
-           này: chu kỳ ĐỌC PHÁP MỖI 3 PHÚT vẫn chạy — tới lượt đọc,
-           bản nhạc YouTube TẠM DỪNG HẲN (pause hẳn, không chỉ nhỏ
+           là "youtube-sleep" — bài “Nghe Trước Khi Ngủ Để Tâm An, Hết
+           Mất Ngủ & Chữa Lành Phiền Não | Lời Phật Dạy” của kênh Gieo
+           Mầm Phước Báu (_GQ_89EqBcs), phát qua trình phát YouTube
+           chính thức, LẶP LIÊN TỤC và đi theo thanh âm lượng của trang
+           (mặc định 80%). Riêng bản "youtube-batnha" khi được khách tự
+           chọn vẫn giữ luật “khi đọc kinh thì nhạc nền tắt chỉ có
+           tiếng mõ”: chu kỳ ĐỌC PHÁP MỖI 3 PHÚT vẫn chạy — tới lượt
+           đọc, bản nhạc YouTube TẠM DỪNG HẲN (pause hẳn, không chỉ nhỏ
            tiếng), chỉ còn tiếng mõ gõ nhịp đều và giọng đọc một đoạn
            pháp trong bộ DHARMA_PASSAGES; đọc xong nhạc TỰ PHÁT TIẾP
            (xem khối đọc pháp + pauseYouTubeForDharma bên dưới).
@@ -2160,8 +2160,9 @@
            tự chọn lại. Các chế độ đơn lẻ "chant" (tụng kinh Phật
            pháp), "ambient" (Thiền tịnh tâm) và hai nguồn YouTube dưới
            đây cũng chỉ phát khi khách tự chọn:
-           - "youtube-sleep": “Pháp thoại trước khi ngủ” — giữ nguyên
-             trong danh sách để ai muốn nghe thì tự chọn.
+           - "youtube-batnha": “Bát Nhã Diệu Tâm — Nhạc Thiền Phật
+             Giáo” — giữ nguyên trong danh sách để ai muốn nghe thì
+             tự chọn.
            - "youtube": “Nhạc thiền An Nhiên” — giữ lại trong danh sách
              để khách tự chọn lại nếu muốn. */
         var YT_TRACKS = {
@@ -2170,7 +2171,7 @@
           "youtube": { id: "XtzgxKhiTHI", label: "Nhạc thiền An Nhiên (YouTube)" }
         };
         function isYtMode(m) { return Object.prototype.hasOwnProperty.call(YT_TRACKS, m); }
-        function ytVideoId() { var t = YT_TRACKS[musicMode]; return t ? t.id : "yO5xkFovXMY"; }
+        function ytVideoId() { var t = YT_TRACKS[musicMode]; return t ? t.id : "_GQ_89EqBcs"; }
         function ytLabel() { var t = YT_TRACKS[musicMode]; return t ? t.label : "Nhạc YouTube"; }
         var btnConnect = document.getElementById("btnConnect");
         var serverUrlInput = document.getElementById("serverUrl");
@@ -2881,20 +2882,20 @@
           /* Nhạc nền: chỉ tôn trọng bản nhạc đã lưu khi khách ĐÃ TỰ TAY
              chọn nó trong menu (cờ musicChosen). Mọi máy đang dùng mặc
              định — chưa từng tự chọn, kể cả trường hợp các bản mặc định
-             cũ "pháp thoại trước khi ngủ" / "Thiền tịnh tâm" / "tụng
+             cũ "Bát Nhã Diệu Tâm" / "Thiền tịnh tâm" / "tụng
              kinh Phật pháp" / "nhạc nền tổng hợp" đã được lưu tự động
              vào bộ nhớ máy từ các bản trang trước — đều di trú sang
-             mặc định mới: BÁT NHÃ DIỆU TÂM "youtube-batnha" (bản nhạc
-             thiền Phật giáo của kênh Phật Pháp Tu Tâm, phát qua
-             YouTube, lặp liên tục, kèm chu kỳ đọc pháp mỗi 3 phút). */
+             mặc định mới: PHÁP THOẠI TRƯỚC KHI NGỦ "youtube-sleep"
+             (bài pháp thoại của kênh Gieo Mầm Phước Báu, phát qua
+             YouTube, lặp liên tục). */
           if (p.musicChosen === true && p.musicMode && musicModeSel && (p.musicMode === "youtube-batnha" || p.musicMode === "youtube" || p.musicMode === "youtube-sleep" || p.musicMode === "ambient" || p.musicMode === "chant" || p.musicMode === "tonghop")) {
             musicChosenByUser = true;
             musicMode = p.musicMode;
             musicModeSel.value = p.musicMode;
           } else {
             musicChosenByUser = false;
-            musicMode = "youtube-batnha";
-            if (musicModeSel) musicModeSel.value = "youtube-batnha";
+            musicMode = "youtube-sleep";
+            if (musicModeSel) musicModeSel.value = "youtube-sleep";
           }
           if (p.musicVolumeChosen === true) musicVolumeChosenByUser = true;
           if (typeof p.musicVolume === "number" && isFinite(p.musicVolume)) {
@@ -3102,7 +3103,7 @@
 
         /* Tuyến ra GHI ĐÈ cho tiếng mõ: bình thường mõ đi qua
            chant.moGain / chant.master của bộ máy nhạc. Riêng lượt ĐỌC
-           PHÁP ở chế độ mặc định YouTube (Bát Nhã Diệu Tâm) bộ máy
+           PHÁP ở chế độ YouTube Bát Nhã Diệu Tâm bộ máy
            tụng không chạy — mõ đi qua một tuyến gain riêng nối thẳng
            ra loa (dharmaMoGain, xem khối đọc pháp) để luật "đọc kinh
            thì chỉ còn tiếng mõ" vẫn có tiếng mõ thật gõ nhịp, và mốc
@@ -3229,16 +3230,16 @@
         /* ----- NHẠC / PHÁP THOẠI QUA YOUTUBE -----
            Nhúng trình phát YouTube chính thức (youtube-nocookie); video
            phát tùy theo lựa chọn đang chọn trong menu nhạc (xem YT_TRACKS):
-           - "youtube-batnha" — MẶC ĐỊNH khi vào chùa: “Nhạc Thiền Phật
-             Giáo - Bát Nhã Diệu Tâm | An nhiên & Giác ngộ” —
-             yO5xkFovXMY, kênh Phật Pháp Tu Tâm, 33:22, lặp liên tục;
-             chế độ này còn chạy chu kỳ ĐỌC PHÁP MỖI 3 PHÚT (cờ dharma
-             trong YT_TRACKS): tới lượt đọc, video TẠM DỪNG HẲN, chỉ
-             còn tiếng mõ gõ nhịp đều + giọng đọc pháp, đọc xong video
-             TỰ PHÁT TIẾP.
-           - "youtube-sleep": “Pháp thoại trước khi ngủ” — _GQ_89EqBcs, bài
-           “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ & Chữa Lành Phiền
-           Não | Lời Phật Dạy”, kênh Gieo Mầm Phước Báu; lựa chọn còn lại
+           - "youtube-sleep" — MẶC ĐỊNH khi vào chùa: “Pháp thoại trước
+             khi ngủ” — _GQ_89EqBcs, bài “Nghe Trước Khi Ngủ Để Tâm An,
+             Hết Mất Ngủ & Chữa Lành Phiền Não | Lời Phật Dạy”, kênh
+             Gieo Mầm Phước Báu, lặp liên tục.
+           - "youtube-batnha": “Nhạc Thiền Phật Giáo - Bát Nhã Diệu Tâm |
+             An nhiên & Giác ngộ” — yO5xkFovXMY, kênh Phật Pháp Tu Tâm,
+             33:22, lặp liên tục; chế độ này còn chạy chu kỳ ĐỌC PHÁP
+             MỖI 3 PHÚT (cờ dharma trong YT_TRACKS): tới lượt đọc, video
+             TẠM DỪNG HẲN, chỉ còn tiếng mõ gõ nhịp đều + giọng đọc
+             pháp, đọc xong video TỰ PHÁT TIẾP; lựa chọn còn lại
            là "Nhạc Thiền Thư Giãn (1 giờ)" — XtzgxKhiTHI, kênh Nhạc Thiền -
            An Nhiên Tự Tại. Không tải/chiết xuất audio của kênh; phát, dừng
            và âm lượng đi qua YT IFrame API, lặp vô hạn bằng loop + playlist
@@ -3353,7 +3354,7 @@
         function startYouTube() {
           if (!soundOn) return;
           ytPlayWanted = true;
-          // Chế độ mặc định Bát Nhã Diệu Tâm giữ chu kỳ ĐỌC PHÁP MỖI
+          // Chế độ Bát Nhã Diệu Tâm giữ chu kỳ ĐỌC PHÁP MỖI
           // 3 PHÚT như chế độ tổng hợp: đồng hồ đọc pháp chạy cùng lúc
           // nhạc YouTube bắt đầu được yêu cầu phát.
           if (musicMode === "youtube-batnha") startDharmaClock();
@@ -3743,7 +3744,7 @@
         function audioReallyRunning() {
           if (!soundOn) return false;
           if (isYtMode(musicMode)) {
-            // Đang lượt ĐỌC PHÁP ở chế độ mặc định Bát Nhã Diệu Tâm:
+            // Đang lượt ĐỌC PHÁP ở chế độ Bát Nhã Diệu Tâm:
             // video bị TẠM DỪNG CÓ CHỦ ĐÍCH theo luật của chùa (chỉ
             // còn mõ + giọng đọc) — phiên nhạc vẫn đang chạy thật,
             // không phải tiếng chưa lên, nên nút bật tiếng không
@@ -4043,7 +4044,7 @@
             // master (nén nhỏ) cho lượt đọc pháp này.
             dharmaReading = true;
             applyMixPhase(0.9);
-            // Ở chế độ mặc định YouTube (Bát Nhã Diệu Tâm): video
+            // Ở chế độ YouTube Bát Nhã Diệu Tâm: video
             // TẠM DỪNG HẲN (không chỉ nhỏ tiếng) và tuyến mõ riêng
             // gõ nhịp đều suốt lượt đọc — đúng luật "khi đọc kinh
             // thì nhạc nền tắt chỉ có tiếng mõ".
@@ -4064,7 +4065,7 @@
               // checkDharmaDue) nên các lượt rơi đúng ~3, ~6, ~9 phút.
               dharmaReading = false;
               applyMixPhase(1.6);
-              // Chế độ YouTube mặc định: hết lượt đọc, dừng tuyến mõ
+              // Chế độ YouTube Bát Nhã: hết lượt đọc, dừng tuyến mõ
               // riêng và cho video TỰ PHÁT TIẾP đúng chỗ đã dừng.
               if (musicMode === "youtube-batnha") {
                 stopDharmaMo();
