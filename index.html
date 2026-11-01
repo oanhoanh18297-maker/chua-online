@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.42" />
+    <meta name="chua-build" content="2026-11-01.43" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -1146,6 +1146,17 @@
         white-space: nowrap;
       }
       .merit-board .mb-points { flex: none; font-weight: 700; color: #ffce54; font-variant-numeric: tabular-nums; }
+      .merit-board .mb-cat, .rpc-merit .mb-cat, .stage-merit .mb-cat {
+        flex: none;
+        font-size: 0.86em;
+        font-weight: 600;
+        color: #ffe9b0;
+        background: rgba(217, 164, 65, 0.16);
+        border: 1px solid rgba(217, 164, 65, 0.45);
+        border-radius: 999px;
+        padding: 0 6px;
+        white-space: nowrap;
+      }
       .merit-board .mb-empty {
         margin: 0;
         font-size: 12px;
@@ -1201,6 +1212,7 @@
       .stage-merit li.top1 .mb-rank { background: #d9a441; color: #3a2404; }
       .stage-merit .mb-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .stage-merit .mb-points { flex: none; font-weight: 700; color: #ffce54; font-variant-numeric: tabular-nums; }
+      .stage-merit .mb-cat { font-size: 1.9cqw; padding: 0 5px; }
       .stage-merit .mb-empty { margin: 0; font-size: 2.1cqw; font-style: italic; color: rgba(243, 227, 189, 0.85); text-align: center; line-height: 1.45; }
       @media (max-width: 560px) {
         .stage-merit { width: 37%; top: 112cqw; padding: 8px 6px 7px; }
@@ -1299,6 +1311,26 @@
         box-shadow: 0 14px 34px rgba(24, 8, 2, 0.6), 0 0 26px rgba(255, 190, 60, 0.35), inset 0 0 0 3px rgba(39, 24, 6, 0.85), inset 0 0 0 5px rgba(255, 217, 104, 0.65);
       }
       .gift-spot-board .wb-text { font-size: 4.3cqw; }
+      /* BẢNG TRÌNH DIỆN KIỂU VIDEO MẪU AN NHIÊN (bản đội hình đứng):
+         hai dòng — dòng LỚN là LỜI CẦU theo loại quà (vàng rực, cỡ
+         lớn nhất), dòng dưới nhỏ hơn là "<Tên> dâng <Tên quà>". */
+      .gift-spot-board .wb-wish {
+        display: block;
+        font-size: 5.6cqw;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        color: #ffe9a8;
+        text-shadow: 0 2px 10px rgba(255, 170, 40, 0.45);
+        line-height: 1.25;
+      }
+      .gift-spot-board .wb-offer {
+        display: block;
+        margin-top: 4px;
+        font-size: 3.9cqw;
+        font-weight: 600;
+        color: #fff6e0;
+        line-height: 1.3;
+      }
       /* ---- BẢNG HIỆN CHỮ ĐOẠN PHÁP giữa sảnh (bản .40) ----
          Khi giọng đọc đọc một đoạn pháp, nguyên văn đoạn đó hiện trên
          bảng nổi này suốt thời gian đọc rồi ẩn — chữ lớn, đọc được ở
@@ -1936,9 +1968,10 @@
           chương trình cầu nối (hoặc server chùa) chỉ cần gửi sự kiện <em>tiktok_gift</em> qua Socket.io —
           hoặc gọi <em>window.hienLoiChucQuaTang({ ten: "Tên người tặng", qua: "Tên món quà" })</em>,
           hoặc <em>postMessage</em> một gói <em>{ type: "tiktok_gift", name, gift }</em> vào trang —
-          <strong>camera của sảnh sẽ zoom vào đúng ghế của người tặng</strong> trong khoảng 1,2 giây và giữ cận cảnh vài giây: nhân vật của người tặng lạy một lạy tại ghế,
-          đồng thời <strong>bảng tri ân giữa sảnh hiện đúng câu cố định “Cảm ơn {Tên} đã gửi đến chùa món quà, chúc thí chủ {Tên} {lời chúc}”</strong> kèm tiếng chuông để cả phòng live cùng đọc được —
-          quà tặng <strong>không đọc thành tiếng</strong>. Sau đó camera zoom ra lại toàn cảnh. Nhiều quà đến cùng lúc sẽ xử lý lần lượt từng người, không chồng lượt zoom, không mất lượt nào.
+          <strong>nhân vật của người tặng được đưa ra GIỮA SẢNH đứng một mình</strong> (đúng kiểu video mẫu AN NHIÊN) và <strong>camera của sảnh sẽ zoom mượt vào cận cảnh người đó</strong> trong khoảng 1,2 giây, giữ cận cảnh vài giây trong lúc họ quỳ lạy một lạy,
+          đồng thời <strong>bảng trình diện giữa sảnh hiện hai dòng kiểu mẫu: dòng lớn là lời cầu theo loại quà</strong> (Hoa hồng → “Cầu Sức Khỏe Bình An”, TikTok → “Cầu Gia Đạo Hạnh Phúc”, Táo → “Cầu Công Việc Thuận Lợi”, Cỏ 4 lá → “Cầu May Mắn An Nhàn”, quà khác → “Cầu Phú Quý Giàu Sang”) <strong>và dòng dưới “{Tên} dâng {Tên quà}”</strong> kèm tiếng chuông để cả phòng live cùng đọc được —
+          quà tặng <strong>không đọc thành tiếng</strong>. Sau đó camera zoom ra lại toàn cảnh và nhân vật trở về đúng vị trí đứng của mình. Nhiều quà đến cùng lúc sẽ xử lý lần lượt từng người, không chồng lượt zoom, không mất lượt nào.
+          Trên <strong>bảng công đức TẤM LÒNG THÀNH</strong>, dòng của người tặng còn kèm <strong>icon + nhãn hạng mục</strong> theo loại quà gần nhất: 🌹 Sức khỏe bình an · 🎵 Gia đình · ❤️ Tình duyên · 🍀 Công việc · 💰 Phú quý giàu sang.
           Kèm theo đó, một nhãn nhỏ <strong>“Cầu Bình An – {tên} tặng {quà}”</strong> hiện trong sân chùa ngay dưới chánh điện.
         </p>
         <p style="margin-top:10px">
@@ -2522,7 +2555,7 @@
           u.tx = spot.x; u.ty = spot.y;
           return true;
         }
-        var SEAT_COLS = [28, 68, 108, 148, 188, 352, 392, 432, 472, 512]; // 5 cột mỗi khối, chừa lối đi giữa 210–330
+        var SEAT_COLS = [46, 114, 182, 358, 426, 494]; // ĐỘI HÌNH ĐỨNG (bản mới): 3 cột mỗi khối, chừa lối đi giữa 210–330 — nhân vật TO hơn hẳn nên cột thưa hơn lưới ghế cũ
         var CUSHIONS = [];
         var seatRowSeqBottom = 0;   // số thứ tự hàng tính từ hàng trước (0) về sau
         var seatRowSeqFront = 0;    // hàng thêm phía trên nhận số âm, thành hàng trước mới
@@ -2543,13 +2576,18 @@
           SEAT_COLS.forEach(function (cx) { CUSHIONS.push({ x: cx, y: y, s: s, row: rowNo, order: 0 }); });
           computeSeatOrder();
         }
-        // MƯỜI HÀNG × MƯỜI CỘT = ĐÚNG 100 GHẾ cố định vừa khung 9:16:
-        // hàng trước (sát ban thờ, ở trên) nhỏ hơn theo phối cảnh
-        // xa–gần, hàng càng về cuối sảnh (gần cửa, ở dưới) càng lớn.
-        for (var seatR = 0; seatR < 10; seatR++) {
-          pushSeatRow(Math.round(648 + seatR * 32.4), 0.58 + seatR * 0.033, seatRowSeqBottom++);
+        // ĐỘI HÌNH ĐỨNG CỐ ĐỊNH (bản mới — BỎ LƯỚI GHẾ/ĐỆM, BỎ CỬA VÀO):
+        // 7 hàng × 6 cột = 42 VỊ TRÍ ĐỨNG trên sàn sảnh, hai khối hai
+        // bên thảm đỏ, hướng về tượng Phật. Hệ số s của mỗi vị trí lớn
+        // hơn lưới ghế cũ ~1,7 lần để NHÂN VẬT TO RÕ RỆT (ảnh AI quỳ
+        // lạy cao ~95px ở hàng xa nhất, ~146px ở hàng gần nhất); hàng
+        // thưa (47px) và cột thưa (68px) để người to không dính nhau.
+        // Tên nội bộ CUSHIONS/homeCushion giữ nguyên — nay hiểu là
+        // "vị trí đứng cố định của khách trong đội hình".
+        for (var seatR = 0; seatR < 7; seatR++) {
+          pushSeatRow(Math.round(640 + seatR * 47), 1.02 + seatR * 0.085, seatRowSeqBottom++);
         }
-        function addSeatRow() { return false; } // lưới ghế đã cố định đủ 100 — kín ghế thì nhường ghế theo luật rời chùa
+        function addSeatRow() { return false; } // đội hình đứng đã cố định — kín đội hình thì nhường vị trí theo luật rời chùa
         function freeSeatCount(exceptUser) {
           var n = 0;
           CUSHIONS.forEach(function (c, i) { if (!cushionTaken(i, exceptUser || null)) n++; });
@@ -2649,11 +2687,15 @@
           u.returningHome = false; u.returnSince = 0; u.ritualSeat = null;
           u.offerSpot = null; u.incenseSlot = null;
           u.waitingGate = false; u.waitSpot = null;
-          releaseSeat(u); // ghế trống ra ngay khi chủ đứng dậy rời chùa
-          u.action = "walking";
-          u.path = buildExitPath(u);
-          if (u.path && u.path.length) { u.tx = u.path[0].x; u.ty = u.path[0].y; }
-          else { u.tx = 270; u.ty = 946; }
+          releaseSeat(u); // vị trí đứng trống ra ngay khi khách bắt đầu rời chùa
+          // BẢN ĐỘI HÌNH ĐỨNG: khách rời KHÔNG đi bộ ra cửa nữa (sảnh
+          // không còn cửa) — nhân vật đứng yên tại chỗ, MỜ DẦN rồi
+          // biến mất (fadeOutT0; vòng lặp chính xóa hẳn sau ~1,5 giây,
+          // drawPerson hạ alpha theo mốc này).
+          u.path = null;
+          u.tx = u.x; u.ty = u.y;
+          if (u.action === "walking") u.action = "seated";
+          u.fadeOutT0 = performance.now();
         }
         // Giữ đúng một ghế cho Phật tử này: đã có ghế nhà còn trống đúng
         // chủ thì giữ nguyên, chưa có thì cấp ghế trống đầu tiên.
@@ -2685,10 +2727,39 @@
           // rời ghế) — còn trống đúng chủ thì khôi phục làm ghế nhà,
           // không ngồi nhầm ghế khác.
           if (u.ritualSeat !== null && u.ritualSeat !== undefined && CUSHIONS[u.ritualSeat] && !cushionTaken(u.ritualSeat, u)) u.homeCushion = u.ritualSeat;
-          if (!reserveSeat(u)) return sendToGateWait(u); // kín 100 ghế và không ai nhường ghế: ra MÉP CỔNG chờ — không đứng trong lối đi
+          if (!reserveSeat(u)) return sendToGateWait(u); // kín đội hình và không ai nhường vị trí: ra MÉP SẢNH chờ — không đứng trong lối đi
           u.waitingGate = false;
           u.waitSpot = null;
           var idx = u.homeCushion;
+          // BẢN ĐỘI HÌNH ĐỨNG — KHÁCH MỚI HIỆN DẦN TẠI VỊ TRÍ ĐỨNG:
+          // khách lần đầu vào sảnh (cờ appearFresh đặt tại các đường
+          // tạo nhân vật) KHÔNG đi bộ từ cửa nữa: được đặt thẳng vào
+          // vị trí đứng đã cấp, ở trạng thái yên vị, và drawPerson cho
+          // hiện dần từ mờ thành rõ kèm quầng sáng nhẹ (appearT0).
+          if (u.appearFresh) {
+            u.appearFresh = false;
+            u.cushion = idx;
+            u.seatAsStand = false;
+            u.pendingStand = false;
+            u.pendingMeditate = false;
+            u.pendingSit = false;
+            u.pendingOffer = false;
+            u.pendingBow = false;
+            u.pendingBell = false;
+            u.offerSpot = null;
+            u.incenseSlot = null;
+            u.path = null;
+            u.x = CUSHIONS[idx].x; u.y = CUSHIONS[idx].y;
+            u.tx = u.x; u.ty = u.y;
+            u.action = "seated";
+            u.returningHome = false;
+            u.returnSince = 0;
+            u.ritualSeat = null;
+            u.appearT0 = performance.now();
+            u.seatedAt = Date.now();
+            if (!u.lastActAt) u.lastActAt = u.seatedAt;
+            return true;
+          }
           u.cushion = idx;
           u.seatAsStand = false;
           u.pendingStand = false;
@@ -2786,6 +2857,7 @@
             var u = users[id];
             if (!u) return;
             if (u.leaving || u.leavePending) return; // đang rời chùa / sắp rời chùa: không xếp ghế nữa
+            if (u._toSpot || u._atSpot) return; // đang trong lượt TRI ÂN QUÀ ở giữa sảnh: không kéo về vị trí đứng giữa chừng
             // LUẬT LỐI ĐI (bản .25) — lưới an toàn chạy trước mọi nhánh
             // khác: ai đang ĐỨNG YÊN giữa lối đi giữa (dù bị đường sự
             // kiện nào đưa tới) đều được dắt ra ngay — về ghế của mình,
@@ -2929,7 +3001,7 @@
               delete wdReturnForced[id];
             }
             if (String(id) === String(myId)) { delete wdWalkSince[id]; return; }
-            var seekingSeat = u.action === "walking" && !u.leaving && !u.leavePending && !u.waitingGate
+            var seekingSeat = u.action === "walking" && !u.leaving && !u.leavePending && !u.waitingGate && !u._toSpot && !u._atSpot
               && !u.pendingOffer && !u.pendingBow && !u.pendingBell && !u.queuedOffer && !u.queuedBow && !u.offerThenBow;
             if (!seekingSeat) { delete wdWalkSince[id]; return; }
             if (!wdWalkSince[id]) { wdWalkSince[id] = now; return; }
@@ -2988,54 +3060,31 @@
           // lễ / lư hương — không còn dòng "ĐIỂM LỄ TRUNG TÂM", không
           // còn dòng chữ mờ "…ngồi hai bên…" phía sau hàng khách. Khu
           // này chỉ còn hình thảm, lư hương, nén hương và khói.
+          // ĐỘI HÌNH ĐỨNG (bản mới): KHÔNG vẽ đệm/ghế dưới từng vị trí
+          // nữa — hội chúng đứng/quỳ lạy thẳng trên sàn sảnh. Vị trí
+          // có người chỉ phủ một quầng sáng sàn rất nhẹ dưới chân để
+          // mắt thấy đội hình có "chỗ đứng" mà sàn vẫn sạch, không còn
+          // lưới đệm như bản ghế cũ.
           CUSHIONS.forEach(function (c, i) {
-            var s = c.s;
             var occupied = Object.keys(users).some(function (id) {
               var u = users[id];
               return (u.cushion === i && (u.action === "seated" || u.action === "standing" || u.action === "meditating" || u.pendingSit || u.pendingMeditate || u.pendingStand)) || u.homeCushion === i;
             });
-            if (occupied) {
-              var og = ctx.createRadialGradient(c.x, c.y, 2, c.x, c.y, 30 * s);
-              og.addColorStop(0, "rgba(255,205,80,0.26)");
-              og.addColorStop(1, "rgba(255,205,80,0)");
-              ctx.fillStyle = og;
-              ctx.fillRect(c.x - 32 * s, c.y - 32 * s, 64 * s, 64 * s);
-            }
-            // ĐỆM NGỒI NÂU SẪM hình hộp chữ nhật (phong cách ảnh mẫu
-            // FOX9): mặt đệm nâu ấm có nút rút giữa, thành đệm sẫm hơn
-            // tạo khối dày — thay cho bồ đoàn tròn đỏ của các bản trước.
-            var rw = 23.5 * s, topH = 8 * s, sideH = 6.5 * s;
-            ctx.fillStyle = "rgba(15,8,3,0.4)";
-            ctx.beginPath(); ctx.ellipse(c.x, c.y + sideH + 2.5 * s, rw + 2 * s, 4.5 * s, 0, 0, 6.29); ctx.fill();
-            // Thành trước của đệm (khối dày)
-            var sg2 = ctx.createLinearGradient(0, c.y, 0, c.y + sideH + 2 * s);
-            sg2.addColorStop(0, occupied ? "#5d3d22" : "#4c3018");
-            sg2.addColorStop(1, "#33200f");
-            ctx.fillStyle = sg2;
-            rr(c.x - rw, c.y - 1 * s, rw * 2, sideH + 2.5 * s, 3 * s); ctx.fill();
-            // Mặt đệm trên
-            var tg2 = ctx.createLinearGradient(0, c.y - topH, 0, c.y + 2 * s);
-            tg2.addColorStop(0, occupied ? "#8a6136" : "#77512a");
-            tg2.addColorStop(1, occupied ? "#6e4a24" : "#5d3d1e");
-            ctx.fillStyle = tg2;
-            rr(c.x - rw, c.y - topH, rw * 2, topH + 2 * s, 3.5 * s); ctx.fill();
-            ctx.strokeStyle = occupied ? "rgba(255,216,120,0.9)" : "rgba(226,178,90,0.45)";
-            ctx.lineWidth = 1.2;
-            rr(c.x - rw, c.y - topH, rw * 2, topH + 2 * s, 3.5 * s); ctx.stroke();
-            ctx.lineWidth = 1;
-            // Nút rút giữa đệm + đường may chéo nhẹ như đệm thật
-            ctx.fillStyle = "rgba(38,22,10,0.55)";
-            ctx.beginPath(); ctx.ellipse(c.x, c.y - topH * 0.35, 2.4 * s, 1.3 * s, 0, 0, 6.29); ctx.fill();
-            ctx.strokeStyle = "rgba(240,214,150,0.28)";
-            ctx.beginPath(); ctx.moveTo(c.x - rw + 3 * s, c.y - topH + 1.5 * s); ctx.lineTo(c.x + rw - 3 * s, c.y - 0.5 * s); ctx.stroke();
+            if (!occupied) return;
+            var og = ctx.createRadialGradient(c.x, c.y + 4, 2, c.x, c.y + 4, 34 * c.s);
+            og.addColorStop(0, "rgba(255,205,80,0.13)");
+            og.addColorStop(1, "rgba(255,205,80,0)");
+            ctx.fillStyle = og;
+            ctx.fillRect(c.x - 36 * c.s, c.y - 30 * c.s, 72 * c.s, 72 * c.s);
           });
         }
 
         function makeUser(x, y, color, name, gender) {
           var g = normalizeGender(gender);
-          return { x: x, y: y, tx: x, ty: y, color: color || colorForGender(g, 0), gender: g, action: "walking", phase: Math.random() * 6.28, name: String(name || "").slice(0, 24), actionT0: 0, pendingOffer: false, pendingMeditate: false, pendingStand: false, seatAsStand: false, pendingSit: false, path: null, pendingBow: false, pendingBell: false, cushion: null, offerSpot: null, incenseSlot: null, isTikTok: false, homeCushion: null, queuedBow: false, lastBowAt: 0, seatedAt: 0, lastActAt: 0, gifted: false, leaving: false, leavePending: false, offerThenBow: false, queuedOffer: false, lastOfferAt: 0, waitingGate: false, waitSpot: null, returningHome: false, returnSince: 0, ritualSeat: null, actionWallT0: 0 };
+          return { x: x, y: y, tx: x, ty: y, color: color || colorForGender(g, 0), gender: g, action: "walking", phase: Math.random() * 6.28, name: String(name || "").slice(0, 24), actionT0: 0, pendingOffer: false, pendingMeditate: false, pendingStand: false, seatAsStand: false, pendingSit: false, path: null, pendingBow: false, pendingBell: false, cushion: null, offerSpot: null, incenseSlot: null, isTikTok: false, homeCushion: null, queuedBow: false, lastBowAt: 0, seatedAt: 0, lastActAt: 0, gifted: false, leaving: false, leavePending: false, offerThenBow: false, queuedOffer: false, lastOfferAt: 0, waitingGate: false, waitSpot: null, returningHome: false, returnSince: 0, ritualSeat: null, actionWallT0: 0, appearFresh: false, appearT0: 0, fadeOutT0: 0 };
         }
-        users[myId] = makeUser(ENTRANCE.x, ENTRANCE.y, colorForGender("nam", 0), "Bạn", "nam"); // bản .22: xuất hiện ở CỬA sảnh rồi tự đi kiếm ghế ngồi như mọi người
+        users[myId] = makeUser(ENTRANCE.x, ENTRANCE.y, colorForGender("nam", 0), "Bạn", "nam");
+        users[myId].appearFresh = true; // bản đội hình đứng: hiện dần ngay tại vị trí đứng của mình — không còn đi bộ từ cửa vào
         headToSeat(users[myId]);
 
         /* ---- Áp dụng tên + giới tính người vào chùa chọn ---- */
@@ -4926,7 +4975,7 @@
           ctx.strokeStyle = "rgba(238,201,110,0.3)";
           ctx.beginPath(); ctx.moveTo(228, 540); ctx.lineTo(206, H); ctx.stroke();
           ctx.beginPath(); ctx.moveTo(312, 540); ctx.lineTo(334, H); ctx.stroke();
-          drawEntranceGate(t); // dự phòng khi tranh nền chưa tải: vẫn có cổng vào ở cuối thảm
+          // BẢN ĐỘI HÌNH ĐỨNG: không còn CỔNG CỬA VÀO ở cuối thảm nữa — thảm đỏ chạy thẳng xuống đáy sảnh, khách hiện dần ngay tại vị trí đứng của mình.
         }
 
         /* ================= SÂN KHẤU TRANH VẼ KIỂU RPC (bản .19) =================
@@ -5174,7 +5223,7 @@
             drawLotusMedallion(270, 712, 22, 0.55);
             drawLotusMedallion(270, 826, 29, 0.6);
             drawLotusMedallion(270, 940, 37, 0.55);
-            drawEntranceGate(t);
+            // BẢN ĐỘI HÌNH ĐỨNG: bỏ hẳn cổng cửa vào ở cuối thảm đỏ.
             return;
           }
           if (!rpcBgReady) { drawBackdrop(t); return; }
@@ -5270,9 +5319,9 @@
           drawLotusMedallion(270, 692, 23, 0.6);
           drawLotusMedallion(270, 812, 30, 0.65);
           drawLotusMedallion(270, 936, 38, 0.6);
-          // CỔNG CỬA VÀO ở cuối thảm đỏ — vẽ sau thảm để cổng đứng ngay
-          // trên đầu thảm, đúng điểm mọi người xuất hiện bước vào sảnh
-          drawEntranceGate(t);
+          // BẢN ĐỘI HÌNH ĐỨNG: bỏ hẳn cổng cửa vào ở cuối thảm đỏ —
+          // đáy sảnh chỉ còn thảm đỏ và sàn đá, không còn điểm xuất
+          // hiện ở cửa (khách hiện dần tại vị trí đứng của mình).
         }
 
         /* ---- Thảm lễ lớn của khu dâng hương: trải rộng trước lư hương để
@@ -5900,6 +5949,27 @@
           else if (u.cushion !== null && u.cushion !== undefined && CUSHIONS[u.cushion]) ds = CUSHIONS[u.cushion].s * 1.06 * PERSON_BOOST;
           ctx.save();
           ctx.translate(u.x, u.y + 6); ctx.scale(ds, ds); ctx.translate(-u.x, -(u.y + 6));
+          /* HIỆN DẦN / MỜ DẦN (bản đội hình đứng): khách mới hiện từ
+             mờ thành rõ trong ~1,5 giây ngay tại vị trí đứng (kèm
+             quầng sáng nhẹ bên dưới); khách rời mờ dần trong ~1,4
+             giây rồi vòng lặp chính xóa hẳn. */
+          var fadeA = 1;
+          if (u.appearT0) {
+            var fIn = (performance.now() - u.appearT0) / 1500;
+            if (fIn >= 1) u.appearT0 = 0;
+            else fadeA = Math.max(0.05, fIn);
+          }
+          if (u.leaving && u.fadeOutT0) fadeA = Math.min(fadeA, Math.max(0, 1 - (performance.now() - u.fadeOutT0) / 1400));
+          if (fadeA < 1) {
+            ctx.globalAlpha = fadeA;
+            if (!u.leaving) {
+              var fg2 = ctx.createRadialGradient(x, y - 14, 3, x, y - 14, 46);
+              fg2.addColorStop(0, "rgba(255,220,130," + (0.5 * (1 - fadeA)).toFixed(3) + ")");
+              fg2.addColorStop(1, "rgba(255,220,130,0)");
+              ctx.fillStyle = fg2;
+              ctx.fillRect(x - 48, y - 62, 96, 96);
+            }
+          }
           if (u === centralUser && centralState.mode !== "idle") {
             var cg3 = ctx.createRadialGradient(x, y - 16, 4, x, y - 16, 56);
             cg3.addColorStop(0, "rgba(255,205,80,0.5)");
@@ -6083,14 +6153,18 @@
                 imgBow = 0.12 + 0.06 * Math.sin((t - u.actionT0) * 2.1);
               } else if (u.action === "seated" || u.action === "meditating" || u.action === "standing") {
                 if (isSpot) {
-                  // Lượt camera zoom: zoom vào xong (~1,2s) mới lạy —
-                  // một lạy 3 giây trong lúc giữ cận cảnh (1,6–4,6s)
-                  imgBow = (spotElapsed >= 1.6 && spotElapsed < 4.6) ? Math.sin(((spotElapsed - 1.6) / 3) * Math.PI) : 0;
+                  // Lượt tri ân quà: người tặng ĐI RA GIỮA SẢNH trước
+                  // (~2 giây) rồi camera zoom vào — một lạy 3 giây ở
+                  // giữa lượt giữ cận cảnh (3,4–6,4 giây của lượt).
+                  imgBow = (spotElapsed >= 3.4 && spotElapsed < 6.4) ? Math.sin(((spotElapsed - 3.4) / 3) * Math.PI) : 0;
                 } else {
-                  var iInd = Math.pow(Math.max(0, Math.sin(t * 0.52 + (u.phase || 0) * 2.9)), 4);
-                  var iWave = t % 26;
-                  var iGrp = (iWave < 6.4 && (Math.floor((u.phase || 0) * 7) % 3) !== 0) ? Math.pow(Math.max(0, Math.sin(iWave * 1.96)), 2) : 0;
-                  imgBow = Math.max(iInd * 0.9, iGrp, gestureEnvelope(u, t) * 0.85);
+                  // VÁI LẠY LIÊN TỤC KHÔNG NGỪNG (lệnh chủ chùa): chu
+                  // kỳ cúi lạy xuống – ngẩng lên ~3,8 giây chạy LIÊN
+                  // TỤC cho mọi người trong đội hình, lệch pha từng
+                  // người theo u.phase nên cả hội chúng lạy nối nhau
+                  // như sóng, không ai đứng yên quá một nhịp.
+                  var iCyc = ((t / 3.8) + (u.phase || 0) * 0.618) % 1;
+                  imgBow = Math.sin(iCyc * Math.PI) * 0.96;
                 }
               }
             }
@@ -6164,14 +6238,13 @@
               ctx.lineWidth = 1;
             }
             if (isSpot && spotElapsed < spotDur - 1.1) {
-              // LƯỢT CHIẾU SÁNG: nhân vật ĐỨNG DẬY ngay tại ghế của
-              // mình, CHẮP TAY rồi VÁI ĐÚNG MỘT LẠY về phía bàn thờ
-              // (nhịp lạy 3 giây giữa lượt), đứng chắp tay một lúc rồi
-              // ngồi xuống lại đúng ghế ở cuối lượt — vị trí ghế và
-              // trạng thái "seated" không hề đổi, chỉ có LỚP VẼ đứng
-              // lên, nên luật về đúng ghế gốc không bị chạm vào.
+              // LƯỢT TRI ÂN QUÀ: nhân vật đã được đưa ra GIỮA SẢNH
+              // (điểm trình diện riêng), ĐỨNG CHẮP TAY rồi VÁI ĐÚNG
+              // MỘT LẠY về phía bàn thờ ở giữa lượt giữ cận cảnh
+              // (3,4–6,4 giây), cuối lượt clearGiftSpot đưa về đúng
+              // vị trí đứng gốc — chỉ lớp vẽ đứng lên tại điểm giữa.
               var riseK = Math.min(1, spotElapsed / 1.0);
-              var spotDepth = (spotElapsed >= 1.6 && spotElapsed < 4.6) ? Math.sin(((spotElapsed - 1.6) / 3) * Math.PI) : 0;
+              var spotDepth = (spotElapsed >= 3.4 && spotElapsed < 6.4) ? Math.sin(((spotElapsed - 3.4) / 3) * Math.PI) : 0;
               legsAndShoes(y - 4 + (1 - riseK) * 4, 0, 0);
               var topStand = y - 42 + spotDepth * 11 + (1 - riseK) * 5;
               backTorso(topStand, y - 2 + (1 - riseK) * 3, 11, 13.5, spotDepth * 4);
@@ -6180,27 +6253,22 @@
             } else {
             seatedBase();
             // TƯ THẾ QUỲ LẠY LÀM CHÍNH (kiểu phòng mẫu AN NHIÊN):
-            // khách quỳ trên đệm và LẠY THEO NHỊP — thân trên cúi sâu
-            // về phía bàn thờ rồi ngẩng lên theo chu kỳ chậm ~12 giây
-            // LỆCH PHA từng người (indBow theo u.phase), và cứ ~26
-            // giây lại có một ĐỢT vài người cùng lạy (grpBow: khoảng
-            // 2/3 hội chúng lạy 2 nhịp trong ~6,4 giây). Xen kẽ vẫn
-            // giữ nhịp thở/đu đưa nhẹ và động tác định kỳ chống live
-            // tĩnh (gestureEnvelope của antiStaticStep).
+            // khách quỳ và LẠY LIÊN TỤC KHÔNG NGỪNG — thân trên cúi
+            // sâu về phía bàn thờ rồi ngẩng lên theo chu kỳ ~3,8 giây
+            // chạy mãi, LỆCH PHA từng người theo u.phase, xen nhịp
+            // thở/đu đưa nhẹ (xem kneelDepth ngay dưới).
             var breath = (u.action === "seated" || u.action === "meditating" || u.action === "standing")
               ? Math.sin(t * 1.5 + (u.phase || 0) * 2.13) * 1.2 : 0;
             var sway2 = Math.sin(t * 0.8 + (u.phase || 0) * 1.7) * 1.0;
-            var indBow = Math.pow(Math.max(0, Math.sin(t * 0.52 + (u.phase || 0) * 2.9)), 4);
-            var waveT = t % 26;
-            var grpBow = (waveT < 6.4 && (Math.floor((u.phase || 0) * 7) % 3) !== 0)
-              ? Math.pow(Math.max(0, Math.sin(waveT * 1.96)), 2) : 0;
-            var kneelDepth = Math.max(indBow * 0.85, grpBow);
-            var nod2 = Math.pow(Math.max(0, Math.sin(t * 0.45 + (u.phase || 0) * 2.7)), 3) * 1.6;
-            var gest2 = gestureEnvelope(u, t) * 8;
-            var bowPx = nod2 + gest2 + kneelDepth * 13;
+            // VÁI LẠY LIÊN TỤC KHÔNG NGỪNG (đồng bộ với nhánh ảnh AI):
+            // chu kỳ cúi xuống – ngẩng lên ~3,8 giây chạy mãi, lệch
+            // pha từng người theo u.phase.
+            var kCyc = ((t / 3.8) + (u.phase || 0) * 0.618) % 1;
+            var kneelDepth = Math.sin(kCyc * Math.PI);
+            var bowPx = kneelDepth * 13;
             var topSit = y - 33 - breath + bowPx * 0.6;
             backTorso(topSit, y - 9, 11.5, 13.5, bowPx * 0.3);
-            if (kneelDepth > 0.35 || gest2 > 3) prayArms(topSit + 5, y - 20 + bowPx * 0.35);
+            if (kneelDepth > 0.3) prayArms(topSit + 5, y - 20 + bowPx * 0.35);
             else lapArms(topSit + 5, y - 12.5 + bowPx * 0.4);
             headBack(x + sway2, y - 41 - breath + bowPx);
             }
@@ -6320,7 +6388,7 @@
           if (u.action === "walking" && u !== centralUser) {
             ctx.restore(); // thoát tỉ lệ theo hàng ghế — vẽ biển theo tọa độ thật của khung
             var wLabel = genderSymbol(u.gender) + " " + plainName + (isSpot ? " · tặng quà" : (u.leaving ? " · đang rời chùa" : (u.pendingSit ? " · đang vào chùa" : ((u.pendingOffer || u.pendingBow || u.pendingBell) ? " · đang ra làm lễ" : ""))));
-            var headTopW = (u.y + 6) - ((use3D ? 120 : 60) + bob) * ds; // 60 = chiều cao hình người đứng nhìn từ sau (bản sảnh FOX9)
+            var headTopW = (u.y + 6) - ((use3D ? 120 : (imgMode ? 84 : 60)) + bob) * ds; // chiều cao hình người đang đi: 84 = ảnh AI tư thế quỳ trượt (imgH 78 + neo đáy), 60 = hình vẽ mã đứng nhìn từ sau
             ctx.font = "800 13.5px 'Be Vietnam Pro', sans-serif";
             var wW = ctx.measureText(wLabel).width + 22;
             var wX = Math.max(4, Math.min(W - wW - 4, x - wW / 2));
@@ -7605,6 +7673,13 @@
           // Cập nhật mọi người
           Object.keys(users).forEach(function (id) {
             var u = users[id];
+            // Khách đang RỜI CHÙA theo kiểu mới: đứng yên mờ dần tại
+            // chỗ (drawPerson hạ alpha theo fadeOutT0) — mờ hết sau
+            // ~1,5 giây thì xóa hẳn khỏi sảnh.
+            if (u.leaving) {
+              if (performance.now() - (u.fadeOutT0 || 0) > 1500) { delete users[id]; updateCount(); }
+              return;
+            }
             if (u.action === "offering" || u.action === "bowing" || u.action === "belling") {
               // GIỮ VỊ TRÍ LỄ SUỐT THỜI GIAN LỄ: đang dâng hương / vái
               // lạy thì nhân vật đứng yên ĐÚNG chỗ lễ trên thảm đỏ
@@ -7687,7 +7762,16 @@
               else if (u.pendingSit) beginSit(u);
               else if (u.leaving) { delete users[id]; updateCount(); return; } // đã ra tới cửa: khuất khỏi sảnh
             } else if (u.leaving) {
-              delete users[id]; updateCount(); return; // đang rời chùa mà không còn đường đi (đã ở sát cửa): khuất hẳn
+              delete users[id]; updateCount(); return; // đang rời chùa mà không còn đường đi: khuất hẳn
+            } else if (u._toSpot) {
+              // Đã tới ĐIỂM TRÌNH DIỆN GIỮA SẢNH của lượt tri ân quà:
+              // yên vị tại đó (quỳ lạy theo cờ chiếu sáng _spot*) cho
+              // tới khi clearGiftSpot đưa về đúng vị trí đứng gốc.
+              u._toSpot = false;
+              u._atSpot = true;
+              u.x = GIFT_SPOT.x; u.y = GIFT_SPOT.y;
+              u.tx = u.x; u.ty = u.y;
+              u.action = "seated";
             } else if (u.waitingGate) {
               u.action = "standing"; // đã ra tới MÉP CỔNG: đứng chờ tại đó (ngoài lối đi) tới khi có ghế trống
             } else if (u.pendingSit) {
@@ -8153,6 +8237,7 @@
           if (users[nid]) return users[nid];
           var gnd = normalizeGender((data && (data.gender || data.sex || data.gioi_tinh)) || "nam");
           var nu = makeUser(ENTRANCE.x, ENTRANCE.y, colorForGender(gnd, h), cleanName, gnd);
+          nu.appearFresh = true; // hiện dần ngay tại vị trí đứng (không đi bộ từ cửa)
           nu.isTikTok = true;
           nu.gifted = true;
           users[nid] = nu;
@@ -8173,23 +8258,25 @@
             && (u.action === "seated" || u.action === "meditating" || u.action === "standing")
             && !u.pendingOffer && !u.pendingBow && !u.pendingBell && !u.pendingSit;
         }
-        /* ---- CAMERA ZOOM vào người tặng quà (bản .42 — thay cơ chế
-           chiếu tại chỗ): toàn bộ khung sảnh (canvas) zoom vào đúng vị
-           trí ghế của người tặng bằng transform scale + translate với
-           chuyển động mượt ~1,2 giây như máy quay truyền hình đẩy vào;
-           hệ số zoom theo hàng ghế (hàng xa nhỏ thì zoom mạnh hơn) và
-           điểm đích được kẹp để khung zoom luôn phủ kín sảnh, không hở
-           mép. Các bảng phủ (bảng tri ân…) nằm ngoài canvas nên không
-           bị zoom theo, vẫn đọc rõ. Mọi cơ chế khác chạy bình thường
+        /* ---- ĐIỂM TRÌNH DIỆN GIỮA SẢNH + CAMERA ZOOM (bản đội hình
+           đứng — ĐÚNG VIDEO MẪU kênh AN NHIÊN): khi có quà, nhân vật
+           của người tặng được ĐƯA RA GIỮA SẢNH đứng một mình tại
+           GIFT_SPOT (trên thảm đỏ, ngay trước khu lễ, giữa hội chúng
+           và bàn thờ) rồi toàn bộ khung sảnh (canvas) zoom mượt vào
+           CẬN CẢNH đúng điểm đó bằng transform scale + translate
+           (~1,2 giây như máy quay truyền hình đẩy vào); điểm đích
+           được kẹp để khung zoom luôn phủ kín sảnh, không hở mép.
+           Các bảng phủ (bảng tri ân…) nằm ngoài canvas nên không bị
+           zoom theo, vẫn đọc rõ. Mọi cơ chế khác chạy bình thường
            bên dưới trong lúc zoom. ---- */
+        var GIFT_SPOT = { x: 270, y: 622 };
         var giftZoomTimer = null;
         function applyGiftZoom(u) {
           var cv = document.getElementById("templeCanvas");
           if (!cv || !u) return;
           var wd = cv.offsetWidth || 540, hd = cv.offsetHeight || 960;
-          var seatS = (u.cushion !== null && u.cushion !== undefined && CUSHIONS[u.cushion]) ? CUSHIONS[u.cushion].s : 0.75;
-          var S = Math.max(1.8, Math.min(2.8, 1.55 / seatS));
-          var px = (u.x / 540) * wd, py = (u.y / 960) * hd;
+          var S = 2.35; // cận cảnh điểm trình diện giữa sảnh: người tặng hiện TO RÕ giữa khung
+          var px = (GIFT_SPOT.x / 540) * wd, py = (GIFT_SPOT.y / 960) * hd;
           var mx = wd / (2 * S), my = hd / (2 * S);
           var cxp = Math.max(mx, Math.min(wd - mx, px));
           var cyp = Math.max(my, Math.min(hd - my, py));
@@ -8203,10 +8290,11 @@
           cv.style.transition = "transform 1.2s ease";
           cv.style.transform = "";
         }
-        // Kết thúc lượt chiếu: zoom ra (nếu còn đang zoom), gỡ cờ
-        // chiếu, ẩn bảng giữa sảnh, và bảo đảm nhân vật đang NGỒI
-        // ĐÚNG GHẾ GỐC — lệch ghế thì dắt về đúng ghế đó theo luật
-        // về ghế hiện có.
+        // Kết thúc lượt tri ân: zoom ra (nếu còn đang zoom), gỡ cờ
+        // chiếu, ẩn bảng giữa sảnh, và đưa nhân vật người tặng từ
+        // ĐIỂM TRÌNH DIỆN GIỮA SẢNH về ĐÚNG VỊ TRÍ ĐỨNG GỐC của
+        // mình (headToSeat theo ritualSeat/homeCushion đã ghi lúc
+        // bắt đầu lượt; chó săn về vị trí gốc canh tiếp chặng về).
         function clearGiftSpot() {
           if (giftZoomTimer) { clearTimeout(giftZoomTimer); giftZoomTimer = null; }
           resetGiftZoom();
@@ -8216,9 +8304,18 @@
             var seat = (u._spotSeat !== undefined && u._spotSeat !== null) ? u._spotSeat : null;
             delete u._spotSeat;
             giftSpotCurrent = null;
-            if (seat !== null && !u.leaving && !u.leavePending && u.action === "seated" && u.cushion !== seat) {
-              u.homeCushion = seat;
-              headToSeat(u);
+            var wasSpot = !!(u._atSpot || u._toSpot);
+            delete u._atSpot; delete u._toSpot;
+            if (!u.leaving && !u.leavePending) {
+              if (wasSpot) {
+                if (seat !== null) { u.homeCushion = seat; u.ritualSeat = seat; }
+                u.returningHome = true;
+                u.returnSince = Date.now();
+                headToSeat(u); // đi bộ từ giữa sảnh về đúng vị trí đứng gốc
+              } else if (seat !== null && u.action === "seated" && u.cushion !== seat) {
+                u.homeCushion = seat;
+                headToSeat(u);
+              }
             }
           }
           if (giftSpotBoardEl) { giftSpotBoardEl.classList.remove("show"); giftSpotBoardEl.setAttribute("aria-hidden", "true"); }
@@ -8254,6 +8351,50 @@
           "tâm sáng như trăng rằm, lộc đến như hoa sen nở giữa hồ thanh.",
           "tai qua nạn khỏi, công việc thuận buồm xuôi gió."
         ];
+        /* ---- LỜI CẦU THEO LOẠI QUÀ (đúng video mẫu AN NHIÊN) ----
+           Bảng trình diện lúc camera zoom hiện DÒNG LỚN là lời cầu
+           theo món quà: khớp tên quà KHÔNG phân biệt hoa thường và
+           dấu tiếng Việt, theo từ khóa; quà không khớp nhóm nào thì
+           dùng lời cầu mặc định "Cầu Phú Quý Giàu Sang". */
+        function giftFoldText(s) {
+          return String(s == null ? "" : s).toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d").replace(/\s+/g, " ").trim();
+        }
+        function giftWishFor(giftName) {
+          var g = giftFoldText(giftName);
+          if (!g) return "Cầu Phú Quý Giàu Sang";
+          if (g.indexOf("rose") >= 0 || g.indexOf("hoa hong") >= 0) return "Cầu Sức Khỏe Bình An";
+          if (g.indexOf("tiktok") >= 0 || g.indexOf("tik tok") >= 0) return "Cầu Gia Đạo Hạnh Phúc";
+          if ((" " + g + " ").indexOf(" tao ") >= 0 || g.indexOf("apple") >= 0) return "Cầu Công Việc Thuận Lợi";
+          if (g.indexOf("co 4 la") >= 0 || g.indexOf("co bon la") >= 0 || g.indexOf("clover") >= 0 || g.indexOf("4 la") >= 0 || g.indexOf("bon la") >= 0) return "Cầu May Mắn An Nhàn";
+          return "Cầu Phú Quý Giàu Sang";
+        }
+        /* ---- ICON + NHÃN HẠNG MỤC cho BẢNG CÔNG ĐỨC (TẤM LÒNG
+           THÀNH) — bộ nhãn RIÊNG, khác câu "Cầu …" của bảng zoom:
+           mỗi dòng công đức kèm icon + nhãn ngắn theo loại quà gần
+           nhất của người tặng (khớp tên quà không phân biệt hoa
+           thường/dấu, cùng bộ gấp chữ giftFoldText). Táo và mọi quà
+           chưa có quy định riêng rơi về nhóm Phú quý giàu sang. */
+        function giftCategoryFor(giftName) {
+          var g = giftFoldText(giftName);
+          if (g) {
+            if (g.indexOf("rose") >= 0 || g.indexOf("hoa hong") >= 0) return { icon: "🌹", label: "Sức khỏe bình an" };
+            if (g.indexOf("tiktok") >= 0 || g.indexOf("tik tok") >= 0) return { icon: "🎵", label: "Gia đình" };
+            if (g.indexOf("tha tim") >= 0 || g.indexOf("heart") >= 0 || g.indexOf("trai tim") >= 0) return { icon: "❤️", label: "Tình duyên" };
+            if (g.indexOf("co 4 la") >= 0 || g.indexOf("co bon la") >= 0 || g.indexOf("clover") >= 0 || g.indexOf("4 la") >= 0 || g.indexOf("bon la") >= 0) return { icon: "🍀", label: "Công việc" };
+          }
+          return { icon: "💰", label: "Phú quý giàu sang" };
+        }
+        // Lượt quà GẦN NHẤT của từng người tặng (khóa = tên đã gấp
+        // chữ, bỏ tiền tố tt_): bảng công đức phía server chỉ gửi
+        // {tên, điểm} nên trang tự ghi nhớ món quà mới nhất của mỗi
+        // người từ chính sự kiện quà đi qua trang, để gắn icon +
+        // nhãn hạng mục đúng dòng của họ trên bảng.
+        window._donorLastGift = window._donorLastGift || {};
+        function donorGiftKey(name) {
+          return giftFoldText(String(name == null ? "" : name).replace(/^tt_/i, ""));
+        }
         var giftQueue = [];
         var giftShowing = false;
         var giftBlessIdx = 0;
@@ -8494,11 +8635,13 @@
         }
         function startGiftTurn(g, spotUser) {
           var tier = g.tier || "small";
-          // Độ dài MỘT lượt tri ân: zoom vào ~1,2 giây + giữ cận cảnh
-          // ~5,6 giây (người tặng lạy một lạy, bảng chúc hiện, giọng
-          // đọc hết câu) + zoom ra ~1,2 giây = 8 giây mọi hạng (hiệu
-          // ứng Đại Lễ trên sảnh vẫn chạy riêng ~20 giây như cũ)
-          var giftDur = 8000;
+          // Độ dài MỘT lượt tri ân: người tặng đi ra giữa sảnh ~2
+          // giây (camera zoom vào điểm trình diện song song ~1,2
+          // giây) + giữ cận cảnh ~6 giây (người tặng quỳ lạy một lạy,
+          // bảng trình diện hai dòng hiện) + zoom ra ~1,2 giây ≈ 9,5
+          // giây mọi hạng (hiệu ứng Đại Lễ trên sảnh vẫn chạy riêng
+          // ~20 giây như cũ)
+          var giftDur = 9500;
           var donorDisplay = giftDonorDisplayName(g.name);
           if (giftBanner) {
             giftBanner.classList.toggle("tier-medium", tier === "medium");
@@ -8506,11 +8649,7 @@
           }
           if (giftThanksEl) giftThanksEl.textContent = tier === "grand" ? "🙏✨ ĐẠI LỄ TRI ÂN ✨🙏" : (tier === "medium" ? "🙏 Tri ân tấm lòng vàng 🙏" : "🙏 Tri ân tấm lòng vàng");
           var bless = GIFT_BLESSINGS[giftBlessIdx % GIFT_BLESSINGS.length].split("{ten}").join(g.name);
-          var blessWish = GIFT_WISHES[giftBlessIdx % GIFT_WISHES.length];
           giftBlessIdx++;
-          // Câu cảm ơn CỐ ĐỊNH của lượt này: bảng giữa sảnh hiện đúng
-          // câu này trong lúc camera zoom (không đọc thành tiếng).
-          var thanksSentence = "Cảm ơn " + donorDisplay + " đã gửi đến chùa món quà, chúc thí chủ " + donorDisplay + " " + blessWish;
           if (giftWhoEl) {
             // Tên người tặng + tên quà là dữ liệu từ xa (TikTok Live):
             // dựng bằng textContent và thẻ <strong> tạo sẵn, tuyệt đối
@@ -8537,17 +8676,31 @@
             giftTagEl.textContent = "🪷 Cầu Bình An – " + g.name + " tặng " + g.gift + (g.count > 1 ? " × " + g.count : "");
             giftTagEl.classList.add("show");
           }
-          // BẢNG TRI ÂN GIỮA SẢNH (cùng kiểu bảng chào khách): hiện
-          // đúng câu cảm ơn cố định suốt lượt chiếu.
+          // BẢNG TRÌNH DIỆN GIỮA SẢNH KIỂU VIDEO MẪU AN NHIÊN: hai
+          // dòng — dòng LỚN là LỜI CẦU theo loại quà (giftWishFor),
+          // dòng dưới là "<Tên> dâng <Tên quà>". Bảng này THAY câu
+          // cảm ơn dài trong lúc zoom (câu "Cảm ơn <Tên> đã gửi…"
+          // không còn hiện ở bảng zoom nữa) và vẫn KHÔNG đọc thành
+          // tiếng. Tên/quà là dữ liệu từ xa: dựng bằng textContent.
           if (giftSpotBoardEl && giftSpotTextEl) {
-            giftSpotTextEl.textContent = thanksSentence;
+            giftSpotTextEl.textContent = "";
+            var wishLine = document.createElement("span");
+            wishLine.className = "wb-wish";
+            wishLine.textContent = giftWishFor(g.gift);
+            giftSpotTextEl.appendChild(wishLine);
+            var offerLine = document.createElement("span");
+            offerLine.className = "wb-offer";
+            offerLine.textContent = String(g.name || "") + " dâng " + String(g.gift || "") + (g.count > 1 ? " × " + g.count : "");
+            giftSpotTextEl.appendChild(offerLine);
             giftSpotBoardEl.classList.add("show");
             giftSpotBoardEl.setAttribute("aria-hidden", "false");
           }
-          // BẬT CAMERA ZOOM vào chính nhân vật người tặng: ghi ghế
-          // gốc + mốc giờ tường, đẩy khung sảnh vào ghế của họ trong
-          // ~1,2 giây; drawPerson giữ thêm quầng sáng nhẹ quanh đệm
-          // làm điểm nhấn phụ và nhịp lạy một lạy (1,6–4,6 giây của
+          // ĐƯA NGƯỜI TẶNG RA GIỮA SẢNH + BẬT CAMERA ZOOM: ghi vị
+          // trí đứng gốc + mốc giờ tường, cho nhân vật đi bộ ra ĐIỂM
+          // TRÌNH DIỆN một mình giữa sảnh (vòng lặp chính chốt trạng
+          // thái _atSpot khi tới nơi), đồng thời đẩy khung sảnh zoom
+          // vào điểm đó trong ~1,2 giây; drawPerson giữ quầng sáng
+          // quanh người tặng và nhịp lạy một lạy (3,4–6,4 giây của
           // lượt) chạy theo các mốc _spot* này.
           if (spotUser) {
             giftSpotCurrent = spotUser;
@@ -8556,6 +8709,17 @@
             spotUser._spotUntilWall = spotUser._spotStartWall + giftDur;
             spotUser.gifted = true;
             spotUser.lastActAt = Date.now();
+            if (spotUser._spotSeat !== null && spotUser._spotSeat !== undefined) spotUser.ritualSeat = spotUser._spotSeat;
+            spotUser.returningHome = false;
+            spotUser.returnSince = 0;
+            spotUser._toSpot = true;
+            spotUser._atSpot = false;
+            var spPath = [];
+            if (Math.abs(spotUser.x - GIFT_SPOT.x) > 4) spPath.push({ x: GIFT_SPOT.x, y: Math.max(600, Math.min(940, spotUser.y)) });
+            spPath.push({ x: GIFT_SPOT.x, y: GIFT_SPOT.y });
+            spotUser.path = spPath;
+            spotUser.action = "walking";
+            spotUser.tx = spPath[0].x; spotUser.ty = spPath[0].y;
             applyGiftZoom(spotUser);
           }
           // Nghi lễ theo hạng xu: nhỏ giữ như cũ; vừa thêm một tiếng
@@ -8586,13 +8750,12 @@
               petals.push({ gold: true, x0: bpx, y0: bpy, x: bpx, y: bpy, spawnT: spawnNowS, rot0: brot, rot: brot, vr: (Math.random() - 0.5) * 2.4, vy: 52 + Math.random() * 34, p: Math.random() * 6, s: 1.35 + Math.random() * 0.95 });
             }
           }
-          // GIỌNG ĐỌC CHO QUÀ TẶNG: ĐÃ BỎ theo lệnh chủ chùa (bản
-          // .42) — sự kiện quà KHÔNG gọi enqueueSpeak nữa: camera
-          // zoom + bảng câu chúc cố định hiện giữa sảnh là đủ. Câu
-          // thanksSentence ở trên chỉ dùng làm CHỮ trên bảng tri ân.
-          // Các giọng đọc khác (chào khách mới, đọc pháp, chúc lành,
-          // quẻ) giữ nguyên không đổi.
-          note("<strong>🎁 " + escapeHtml(g.name) + "</strong> vừa tặng <strong>" + escapeHtml(g.gift) + "</strong>" + (g.coins > 0 ? " (" + g.coins + " xu — " + (tier === "grand" ? "ĐẠI LỄ" : (tier === "medium" ? "lễ tri ân lớn" : "lễ tri ân")) + ")" : "") + " trên TikTok Live — camera đang zoom vào người tặng tại ghế của mình và lời chúc lành đang hiện trên bảng tri ân giữa sảnh. 🙏");
+          // GIỌNG ĐỌC CHO QUÀ TẶNG: ĐÃ BỎ theo lệnh chủ chùa — sự
+          // kiện quà KHÔNG gọi enqueueSpeak: người tặng ra giữa sảnh,
+          // camera zoom cận cảnh và bảng trình diện hai dòng kiểu
+          // video mẫu hiện giữa sảnh là đủ, không đọc thành tiếng.
+          // Các giọng đọc khác (đọc pháp, chúc lành, quẻ) giữ nguyên.
+          note("<strong>🎁 " + escapeHtml(g.name) + "</strong> vừa tặng <strong>" + escapeHtml(g.gift) + "</strong>" + (g.coins > 0 ? " (" + g.coins + " xu — " + (tier === "grand" ? "ĐẠI LỄ" : (tier === "medium" ? "lễ tri ân lớn" : "lễ tri ân")) + ")" : "") + " trên TikTok Live — nhân vật của người tặng đang ra giữa sảnh, camera zoom vào cận cảnh và bảng trình diện “" + escapeHtml(giftWishFor(g.gift)) + " — " + escapeHtml(g.name) + " dâng " + escapeHtml(g.gift) + "” đang hiện giữa sảnh. 🙏");
           // Thời lượng khung tính TỪ LÚC KHUNG THẬT SỰ HIỆN ở trên
           // (mốc giftHideAt đặt ngay tại đây, không phải từ lúc món
           // quà được xếp vào hàng chờ): hạng Đại Lễ đủ ~10 giây, hạng
@@ -8674,6 +8837,12 @@
           var gKeys = giftEventKeys(data, name, gift, count, coins);
           if (giftAnyKeySeen(gKeys)) return;
           giftMarkSeen(gKeys);
+          // Ghi nhớ món quà MỚI NHẤT của người tặng cho BẢNG CÔNG
+          // ĐỨC (icon + nhãn hạng mục theo loại quà) rồi vẽ lại bảng
+          // từ dữ liệu gần nhất server đã gửi — dòng của người tặng
+          // hiện đúng hạng mục của món quà này ngay trong buổi live.
+          window._donorLastGift[donorGiftKey(name)] = gift;
+          try { if (window._meritLastData && window.capNhatBangCongDuc) window.capNhatBangCongDuc(window._meritLastData); } catch (eMg) {}
           // Xác định NGAY nhân vật của người tặng (chưa có mặt thì
           // cho vào ngồi ghế như khách mới) để lượt chiếu sáng có
           // đúng người mà chiếu; định danh được ghi vào lượt chờ.
@@ -8698,55 +8867,15 @@
         // Kênh 3: hàm toàn cục cho cầu nối / tiện ích mở rộng gọi trực tiếp
         window.hienLoiChucQuaTang = hienLoiChucQuaTang;
 
-        /* ----- GIỌNG ĐỌC LỜI MỜI KHI KHÁCH MỚI VÀO SẢNH -----
-           Lớp BỔ SUNG trên bảng chào chữ ở dưới: mỗi khách MỚI xuất
-           hiện trong sảnh (khách TikTok qua sự kiện vào phòng, khách
-           web vừa qua cổng — mọi đường đều đã qua chống trùng của
-           chaoPhatTuMoi hoặc của chính hàm này) được giọng đọc của
-           trang đọc đúng một lần câu mời theo tên:
-           "Mời phật tử <Tên> vào chùa lễ Phật cầu an".
-           CHỐNG DỒN DẬP: tối đa 1 câu mời mỗi ~8 giây; trong cửa sổ
-           nhịp đó chỉ giữ khách MỚI NHẤT đang chờ — khách cũ hơn bị
-           thay thế và bỏ qua, không đọc dồn thành nhiều câu. Chỉ phát
-           khi công tắc "🔊 Giọng đọc" đang bật (mặc định bật ở ?full
-           và ?daisanh; chế độ thường theo công tắc của trang); khách
-           tương tác lại sau đó KHÔNG được đọc lại lời mời. */
-        var inviteVoiceSeenIds = {}; // định danh khách đã nhận lời mời trong phiên mở trang này
-        var inviteVoiceRecent = {}; // cửa sổ theo tên, gộp các kênh trùng của cùng một khách
-        var invitePendingName = null; // tên khách MỚI NHẤT đang chờ tới lượt đọc
-        var inviteLastReadAt = 0; // mốc lần gần nhất một câu mời được đưa vào hàng đọc
-        var inviteTimer = null;
-        var INVITE_GAP_MS = 8000;
-        function pumpInviteVoice() {
-          if (inviteTimer) { clearTimeout(inviteTimer); inviteTimer = null; }
-          if (!invitePendingName) return;
-          if (!voiceOn) { invitePendingName = null; return; }
-          var now = Date.now();
-          var wait = inviteLastReadAt + INVITE_GAP_MS - now;
-          if (wait > 0) { inviteTimer = setTimeout(pumpInviteVoice, wait + 30); return; }
-          var nm = invitePendingName;
-          invitePendingName = null;
-          inviteLastReadAt = now;
-          enqueueSpeak("Mời phật tử " + nm + " vào chùa lễ Phật cầu an.");
-        }
-        function docLoiMoiKhachMoi(name, idKey) {
-          if (!voiceOn) return;
-          if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
-          var nm = String(name == null ? "" : name).replace(/^tt_/i, "").trim().slice(0, 40);
-          if (!nm) nm = "Phật tử";
-          // Mỗi khách chỉ được mời một lần lúc mới vào: chống trùng
-          // theo định danh trước, theo cửa sổ tên 6 giây sau (cùng quy
-          // ước với bảng chào chữ trong chaoPhatTuMoi).
-          var key = (idKey != null && String(idKey) !== "") ? String(idKey) : null;
-          if (key && inviteVoiceSeenIds[key]) return;
-          var now = Date.now();
-          var rec = inviteVoiceRecent[nm];
-          if (rec && now - rec.at < 6000 && (!key || !rec.hadId)) return;
-          if (key) inviteVoiceSeenIds[key] = true;
-          inviteVoiceRecent[nm] = { at: now, hadId: !!key };
-          invitePendingName = nm; // khách mới nhất thay thế khách đang chờ cũ hơn
-          pumpInviteVoice();
-        }
+        /* ----- KHÁCH MỚI VÀO SẢNH: CHỈ HIỆN BẢNG CHÀO CHỮ, KHÔNG ĐỌC -----
+           (Chủ chùa chốt bản .43): BỎ HẲN giọng đọc lời mời khi khách
+           mới vào — trang không còn đọc câu “Mời phật tử <Tên> vào chùa
+           lễ Phật cầu an” bằng speechSynthesis nữa. Khách vào chỉ cần
+           THẤY nhân vật của mình đi từ cửa vào ghế cùng biển tên, và
+           bảng chào chữ giữa sảnh (mục ngay dưới đây) giữ nguyên như
+           trước. Các giọng đọc khác của trang (pháp thoại, chúc lành)
+           không đổi; quà tặng vốn đã không đọc lời cảm ơn từ bản trước
+           và vẫn giữ nguyên như vậy. */
 
         /* ----- LỜI CHÀO KHI KHÁCH TIKTOK VỪA VÀO SẢNH CHÙA -----
            Khi server đưa một khách TikTok vào chùa (sự kiện "new_user" với
@@ -8838,16 +8967,12 @@
           if (recent && now - recent.at < 6000 && (!idKey || !recent.hadId)) return;
           if (idKey) welcomeSeenIds[idKey] = true;
           welcomeRecent[nm] = { at: now, hadId: !!idKey };
-          // Lớp giọng đọc bổ sung cho đúng khách mới này: đọc đúng câu
-          // mẫu của bảng giữa sảnh “Mời phật tử <Tên> vào chùa lễ Phật
-          // cầu an” — chỉ tới được
-          // đây khi đã qua chống trùng ở trên nên mỗi khách đúng một
-          // lần; nhịp chống dồn dập nằm trong docLoiMoiKhachMoi.
-          docLoiMoiKhachMoi(nm, idKey);
+          // (Bản .43) Không còn giọng đọc lời mời cho khách mới nữa —
+          // chỉ hiện bảng chào chữ ở dưới như cũ.
           // LUẬT LỐI ĐI (bản .25): khách mới KHÔNG cúi chào tại chỗ nữa —
           // điểm xuất hiện là cửa sảnh nằm giữa lối đi, cúi chào ở đó
           // tức là đứng lại giữa lối đi. Khách đi thẳng tới ghế của
-          // mình; lời chào nhau nằm ở bảng chào + giọng đọc lời mời.
+          // mình; lời chào nhau nằm ở bảng chào giữa sảnh.
           welcomeQueue.push(nm);
           pumpWelcome();
         }
@@ -8951,6 +9076,7 @@
           if (Array.isArray(data)) entries = data;
           else if (data && typeof data === "object") entries = data.entries || data.board || data.list || data.rankings || [];
           if (!Array.isArray(entries)) entries = [];
+          if (data) window._meritLastData = data; // giữ gói gần nhất để gắn lại icon hạng mục ngay khi có lượt quà mới đi qua trang
           var clean = [];
           entries.forEach(function (e) {
             if (!e || typeof e !== "object") return;
@@ -8958,7 +9084,12 @@
             var pts = parseFloat(e.points != null ? e.points : (e.score != null ? e.score : (e.diem != null ? e.diem : e.merit)));
             nm = String(nm || "").trim().slice(0, 40);
             if (!nm || isNaN(pts)) return;
-            clean.push({ name: nm, points: pts });
+            // Món quà của dòng này: ưu tiên trường quà server đính
+            // kèm bản ghi; không có thì lấy lượt quà gần nhất của
+            // chính người tặng mà trang đã ghi nhớ từ sự kiện quà.
+            var gf = e.gift || e.qua || e.giftName || e.gift_name || e.lastGift || e.ten_qua || e.mon_qua || "";
+            if (!gf && window._donorLastGift) gf = window._donorLastGift[donorGiftKey(nm)] || "";
+            clean.push({ name: nm, points: pts, gift: String(gf || "") });
           });
           clean.sort(function (a, b) { return b.points - a.points; });
           // KHÔNG cắt danh sách ở đây: tổng CĐ trên thanh trên cùng phải
@@ -8985,6 +9116,17 @@
             pt.textContent = (Math.round(e.points * 10) / 10).toLocaleString("vi-VN") + " điểm";
             li.appendChild(rk);
             li.appendChild(nmEl);
+            // ICON + NHÃN HẠNG MỤC theo loại quà (bộ nhãn riêng của
+            // bảng công đức): hiện ngay cạnh tên người tặng khi biết
+            // món quà gần nhất của họ.
+            if (e.gift) {
+              var cat = giftCategoryFor(e.gift);
+              var catEl = document.createElement("span");
+              catEl.className = "mb-cat";
+              catEl.textContent = cat.icon + " " + cat.label;
+              catEl.title = e.gift;
+              li.appendChild(catEl);
+            }
             li.appendChild(pt);
             meritListEl.appendChild(li);
           });
@@ -9558,11 +9700,11 @@
           var nm = displayNameOf(u, false);
           var gd = u.gender;
           addChatSys(genderSymbol(gd) + " " + nm + " đã rời chùa.");
-          note("<strong>" + genderSymbol(gd) + " " + escapeHtml(nm) + "</strong> đã rời chùa — nhân vật của họ đang đứng dậy, đi dọc lối đi giữa ra cửa sảnh rồi mới khuất khỏi chánh điện.");
-          // Nhân vật KHÔNG biến mất ngay (mục C): đang làm lễ thì lễ
-          // xong mới rời (leavePending — vòng lặp chính lo tiếp); còn
-          // lại thì đứng dậy đi bộ ra cửa ngay, ghế trống ra tức thì
-          // cho khách đang chờ vào ngồi, không đợi vòng quét định kỳ.
+          note("<strong>" + genderSymbol(gd) + " " + escapeHtml(nm) + "</strong> đã rời chùa — nhân vật của họ đang mờ dần ngay tại vị trí đứng rồi khuất khỏi chánh điện.");
+          // Nhân vật KHÔNG biến mất ngay: đang làm lễ thì lễ xong mới
+          // rời (leavePending — vòng lặp chính lo tiếp); còn lại thì
+          // mờ dần tại chỗ (startExitWalk), vị trí đứng trống ra tức
+          // thì cho khách đang chờ vào đội hình, không đợi vòng quét.
           if (u.action === "offering" || u.action === "bowing" || u.action === "belling") { u.leavePending = true; return; }
           startExitWalk(u);
           seatWaitingTikTokGuests();
@@ -9898,7 +10040,7 @@
                 // danh sách gửi lại); khách lần đầu xuất hiện thì vào từ
                 // CỬA sảnh và đi bộ đi kiếm ghế.
                 var prev = prevUsers[id];
-                if (prev) { u.seatedAt = prev.seatedAt || 0; u.lastActAt = prev.lastActAt || 0; u.gifted = !!prev.gifted; } // giữ mốc ngồi / tương tác / đã tặng quà qua mọi bản chụp danh sách
+                if (prev) { u.seatedAt = prev.seatedAt || 0; u.lastActAt = prev.lastActAt || 0; u.gifted = !!prev.gifted; if (prev.appearT0) u.appearT0 = prev.appearT0; if (prev.fadeOutT0) u.fadeOutT0 = prev.fadeOutT0; } // giữ mốc ngồi / tương tác / đã tặng quà / mốc hiện–mờ dần qua mọi bản chụp danh sách
                 if (prev && prev.homeCushion !== null && prev.homeCushion !== undefined && CUSHIONS[prev.homeCushion]) {
                   u.homeCushion = prev.homeCushion;
                   u.cushion = prev.cushion;
@@ -9925,7 +10067,12 @@
                   u.x = wSpot.x; u.y = wSpot.y; u.tx = wSpot.x; u.ty = wSpot.y;
                   u.action = "standing";
                 } else {
-                  u.x = ENTRANCE.x; u.y = ENTRANCE.y; u.tx = u.x; u.ty = u.y;
+                  // BẢN ĐỘI HÌNH ĐỨNG: khách lần đầu xuất hiện trong
+                  // bản chụp KHÔNG hiện ở cửa đi bộ vào nữa — cờ
+                  // appearFresh để headToSeat đặt thẳng vào vị trí
+                  // đứng trống và drawPerson cho hiện dần từ mờ.
+                  u.appearFresh = true;
+                  u.x = 270; u.y = 700; u.tx = u.x; u.ty = u.y;
                   u.action = "walking";
                 }
                 /* GIỮ NGUYÊN TRẠNG THÁI LỄ QUA MỌI BẢN CHỤP (gốc rễ
@@ -9939,7 +10086,7 @@
                    trang. Trước đây bản chụp ghi đè khiến lễ bị cắt
                    giữa chừng, mất chặng vái tiếp, hoặc nhân vật bị
                    đóng băng "đã ngồi" ngay tại thảm lễ/lối đi. */
-                if (prev && (prev.action === "offering" || prev.action === "bowing" || prev.action === "belling" || prev.pendingOffer || prev.pendingBow || prev.pendingBell || prev.offerThenBow || prev.returningHome)) {
+                if (prev && (prev.action === "offering" || prev.action === "bowing" || prev.action === "belling" || prev.pendingOffer || prev.pendingBow || prev.pendingBell || prev.offerThenBow || prev.returningHome || prev._toSpot || prev._atSpot)) {
                   u.action = prev.action;
                   u.actionT0 = prev.actionT0 || 0;
                   u.actionWallT0 = prev.actionWallT0 || 0;
@@ -9957,6 +10104,12 @@
                   u.returningHome = !!prev.returningHome;
                   u.returnSince = prev.returnSince || 0;
                   u.ritualSeat = (prev.ritualSeat !== undefined) ? prev.ritualSeat : null;
+                  // Lượt TRI ÂN QUÀ đang chạy (đang ra giữa sảnh / đang
+                  // ở điểm trình diện): giữ nguyên cờ + mốc chiếu để
+                  // bản chụp không cắt ngang cảnh camera zoom.
+                  u._toSpot = !!prev._toSpot;
+                  u._atSpot = !!prev._atSpot;
+                  if (prev._spotStartWall) { u._spotStartWall = prev._spotStartWall; u._spotUntilWall = prev._spotUntilWall; u._spotSeat = prev._spotSeat; }
                   u.x = prev.x; u.y = prev.y; u.tx = prev.tx; u.ty = prev.ty;
                   u.path = prev.path || null;
                   if (u.path && u.path.length) { u.tx = u.path[0].x; u.ty = u.path[0].y; }
@@ -9984,7 +10137,14 @@
               if (!pu.missingSince) pu.missingSince = Date.now();
               merged[pid] = pu;
             });
+            // Lượt tri ân quà đang chạy: bản chụp vừa dựng lại đối
+            // tượng nhân vật — trỏ lại giftSpotCurrent sang đối tượng
+            // MỚI của đúng người tặng để clearGiftSpot cuối lượt vẫn
+            // đưa đúng người về vị trí đứng gốc.
+            var spotRebindId = null;
+            try { if (typeof giftSpotCurrent !== "undefined" && giftSpotCurrent) spotRebindId = userIdOf(giftSpotCurrent); } catch (eRb) {}
             users = merged;
+            try { if (spotRebindId && users[spotRebindId] && typeof giftSpotCurrent !== "undefined") giftSpotCurrent = users[spotRebindId]; } catch (eRb2) {}
             // Khách TikTok lần đầu xuất hiện trong một bản chụp danh sách
             // GỬI LẠI giữa buổi (không phải bản chụp đầu tiên ngay khi
             // mới nối — bản đó gồm cả khách đã ở chùa từ trước): cũng
@@ -10039,9 +10199,11 @@
             }
             if (!users[data.id]) {
               var rg2 = normalizeGender(nu.gender || nu.sex);
-              // Người mới vào XUẤT HIỆN Ở CỬA sảnh (dưới chân khung) rồi
-              // tự ĐI BỘ đi kiếm ghế — không hiện hình sẵn giữa hội chúng.
+              // BẢN ĐỘI HÌNH ĐỨNG: người mới vào HIỆN DẦN (mờ → rõ,
+              // kèm sáng nhẹ) NGAY TẠI vị trí đứng trống của mình —
+              // không còn xuất hiện ở cửa và đi bộ vào ghế nữa.
               var u = makeUser(ENTRANCE.x, ENTRANCE.y, (nu.gender || nu.sex) ? colorForGender(rg2, 2) : (nu.color || LAM_COLORS[2]), nu.name || nu.displayName || "Phật tử", rg2);
+              u.appearFresh = true;
               u.action = "walking";
               users[data.id] = u;
               note("<strong>" + genderSymbol(rg2) + " " + escapeHtml(u.name) + " — " + genderLabel(rg2) + "</strong> vừa vào chùa.");
@@ -10053,13 +10215,11 @@
                 // với việc xếp ghế: xếp ghế có trục trặc cũng không được
                 // nuốt mất lời chào của khách vừa vào.
                 chaoPhatTuMoi(u.name, u, data.id);
-              } else {
-                // Khách WEB vừa qua cổng xuất hiện mới trong sảnh: bảng
-                // chào chữ giữ nguyên như cũ (chỉ dành cho khách
-                // TikTok), riêng giọng đọc lời mời áp dụng cho cả khách
-                // web — chống trùng theo định danh trong hàm đọc.
-                docLoiMoiKhachMoi(u.name, data.id);
               }
+              // Khách WEB vừa qua cổng: không bảng chào (bảng chỉ dành
+              // cho khách TikTok) và cũng không còn giọng đọc lời mời
+              // (đã bỏ ở bản .43) — khách chỉ thấy nhân vật của mình
+              // cùng biển tên đi từ cửa vào ghế.
               // MỌI người mới (web lẫn TikTok tt_) đều tự đi kiếm ghế:
               // đang làm lễ ngay khi vào thì giữ chỗ ghế trước, lễ xong
               // về ngồi; còn lại đi bộ từ cửa tới ghế của mình ngay.
