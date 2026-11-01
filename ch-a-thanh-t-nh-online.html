@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Chùa Online" />
     <meta name="application-name" content="Chùa Online" />
     <meta name="description" content="Chùa Thanh Tịnh Online — vào chánh điện dâng hương, vái lạy, tọa thiền, thỉnh chuông và nghe nhạc thiền cùng các Phật tử." />
-    <meta name="chua-build" content="2026-11-01.37" />
+    <meta name="chua-build" content="2026-11-01.40" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
@@ -190,6 +190,18 @@
         display: block;
         cursor: crosshair;
         touch-action: manipulation;
+      }
+      /* Lớp nhân vật 3D (bản .38): canvas WebGL phủ đúng khung sảnh,
+         nằm trên canvas 2D nhưng dưới mọi bảng phủ giao diện (z ≥ 3). */
+      canvas.gl3d {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        pointer-events: none;
+        cursor: default;
+        z-index: 2;
       }
       /* ---- Hòm công đức: nhỏ gọn, đặt ngay bên phải tượng Phật ---- */
       .merit-box {
@@ -475,27 +487,9 @@
       .event-feed li.ev-prayer { background: rgba(255, 150, 90, 0.14); }
       .rpc-music-status { margin: 0 0 6px; font-size: 14px; color: #f0d9a0; }
       .rpc-note { margin: 0; font-size: 12.5px; color: rgba(238, 214, 150, 0.75); line-height: 1.55; }
-      /* Huy hiệu đếm hương nổi trong sảnh, ngay trên dòng hướng dẫn live */
-      .incense-badge {
-        position: absolute;
-        left: 8px;
-        bottom: 52px;
-        z-index: 6;
-        background: rgba(43, 26, 12, 0.82);
-        color: #ffe9bd;
-        border: 1.5px solid rgba(217, 164, 65, 0.75);
-        border-radius: 999px;
-        padding: 5px 12px;
-        font-size: 12.5px;
-        font-weight: 600;
-        line-height: 1.3;
-        pointer-events: none;
-        backdrop-filter: blur(2px);
-      }
-      .incense-badge strong { color: #ffd968; font-variant-numeric: tabular-nums; }
-      @media (max-width: 560px) {
-        .incense-badge { bottom: 64px; font-size: 11.5px; padding: 4px 10px; }
-      }
+      /* Bản .39: huy hiệu nổi báo số hương đang cháy trong sảnh đã XÓA
+         hẳn theo lệnh chủ chùa (cả phần tử lẫn CSS) — khói hương và các
+         nén hương trên lư vẫn hiện như cũ, chỉ không còn dòng chữ báo. */
       .controls {
         display: flex;
         flex-wrap: wrap;
@@ -618,7 +612,7 @@
       .entry-field input:focus,.entry-field select:focus{outline:2px solid var(--gold);outline-offset:1px}
       .legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;font-size:13.5px;color:var(--ink-soft)}
       .sw{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:6px;border:1px solid rgba(0,0,0,.25)}
-      .sw-male{background:#5f7d95}.sw-female{background:#b583a6}
+      .sw-male{background:#8a5a2b}.sw-female{background:#8d8578}
       #identityStatus{margin:12px 0 0;color:var(--ink)}
       #identityStatus strong{color:var(--accent)}
       footer {
@@ -1254,13 +1248,13 @@
          khách thì xếp hàng hiện lần lượt như trước. */
       .welcome-banner {
         position: absolute;
-        left: 33.5%;
+        left: 50%;
         top: 550px;
         top: 110cqw;
         transform: translate(-50%, 10px);
         z-index: 6;
-        width: min(300px, calc(100% - 30px));
-        width: min(60cqw, calc(100% - 6cqw));
+        width: min(340px, calc(100% - 30px));
+        width: min(74cqw, calc(100% - 6cqw));
         text-align: center;
         line-height: 1.4;
         padding: 14px 18px 12px;
@@ -1278,21 +1272,64 @@
       }
       .welcome-banner.show { opacity: 1; transform: translate(-50%, 0); }
       .welcome-banner .wb-text {
-        font-size: 26px;
-        font-size: 5.6cqw;
+        font-size: 22px;
+        font-size: 4.7cqw;
         font-weight: 700;
         line-height: 1.3;
         margin: 0;
         overflow-wrap: anywhere;
       }
       .welcome-banner .wb-text strong { color: #fff3d6; }
-      .welcome-banner .wb-sub {
-        font-size: 13px;
-        font-size: 2.7cqw;
-        font-style: italic;
-        color: rgba(255, 238, 196, 0.82);
-        margin: 4px 0 0;
-        margin: 0.8cqw 0 0;
+      /* ---- BẢNG HIỆN CHỮ ĐOẠN PHÁP giữa sảnh (bản .40) ----
+         Khi giọng đọc đọc một đoạn pháp, nguyên văn đoạn đó hiện trên
+         bảng nổi này suốt thời gian đọc rồi ẩn — chữ lớn, đọc được ở
+         khung phát sóng 1080×1920. Đặt căn giữa ở vùng giữa–dưới sảnh
+         (top 124cqw), dưới khu ban thờ/lư hương và dưới bảng chào
+         khách mới, không che mặt tượng Phật hay hào quang. */
+      .dharma-board {
+        position: absolute;
+        left: 50%;
+        top: 670px;
+        top: 124cqw;
+        transform: translate(-50%, 10px);
+        z-index: 7;
+        width: min(440px, calc(100% - 24px));
+        width: min(88cqw, calc(100% - 5cqw));
+        text-align: center;
+        line-height: 1.55;
+        padding: 14px 18px 13px;
+        padding: 2.8cqw 3.8cqw 2.6cqw;
+        background:
+          radial-gradient(120px 26px at 50% 0, rgba(255, 214, 130, 0.28), transparent 70%),
+          linear-gradient(180deg, #43301c, #2e1e0c 55%, #211304);
+        color: #ffefc2;
+        border: 2px solid #d9a441;
+        border-radius: 12px;
+        box-shadow: 0 12px 30px rgba(24, 8, 2, 0.55), inset 0 0 0 3px rgba(39, 24, 6, 0.85), inset 0 0 0 5px rgba(217, 164, 65, 0.45);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+      .dharma-board.show { opacity: 1; transform: translate(-50%, 0); }
+      .dharma-board .db-label {
+        font-size: 12px;
+        font-size: 2.6cqw;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: #ffd968;
+        margin: 0 0 4px;
+        margin: 0 0 0.8cqw;
+      }
+      .dharma-board .db-text {
+        font-size: 19px;
+        font-size: 4.1cqw;
+        font-weight: 600;
+        line-height: 1.55;
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .dharma-board { transition: opacity 0.2s ease; transform: translate(-50%, 0); }
       }
       /* ---- Dòng hướng dẫn cố định cho khách xem live ----
          Dải chữ ở sát đáy khung sảnh 9:16 như dòng chạy dưới của buổi live:
@@ -1324,7 +1361,7 @@
            nên bảng chào thu còn 58% và lệch trái hơn (mép phải 61%) để
            vẫn không đè lên bia; vị trí dưới lư hương và cỡ chữ theo cqw
            giữ nguyên như khung rộng. */
-        .welcome-banner { left: 32%; width: min(58cqw, calc(100% - 6cqw)); padding: 10px 12px 9px; }
+        .welcome-banner { left: 50%; width: min(74cqw, calc(100% - 6cqw)); padding: 10px 12px 9px; }
         .live-guide { font-size: 11.3px; padding: 6px 8px 7px; }
       }
       /* Hòm công đức dời sang phía trái tượng Phật để khoảng giữa chánh
@@ -1482,7 +1519,6 @@
       .stage-tiers .tier-box b {
         display: block; font-size: 2.05cqw; font-weight: 700; color: #ffe9b0; white-space: nowrap;
       }
-      .incense-badge { bottom: 27.5cqw; }
       .breath { bottom: 30cqw; }
       .merit-box { left: 2cqw; top: auto; bottom: 36cqw; }
       .welcome-banner { top: 118cqw; }
@@ -1703,8 +1739,8 @@
         </div>
         <p id="identityStatus">Bạn đang ở chùa với bảng tên: <strong id="identityPreview">♂ Bạn — Phật tử nam</strong></p>
         <div class="legend" aria-label="Chú thích phân biệt nam nữ">
-          <span><i class="sw sw-male"></i><b>Phật tử nam:</b> áo trắng/xám nhạt, tóc ngắn — quỳ dự lễ nhìn từ phía sau, hướng về Phật</span>
-          <span><i class="sw sw-female"></i><b>Phật tử nữ:</b> áo trắng ngà/xám nhạt, tóc dài búi cao cài hoa sen — quỳ dự lễ nhìn từ phía sau</span>
+          <span><i class="sw sw-male"></i><b>Phật tử nam — Sư:</b> đầu trọc, áo tràng nâu/vàng đất dài phủ chân, đeo tràng hạt — quỳ dự lễ nhìn từ phía sau, hướng về Phật</span>
+          <span><i class="sw sw-female"></i><b>Phật tử nữ — Ni cô:</b> đội mũ vải tu, áo tràng xám tro/nâu nhạt dài phủ chân, đeo tràng hạt — quỳ dự lễ nhìn từ phía sau</span>
           <span><b>Bảng tên trên đầu:</b> hiện “♂ Tên — Phật tử nam” hoặc “♀ Tên — Phật tử nữ” kèm hành động đang làm</span>
         </div>
       </section>
@@ -1733,7 +1769,6 @@
           <span class="station-label sl-xam" aria-hidden="true">🎋 Xin Xăm</span>
           <span class="station-label sl-mo" aria-hidden="true">🥁 Gõ Mõ (<span id="moCountLabel">0</span>)</span>
           <div class="stage-event-pill" id="stageEventPill" role="status" aria-live="polite">Nam mô A Di Đà Phật 🙏</div>
-          <div class="incense-badge" id="incenseBadge" aria-hidden="true">🪔 <strong id="incenseNowBadge">0</strong> nén hương đang cháy trên lư · đã dâng <strong id="incenseTotalBadge">0</strong> nén</div>
           <div class="breath" id="breath"><span class="orb" id="breathOrb"></span><span id="breathText">Hít vào…</span></div>
           <div class="gift-banner" id="giftBanner" role="status" aria-live="polite" aria-hidden="true">
             <p class="gb-thanks">🙏 Tri ân tấm lòng vàng</p>
@@ -1755,7 +1790,10 @@
           <div class="gift-tag" id="giftTag" role="status" aria-live="polite"></div>
           <div class="welcome-banner" id="welcomeBanner" role="status" aria-live="polite" aria-hidden="true">
             <p class="wb-text" id="welcomeText"></p>
-            <p class="wb-sub">Nam mô A Di Đà Phật — chúc Phật tử thân tâm an lạc, vạn sự bình an 🪷</p>
+          </div>
+          <div class="dharma-board" id="dharmaBoard" role="status" aria-live="polite" aria-hidden="true">
+            <p class="db-label">LỜI PHẬT DẠY</p>
+            <p class="db-text" id="dharmaText"></p>
           </div>
           <div class="stage-tiers" aria-hidden="true">
             <span class="tier-box"><em>1 COIN / CMT</em><b>🔥 Dâng hương</b></span>
@@ -1781,7 +1819,8 @@
           <button class="btn-ghost active" id="btnSound" type="button" aria-pressed="true">🎵 Nhạc thiền: Bật</button>
           <button class="btn-ghost" id="btnVoice" type="button" aria-pressed="false" title="Đọc thành tiếng lời cảm tạ khi tặng quà, lời cầu nguyện và tên quẻ bằng giọng của trình duyệt">🔊 Giọng đọc: Tắt</button>
           <select class="music-select" id="musicMode" aria-label="Chọn kiểu nhạc nền">
-            <option value="youtube-sleep" selected>🎧 Pháp thoại trước khi ngủ (YouTube) · mặc định</option>
+            <option value="youtube-goc" selected>🧘 Nhạc thiền tĩnh tâm an lạc · mặc định</option>
+            <option value="youtube-sleep">🎧 Pháp thoại trước khi ngủ (YouTube)</option>
             <option value="tonghop">🙏 An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút</option>
             <option value="chant">🙏 Tụng kinh · gõ mõ · chuông bát — nhạc Phật pháp</option>
             <option value="ambient">🧘 Thiền tịnh tâm · chuông bát &amp; hơi thở</option>
@@ -1792,7 +1831,7 @@
             <input type="range" id="musicVol" min="0" max="100" value="80" aria-label="Âm lượng nhạc thiền" />
           </label>
           <span class="timer" id="medTimer">Đã thiền <strong id="medTime">00:00</strong></span>
-          <p class="music-hint">Nguồn mặc định khi vào chùa là <strong>🎧 Pháp thoại trước khi ngủ (YouTube)</strong>: bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ &amp; Chữa Lành Phiền Não | Lời Phật Dạy” của kênh <strong>Gieo Mầm Phước Báu</strong>, phát qua trình phát YouTube chính thức ở mức âm lượng mặc định <strong>80%</strong> và <strong>tự lặp lại liên tục</strong>, để buổi live dài không đứt nhạc. Các thông báo bằng giọng đọc (mời khách vào chùa, cảm tạ quà…) vẫn nổi trên nhạc như cũ — nhạc tự nhường tiếng trong lúc thông báo. <strong>Nhạc nền tổng hợp 🙏 An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút</strong> vẫn nằm trong menu chọn nhạc phía trên để ai muốn nghe thì tự chọn: nó chạy theo từng pha xen kẽ — lúc nhạc nền thiền An Nhiên vang lên rõ ràng thì tiếng mõ chỉ điểm thưa nhẹ ở phía dưới; tới <strong>đợt tụng kinh</strong> thì <strong>nhạc nền tắt hẳn</strong>, chỉ còn tiếng gõ mõ đều chậm và tiếng tụng kinh xa xa; cứ 3 phút một lần nhạc nền lại tắt hẳn để giọng đọc đọc một đoạn pháp ngắn rồi mới trở lại. Nút bật/tắt và thanh âm lượng ở trên điều khiển chung mọi kiểu nhạc. Ở màn hình live (<strong>?full</strong> / <strong>?daisanh</strong>) nhạc <strong>tự khởi động ngay khi trang tải xong</strong>; ở chế độ thường nhạc bắt đầu sau lần chạm/bấm đầu tiên (quy định của trình duyệt) — bấm nút <strong>“🔊 Chạm để bật tiếng nhạc”</strong> trên sảnh là mở được cả bản nhạc YouTube này trong cùng một lần bấm. Các bản đơn lẻ — <strong>Tụng kinh Phật pháp</strong>, <strong>Thiền tịnh tâm</strong> thuần nhạc cụ không lời, <strong>Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo (YouTube)</strong> — bản “Nhạc Thiền Phật Giáo - Bát Nhã Diệu Tâm | An nhiên &amp; Giác ngộ” của kênh <strong>Phật Pháp Tu Tâm</strong>, cứ đúng 3 phút một lần bản nhạc tạm dừng hẳn để chùa đọc một đoạn pháp ngắn, chỉ còn tiếng mõ, đọc xong nhạc tự phát tiếp — và <strong>Nhạc thiền An Nhiên (YouTube)</strong> — vẫn nằm trong menu chọn nhạc phía trên; nếu video bị chủ kênh chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về kiểu <strong>Thiền tịnh tâm</strong> có sẵn.</p>
+          <p class="music-hint">Nguồn mặc định khi vào chùa là <strong>🧘 Nhạc thiền tĩnh tâm an lạc (YouTube)</strong> — nhạc gốc của chùa: bài “Nhạc Thiền Tĩnh Tâm An Lạc - Lắng Nghe Và Cảm Nhận Sự Bình An Trong Tâm Hồn - HAY TUYỆT” của kênh <strong>Nhạc Thiền Tịnh Tâm</strong>, phát qua trình phát YouTube chính thức ở mức âm lượng mặc định <strong>80%</strong> và <strong>tự lặp lại liên tục</strong>, để buổi live dài không đứt nhạc. Bài <strong>🎧 Pháp thoại trước khi ngủ (YouTube)</strong> vẫn nằm ngay sau trong menu để ai muốn nghe thì tự chọn. Các thông báo bằng giọng đọc (mời khách vào chùa, cảm tạ quà…) vẫn nổi trên nhạc như cũ — nhạc tự nhường tiếng trong lúc thông báo. <strong>Nhạc nền tổng hợp 🙏 An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút</strong> vẫn nằm trong menu chọn nhạc phía trên để ai muốn nghe thì tự chọn: nó chạy theo từng pha xen kẽ — lúc nhạc nền thiền An Nhiên vang lên rõ ràng thì tiếng mõ chỉ điểm thưa nhẹ ở phía dưới; tới <strong>đợt tụng kinh</strong> thì <strong>nhạc nền tắt hẳn</strong>, chỉ còn tiếng gõ mõ đều chậm và tiếng tụng kinh xa xa; cứ 3 phút một lần nhạc nền lại tắt hẳn để giọng đọc đọc một đoạn pháp ngắn rồi mới trở lại. Nút bật/tắt và thanh âm lượng ở trên điều khiển chung mọi kiểu nhạc. Ở màn hình live (<strong>?full</strong> / <strong>?daisanh</strong>) nhạc <strong>tự khởi động ngay khi trang tải xong</strong>; ở chế độ thường nhạc bắt đầu sau lần chạm/bấm đầu tiên (quy định của trình duyệt) — bấm nút <strong>“🔊 Chạm để bật tiếng nhạc”</strong> trên sảnh là mở được cả bản nhạc YouTube này trong cùng một lần bấm. Các bản đơn lẻ — <strong>Tụng kinh Phật pháp</strong>, <strong>Thiền tịnh tâm</strong> thuần nhạc cụ không lời, <strong>Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo (YouTube)</strong> — bản “Nhạc Thiền Phật Giáo - Bát Nhã Diệu Tâm | An nhiên &amp; Giác ngộ” của kênh <strong>Phật Pháp Tu Tâm</strong>, cứ đúng 3 phút một lần bản nhạc tạm dừng hẳn để chùa đọc một đoạn pháp ngắn, chỉ còn tiếng mõ, đọc xong nhạc tự phát tiếp — và <strong>Nhạc thiền An Nhiên (YouTube)</strong> — vẫn nằm trong menu chọn nhạc phía trên; nếu video bị chủ kênh chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về kiểu <strong>Thiền tịnh tâm</strong> có sẵn.</p>
           <p class="yt-status" id="ytStatus" role="status" aria-live="polite" hidden></p>
           <div class="yt-holder" aria-hidden="true"><div id="ytPlayer"></div></div>
         </div>
@@ -1834,7 +1873,7 @@
         <section class="rpc-panel" aria-label="Âm thanh chùa và nhạc nền">
           <h3>🎵 Âm Thanh Chùa &amp; Nhạc Nền</h3>
           <p class="rpc-music-status" id="musicStatusSide">Nhạc nền đang sẵn sàng — chạm vào chánh điện hoặc bấm một nút bất kỳ để nhạc bắt đầu.</p>
-          <p class="rpc-note">Nút bật/tắt nhạc, menu chọn bản nhạc (pháp thoại trước khi ngủ — mặc định khi vào chùa · tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút · tụng kinh Phật pháp · thiền tịnh tâm · Bát Nhã Diệu Tâm · nhạc thiền An Nhiên) và thanh âm lượng nằm ngay dưới chánh điện. Khi có giọng đọc thông báo, nhạc tự nhỏ xuống rồi trở lại như cũ; riêng lúc tụng kinh và lúc đọc pháp, nhạc nền tắt hẳn, chỉ còn tiếng mõ.</p>
+          <p class="rpc-note">Nút bật/tắt nhạc, menu chọn bản nhạc (nhạc thiền tĩnh tâm an lạc — mặc định khi vào chùa · pháp thoại trước khi ngủ · tổng hợp An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút · tụng kinh Phật pháp · thiền tịnh tâm · Bát Nhã Diệu Tâm · nhạc thiền An Nhiên) và thanh âm lượng nằm ngay dưới chánh điện. Khi có giọng đọc thông báo, nhạc tự nhỏ xuống rồi trở lại như cũ; riêng lúc tụng kinh và lúc đọc pháp, nhạc nền tắt hẳn, chỉ còn tiếng mõ.</p>
         </section>
       </aside>
       </div>
@@ -2125,7 +2164,7 @@
         var btnVoice = document.getElementById("btnVoice");
         var musicModeSel = document.getElementById("musicMode");
         var musicVolEl = document.getElementById("musicVol");
-        var musicMode = "youtube-sleep";
+        var musicMode = "youtube-goc";
         /* Cờ phân biệt "khách đã TỰ TAY chọn nhạc trong menu" với "đang
            dùng bản mặc định của chùa": chỉ khi khách tự chọn thì lựa
            chọn đó mới được giữ nguyên qua các lần mở sau. Máy nào chưa
@@ -2140,9 +2179,10 @@
         var musicVolumeChosenByUser = false;
         var musicVolume = 0.8; // âm lượng mặc định 80% (chủ chùa chốt: nhạc nền phải nghe TO, RÕ — áp cho cả bản YouTube mặc định mới lẫn mọi chế độ nhạc khác; vẫn dưới giọng đọc thông báo vì giọng đọc là kênh riêng speechSynthesis ở mức tối đa)
         /* MẶC ĐỊNH khi vào chùa (kể cả màn hình phát ?full và ?daisanh)
-           là "youtube-sleep" — bài “Nghe Trước Khi Ngủ Để Tâm An, Hết
-           Mất Ngủ & Chữa Lành Phiền Não | Lời Phật Dạy” của kênh Gieo
-           Mầm Phước Báu (_GQ_89EqBcs), phát qua trình phát YouTube
+           là "youtube-goc" — NHẠC GỐC CỦA CHÙA (bản .40): bài “Nhạc
+           Thiền Tĩnh Tâm An Lạc - Lắng Nghe Và Cảm Nhận Sự Bình An
+           Trong Tâm Hồn - HAY TUYỆT” của kênh Nhạc Thiền Tịnh Tâm
+           (eIxl4-X3h-w), phát qua trình phát YouTube
            chính thức, LẶP LIÊN TỤC và đi theo thanh âm lượng của trang
            (mặc định 80%). Riêng bản "youtube-batnha" khi được khách tự
            chọn vẫn giữ luật “khi đọc kinh thì nhạc nền tắt chỉ có
@@ -2166,12 +2206,13 @@
            - "youtube": “Nhạc thiền An Nhiên” — giữ lại trong danh sách
              để khách tự chọn lại nếu muốn. */
         var YT_TRACKS = {
+          "youtube-goc": { id: "eIxl4-X3h-w", label: "Nhạc thiền tĩnh tâm an lạc (YouTube)" },
           "youtube-batnha": { id: "yO5xkFovXMY", label: "Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo (YouTube)", dharma: true },
           "youtube-sleep": { id: "_GQ_89EqBcs", label: "Pháp thoại trước khi ngủ (YouTube)" },
           "youtube": { id: "XtzgxKhiTHI", label: "Nhạc thiền An Nhiên (YouTube)" }
         };
         function isYtMode(m) { return Object.prototype.hasOwnProperty.call(YT_TRACKS, m); }
-        function ytVideoId() { var t = YT_TRACKS[musicMode]; return t ? t.id : "_GQ_89EqBcs"; }
+        function ytVideoId() { var t = YT_TRACKS[musicMode]; return t ? t.id : "eIxl4-X3h-w"; }
         function ytLabel() { var t = YT_TRACKS[musicMode]; return t ? t.label : "Nhạc YouTube"; }
         var btnConnect = document.getElementById("btnConnect");
         var serverUrlInput = document.getElementById("serverUrl");
@@ -2252,8 +2293,8 @@
 
         /* ---------------- Trạng thái ---------------- */
         var LAM_COLORS = ["#7d8ca3", "#8a97a5", "#6f7f95", "#97a08b", "#a08b7d", "#7f7263"];
-        var MALE_COLORS = ["#eceae2", "#dcd9cf", "#e3e6e4", "#d5d2c8", "#e8e4da", "#cfd3d6"];   // Hội chúng bản .19: áo TRẮNG / xám nhạt nhìn từ sau lưng như ảnh mẫu RPC
-        var FEMALE_COLORS = ["#f0ebe3", "#e6ded4", "#eae7df", "#ddd8ce", "#e9e2d8", "#dcd6cc"]; // Hội chúng nữ: trắng ngà / xám nhạt, tóc dài búi cao
+        var MALE_COLORS = ["#8a5a2b", "#96622e", "#7a4a21", "#a5712f", "#835226", "#9c6b30"];   // Bản .39: khách "nam" là SƯ — áo tràng nâu / vàng đất dài, đầu trọc (xem buildFigure + head 2D)
+        var FEMALE_COLORS = ["#8d8578", "#9a9184", "#7e7668", "#a39a8a", "#8a7f6d", "#978b76"]; // Bản .39: khách "nữ" là NI CÔ — áo tràng xám tro / nâu nhạt dài, đội mũ vải tu
         function normalizeGender(g) {
           if (g === "nu" || g === "nữ" || g === "Nữ" || g === "female" || g === "Female" || g === "F") return "nu";
           return "nam";
@@ -2868,7 +2909,7 @@
           if (bzSyncIdentity()) {}
           savePrefs();
           emitProfile();
-          if (announce) note("<strong>Đã vào chùa với tên “" + escapeHtml(myDisplayName) + "” — " + genderLabel(myGender) + ":</strong> bảng tên “" + genderSymbol(myGender) + " " + escapeHtml(myDisplayName) + "” đã hiện trên đầu nhân vật của bạn" + (myGender === "nu" ? " (áo lam hồng tím, tóc dài búi cài hoa sen, dáng áo xòe)." : " (áo lam xám xanh, tóc ngắn, dáng áo thẳng)."));
+          if (announce) note("<strong>Đã vào chùa với tên “" + escapeHtml(myDisplayName) + "” — " + genderLabel(myGender) + ":</strong> bảng tên “" + genderSymbol(myGender) + " " + escapeHtml(myDisplayName) + "” đã hiện trên đầu nhân vật của bạn" + (myGender === "nu" ? " (ni cô: mũ vải tu, áo tràng xám tro dài phủ chân, đeo tràng hạt)." : " (sư: đầu trọc, áo tràng nâu vàng đất dài phủ chân, đeo tràng hạt)."));
         }
         function bzSyncIdentity() { return false; }
         /* Khôi phục hồ sơ + lựa chọn nhạc đã lưu từ lần mở trước —
@@ -2885,17 +2926,17 @@
              cũ "Bát Nhã Diệu Tâm" / "Thiền tịnh tâm" / "tụng
              kinh Phật pháp" / "nhạc nền tổng hợp" đã được lưu tự động
              vào bộ nhớ máy từ các bản trang trước — đều di trú sang
-             mặc định mới: PHÁP THOẠI TRƯỚC KHI NGỦ "youtube-sleep"
-             (bài pháp thoại của kênh Gieo Mầm Phước Báu, phát qua
-             YouTube, lặp liên tục). */
-          if (p.musicChosen === true && p.musicMode && musicModeSel && (p.musicMode === "youtube-batnha" || p.musicMode === "youtube" || p.musicMode === "youtube-sleep" || p.musicMode === "ambient" || p.musicMode === "chant" || p.musicMode === "tonghop")) {
+             mặc định mới: NHẠC GỐC CỦA CHÙA "youtube-goc" — bài
+             “Nhạc Thiền Tĩnh Tâm An Lạc” của kênh Nhạc Thiền Tịnh Tâm
+             (eIxl4-X3h-w), phát qua YouTube, lặp liên tục. */
+          if (p.musicChosen === true && p.musicMode && musicModeSel && (p.musicMode === "youtube-goc" || p.musicMode === "youtube-batnha" || p.musicMode === "youtube" || p.musicMode === "youtube-sleep" || p.musicMode === "ambient" || p.musicMode === "chant" || p.musicMode === "tonghop")) {
             musicChosenByUser = true;
             musicMode = p.musicMode;
             musicModeSel.value = p.musicMode;
           } else {
             musicChosenByUser = false;
-            musicMode = "youtube-sleep";
-            if (musicModeSel) musicModeSel.value = "youtube-sleep";
+            musicMode = "youtube-goc";
+            if (musicModeSel) musicModeSel.value = "youtube-goc";
           }
           if (p.musicVolumeChosen === true) musicVolumeChosenByUser = true;
           if (typeof p.musicVolume === "number" && isFinite(p.musicVolume)) {
@@ -3072,7 +3113,7 @@
            (vẽ chính diện, thấy rõ mặt) và TO HƠN bản .30 rõ rệt nhờ hệ
            số MONK_SCALE áp trong drawMoMonks — to hơn nhân vật khách
            thường một bậc (khổ nhân vật khách ~50 đơn vị vẽ; hai sư vẽ
-           ~53 đơn vị × 1,35). Vị trí đã dời nhẹ ra ngoài/xuống (146,544
+           ~53 đơn vị × 1,6 — bản .32). Vị trí đã dời nhẹ ra ngoài/xuống (146,544
            → 154,550 và đối xứng) để hộp bao sau phóng to vẫn nằm ngoài
            mọi vùng cấm (xem ghi chú ở drawMoMonks). Mỗi tiếng mõ PHÁT
            RA từ bộ máy nhạc (moKnock, ở cả chế độ tụng kinh đơn lẻ lẫn
@@ -3082,7 +3123,7 @@
            tiếng mõ nào đang tới (nhạc tắt, chế độ không có mõ, hay pha
            nền mõ điểm thưa), vòng lặp vẽ tự gõ HÌNH ẢNH theo nhịp chậm
            đều ~2 giây một tiếng để chuyển động gõ không bao giờ ngừng. */
-        var MONK_SCALE = 1.35; // hệ số phóng to hình vẽ hai vị sư so với bản .30 (bản .31)
+        var MONK_SCALE = 1.6; // hệ số phóng to hình vẽ hai vị sư (bản .31 là 1,35; bản .32 tăng lên 1,6 cho to và rõ ở khung phát sóng)
         var MO_MONKS = [
           { x: 154, y: 550, flip: 1, phase: 0.7 },
           { x: 386, y: 550, flip: -1, phase: 2.4 }
@@ -3354,10 +3395,11 @@
         function startYouTube() {
           if (!soundOn) return;
           ytPlayWanted = true;
-          // Chế độ Bát Nhã Diệu Tâm giữ chu kỳ ĐỌC PHÁP MỖI
+          // Các chế độ YouTube có đọc pháp (Bát Nhã Diệu Tâm và nhạc
+          // gốc — xem isDharmaYtMode) giữ chu kỳ ĐỌC PHÁP MỖI
           // 3 PHÚT như chế độ tổng hợp: đồng hồ đọc pháp chạy cùng lúc
           // nhạc YouTube bắt đầu được yêu cầu phát.
-          if (musicMode === "youtube-batnha") startDharmaClock();
+          if (isDharmaYtMode()) startDharmaClock();
           if (ytFailed) return; // đã tự quay về nhạc có sẵn khi lỗi xảy ra
           loadYouTubeApi();
           if (ytReady && ytPlayer) {
@@ -3384,6 +3426,12 @@
         var dharmaMoTimer = null;
         var dharmaMoGain = null;
         var dharmaMoCount = 0;
+        /* Chế độ YouTube có chu kỳ ĐỌC PHÁP mỗi 3 phút (bản .40 mở
+           rộng cho cả nhạc gốc mới): Bát Nhã Diệu Tâm và NHẠC GỐC
+           "youtube-goc" (mặc định hiện tại). Tới lượt đọc: video tạm
+           dừng hẳn (nhạc về 0), hiện chữ đoạn pháp giữa sảnh, chỉ còn
+           mõ + giọng đọc; đọc xong video phát tiếp và bảng chữ ẩn. */
+        function isDharmaYtMode() { return musicMode === "youtube-batnha" || musicMode === "youtube-goc"; }
         function pauseYouTubeForDharma() {
           if (ytPlayer && ytReady) {
             try { ytPlayer.pauseVideo(); } catch (e) {}
@@ -3927,22 +3975,33 @@
            đọc CHUẨN RÕ và ẤM ÁP TRUYỀN CẢM. Trình duyệt chỉ cho chỉnh
            giọng / tông (pitch) / tốc độ (rate) nên "truyền cảm" được
            tạo bằng đúng ba cần gạt đó, PHÂN NHỊP THEO LOẠI CÂU:
-           - dharma (đọc pháp / đọc kinh mỗi 3 phút): chậm và trầm
-             nhất — rate 0,84, pitch 0,8 — trang nghiêm, ấm, ngắt nghỉ
-             rõ theo dấu câu.
-           - bless (lời chúc, cảm ơn tặng quà, đọc kết quả quẻ, đọc lời
-             cầu nguyện): nhịp ấm áp gần gũi — rate 0,89, pitch 0,85.
+           LUẬT GIỌNG ĐỌC CHUNG (bản .40 — chủ chùa chốt, ghi đè mọi
+           thông số tốc độ cũ): MỌI câu đọc phải CHẬM, RÕ, DỄ NGHE —
+           mọi profile đều ở dải rate 0,78–0,85, pitch giữ tự nhiên
+           trầm ấm, và văn bản được chèn quãng ngắt hơi giữa các mệnh
+           đề/câu bằng paceSpeechText ở speakNext (không đọc lướt,
+           không nuốt chữ):
+           - dharma (đọc pháp / đọc kinh mỗi 3 phút): chậm rõ từng
+             câu — rate 0,8, pitch 0,85 — trong lúc đọc
+             pháp, chữ của đoạn pháp hiện trên bảng giữa sảnh và nhạc
+             nền tắt hẳn về 0 theo luật trộn âm.
+           - thanks (riêng lời CẢM ƠN khi khách tặng quà/công đức):
+             CHẬM NHẤT và TRẦM NHẤT — rate 0,78, pitch 0,7 —
+             trầm ấm, chậm rãi.
+           - bless (lời chúc, đọc kết quả quẻ, đọc lời
+             cầu nguyện): chậm rãi ấm áp — rate 0,83, pitch 0,85.
            - announce (lời mời khách vào chùa và thông báo ngắn khác):
-             rõ ràng tự nhiên — rate 0,92, pitch 0,85.
+             chậm rõ dễ nghe — rate 0,83, pitch 0,85.
            Cả ba dùng chung MỘT giọng nam trầm tiếng Việt đã chọn ở
            selectViVoice, và áp dụng ở MỌI điểm phát giọng đọc của
            trang (hàm đọc chính speakNext theo loại của từng mục hàng
            đợi; câu "mồi" mở khóa primeSpeechUnlock dùng nhịp
            announce) — không điểm nào dùng tông/tốc độ ngoài bảng này. */
         var VOICE_PROFILES = {
-          dharma: { pitch: 0.8, rate: 0.84 },
-          bless: { pitch: 0.85, rate: 0.89 },
-          announce: { pitch: 0.85, rate: 0.92 }
+          dharma: { pitch: 0.85, rate: 0.8 },
+          bless: { pitch: 0.85, rate: 0.83 },
+          thanks: { pitch: 0.7, rate: 0.78 },
+          announce: { pitch: 0.85, rate: 0.83 }
         };
         var VOICE_PITCH = VOICE_PROFILES.announce.pitch;
         var VOICE_RATE = VOICE_PROFILES.announce.rate;
@@ -4024,6 +4083,24 @@
         if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
           try { window.speechSynthesis.onvoiceschanged = function () { pickViVoice(); }; } catch (e) {}
         }
+        /* Bảng hiện chữ đoạn pháp giữa sảnh (bản .40): hiện đúng
+           nguyên văn đoạn pháp trong SUỐT lúc giọng đọc đọc đoạn đó,
+           đọc xong (done của speakNext) thì ẩn. Tra phần tử lười theo
+           id mỗi lần gọi nên không phụ thuộc thứ tự khởi tạo. */
+        function showDharmaBoard(text) {
+          var b = document.getElementById("dharmaBoard");
+          var tx = document.getElementById("dharmaText");
+          if (!b || !tx) return;
+          tx.textContent = String(text == null ? "" : text);
+          b.classList.add("show");
+          b.setAttribute("aria-hidden", "false");
+        }
+        function hideDharmaBoard() {
+          var b = document.getElementById("dharmaBoard");
+          if (!b) return;
+          b.classList.remove("show");
+          b.setAttribute("aria-hidden", "true");
+        }
         function speakNext() {
           if (voiceSpeaking) return;
           if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) { voiceQueue.length = 0; duckMusic(false); return; }
@@ -4034,7 +4111,8 @@
             // Mục thường bị bỏ qua khi công tắc giọng đọc đang tắt.
           }
           if (!item) { duckMusic(false); return; }
-          var text = item.text;
+          var text = paceSpeechText(stripSpeechDecor(item.text)); // chốt cuối cho MỌI câu đọc: lọc icon + chèn ngắt hơi theo dấu câu (kể cả đoạn pháp)
+          if (!text) { duckMusic(false); if (voiceQueue.length) setTimeout(speakNext, 60); return; }
           voiceSpeaking = true;
           voiceCurrentDharma = !!item.dharma;
           if (voiceCurrentDharma) {
@@ -4043,12 +4121,13 @@
             // 0 qua applyMixPhase, chỉ giữ tuyến mõ; KHÔNG dùng duck
             // master (nén nhỏ) cho lượt đọc pháp này.
             dharmaReading = true;
+            showDharmaBoard(text); // hiện chữ đoạn pháp giữa sảnh suốt lượt đọc (bản .40)
             applyMixPhase(0.9);
             // Ở chế độ YouTube Bát Nhã Diệu Tâm: video
             // TẠM DỪNG HẲN (không chỉ nhỏ tiếng) và tuyến mõ riêng
             // gõ nhịp đều suốt lượt đọc — đúng luật "khi đọc kinh
             // thì nhạc nền tắt chỉ có tiếng mõ".
-            if (musicMode === "youtube-batnha") {
+            if (isDharmaYtMode()) {
               pauseYouTubeForDharma();
               startDharmaMo();
             }
@@ -4059,6 +4138,7 @@
             var wasDharma = voiceCurrentDharma;
             voiceSpeaking = false;
             voiceCurrentDharma = false;
+            if (wasDharma) hideDharmaBoard(); // đọc xong đoạn pháp: ẩn bảng chữ giữa sảnh
             if (wasDharma) {
               // Đọc xong mới mở lại nhạc theo pha hiện tại. Mốc chu kỳ
               // 3 phút đã được ghi ngay lúc lượt đọc pháp BẮT ĐẦU (ở
@@ -4067,7 +4147,7 @@
               applyMixPhase(1.6);
               // Chế độ YouTube Bát Nhã: hết lượt đọc, dừng tuyến mõ
               // riêng và cho video TỰ PHÁT TIẾP đúng chỗ đã dừng.
-              if (musicMode === "youtube-batnha") {
+              if (isDharmaYtMode()) {
                 stopDharmaMo();
                 resumeYouTubeAfterDharma();
               }
@@ -4094,13 +4174,43 @@
             setTimeout(function () { if (voiceSpeaking && !window.speechSynthesis.speaking && !window.speechSynthesis.pending) done(); }, Math.max(6000, text.length * 300));
           } catch (e) { done(); }
         }
+        /* LỌC ICON CHO GIỌNG ĐỌC (bản .40 — lệnh chủ chùa): giọng đọc
+           KHÔNG đọc emoji/ký hiệu trang trí. Mọi câu đưa vào hàng đọc
+           đều qua bộ lọc này: bỏ toàn bộ emoji và biểu tượng trang trí
+           (kể cả dấu biến thể và ký tự nối ZWJ), chỉ giữ chữ, số và dấu
+           câu thường. Áp tại enqueueSpeak (mọi câu thường) và tại
+           speakNext (chốt cuối — cả đoạn pháp đẩy thẳng vào hàng đợi
+           cũng sạch icon trước khi phát thành tiếng). */
+        function stripSpeechDecor(s) {
+          return String(s == null ? "" : s)
+            .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{2190}-\u{21FF}\u{FE0F}\u{200D}]/gu, " ")
+            .replace(/[•·▪◦]/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+        }
+        /* NGẮT HƠI CHO GIỌNG ĐỌC (luật chung bản .40): chuẩn hoá dấu
+           câu để giọng đọc nghỉ rõ giữa các mệnh đề/câu — dấu chấm
+           phẩy thành quãng nghỉ như hết câu, gạch ngang dài thành
+           quãng nghỉ nhẹ như dấu phẩy, và bảo đảm sau mỗi dấu câu có
+           đúng một khoảng trắng. Áp tại speakNext cho MỌI câu đọc
+           (sau bước lọc icon), cùng với rate chậm của VOICE_PROFILES
+           tạo nhịp đọc chậm, rõ, không nuốt chữ. */
+        function paceSpeechText(s) {
+          var out = String(s == null ? "" : s);
+          out = out.replace(/\s*;\s*/g, ". ");
+          out = out.replace(/\s+—\s+/g, ", ");
+          out = out.replace(/,\s*/g, ", ");
+          out = out.replace(/([.!?…])\s*/g, "$1 ");
+          return out.replace(/\s+/g, " ").trim();
+        }
         function enqueueSpeak(text, kind) {
           if (!voiceOn) return;
           if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
-          var clean = String(text == null ? "" : text).replace(/\s+/g, " ").trim().slice(0, 240);
+          var clean = stripSpeechDecor(String(text == null ? "" : text).replace(/\s+/g, " ").trim()).slice(0, 240);
           if (!clean) return;
           if (voiceQueue.length > 5) voiceQueue.shift(); // hàng đợi quá dài thì bỏ câu cũ nhất, tránh đọc dồn dập lạc hậu
-          // kind: "bless" (lời chúc / cảm ơn / quẻ / cầu nguyện) hoặc
+          // kind: "thanks" (riêng lời cảm ơn tặng quà — chậm, trầm),
+          // "bless" (lời chúc / quẻ / cầu nguyện) hoặc
           // "announce" (lời mời + thông báo ngắn, mặc định) — quyết
           // định nhịp tông/tốc độ khi speakNext phát mục này.
           voiceQueue.push({ text: clean, dharma: false, kind: (kind && VOICE_PROFILES[kind] && kind !== "dharma") ? kind : "announce" });
@@ -4151,7 +4261,7 @@
           // "youtube-batnha" (nhạc phát qua trình YouTube; tới lượt
           // đọc, speakNext sẽ tạm dừng hẳn video + gõ mõ riêng).
           if (musicMode === "tonghop") { if (!chant.running) return; }
-          else if (musicMode !== "youtube-batnha") return;
+          else if (!isDharmaYtMode()) return;
           if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
           if (voiceCurrentDharma) return;
           var nowD = Date.now();
@@ -4205,7 +4315,7 @@
             voiceQueue.length = 0;
             try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
             voiceSpeaking = false;
-            if (voiceCurrentDharma) { voiceCurrentDharma = false; dharmaReading = false; applyMixPhase(1.2); if (musicMode === "youtube-batnha") { stopDharmaMo(); resumeYouTubeAfterDharma(); } }
+            if (voiceCurrentDharma) { voiceCurrentDharma = false; dharmaReading = false; hideDharmaBoard(); applyMixPhase(1.2); if (isDharmaYtMode()) { stopDharmaMo(); resumeYouTubeAfterDharma(); } }
             duckMusic(false);
             note("Đã tắt <strong>giọng đọc thành tiếng</strong>. Lời cảm tạ, lời cầu nguyện và tên quẻ vẫn hiện bằng chữ như thường.");
           } else {
@@ -4985,12 +5095,9 @@
               ctx.beginPath(); ctx.arc(topX, topY, 2.4 + Math.sin(t * 7 + i * 2.1) * 0.4, 0, 6.29); ctx.fill();
             }
             ctx.lineWidth = 1;
-            if (stageIncenseTotal > 0) {
-              ctx.fillStyle = "rgba(255,233,189,0.95)";
-              ctx.font = "700 12px 'Be Vietnam Pro', sans-serif";
-              ctx.textAlign = "center";
-              ctx.fillText("🪔 " + (5 + stageIncenseTotal) + " nén hương đang cháy trên lư", bx, by + 106);
-            }
+            // Bản .39 (lệnh chủ chùa): bỏ hẳn dòng chữ báo số hương đang
+            // cháy vẽ dưới lư — chỉ bỏ CHỮ báo, các nén hương, đầu hương
+            // đỏ và khói hương trên miệng lư vẫn vẽ như cũ.
           })();
           // Hương Phật tử vừa cắm lên lư (to, rõ, theo đúng ô đã giữ chỗ)
           drawPlantedIncense(t);
@@ -5203,18 +5310,18 @@
            ở PHÍA DƯỚI — giữa hai đầu gối, thấp, không che mặt hay thân;
            tay phía trong cầm DÙI gõ thẳng xuống mõ phía trước, chuyển
            động giơ–gõ nhìn rõ từ góc chính diện. Toàn bộ hình nhân được
-           nhân MONK_SCALE = 1,35 quanh điểm neo đáy thân (x, y+7): to
+           nhân MONK_SCALE = 1,6 quanh điểm neo đáy thân (x, y+7): to
            rõ rệt so với bản .30 và to hơn nhân vật khách thường một bậc.
            Hộp bao sau phóng to (kể cả vòng sóng mõ thoáng qua): sư trái
-           x ≈ 117–191, sư phải x ≈ 349–423, y ≈ 490–594 — vẫn NGOÀI
+           x ≈ 109–199, sư phải x ≈ 341–431, y ≈ 475–601 — vẫn NGOÀI
            thảm đỏ lối đi giữa (mép thảm ở các y này từ x 212 trở vào),
-           cách hàng ghế trước của hội chúng (y 648) hơn 50px, không
+           cách hàng ghế trước của hội chúng (y 648) gần 47px, không
            chạm thân lư hương (phần mõ thấp của sư ở y ≥ 565, dưới bệ
            lư), không che tượng Phật/hào quang (giữa–trên sảnh) và
            không che cổng CỬA VÀO (giữa–đáy sảnh). Pha gõ tính từ
            monkLastHitAt theo GIỜ TƯỜNG như bản .30: đúng mốc gõ dùi
            CHẠM mõ, sau đó nhấc lên trong ~0,45 giây rồi giữ ở thế giơ
-           cho tới nhịp kế — biên độ đầu dùi ~17px (×1,35 khi vẽ), thấy
+           cho tới nhịp kế — biên độ đầu dùi ~17px (×1,6 khi vẽ), thấy
            rõ giữa hai khung hình cách nhau ~1 giây. Cả hai vị dùng
            CHUNG một mốc gõ nên gõ cùng nhịp với nhau tuyệt đối. */
         function drawMoMonks(t) {
@@ -5358,15 +5465,72 @@
           return "rgb(" + r + "," + g + "," + b + ")";
         }
 
+        /* Hệ số phóng to nhân vật khách (bản .32 — chủ chùa yêu cầu người
+           2D lớn hơn): thân, đầu và mọi nét vẽ của khách nhân thêm ~1,32
+           lần quanh điểm neo đáy thân (x, y+6) trong drawPerson, nên
+           không ai rời ghế, lưới 100 ghế và lối đi giữa giữ nguyên. */
+        var PERSON_BOOST = 1.32;
+
+        /* Cờ LỚP NHÂN VẬT 3D (bản .38): chỉ bật khi Three.js nạp xong và
+           WebGL dựng thành công (xem khối NHÂN VẬT 3D bên dưới). Khi bật,
+           thân người 2D và hai sư 2D ngừng vẽ — mô hình 3D thay thế —
+           nhưng BIỂN TÊN và BONG BÓNG vẫn do drawPerson vẽ như cũ.
+           WebGL lỗi / CDN hỏng / máy yếu: cờ không bật (hoặc tự tắt),
+           sảnh chạy người 2D nguyên vẹn như trước, không bao giờ trống. */
+        var CHUA3D_ON = false;
+
+        /* ================= CHỐNG LIVE TĨNH (bản .40) =================
+           TikTok đã đánh gậy vì nghi live không hoạt động, nên khung
+           phát sóng phải LUÔN có chuyển động nhìn thấy rõ:
+           - Người đang ngồi: đu đưa + thở biên độ rõ hơn, chắp tay đều
+             đặn theo chu kỳ ~33 giây, thỉnh thoảng cúi đầu nhẹ — mỗi
+             người LỆCH PHA theo u.phase riêng, không đồng loạt.
+           - ĐỊNH KỲ 20–30 giây: antiStaticStep chọn ngẫu nhiên 1–3
+             khách đang ngồi làm một ĐỘNG TÁC RÕ (vái nhẹ/chắp tay cúi
+             đầu tại chỗ, ~3,6 giây, so le nhau) rồi trở lại ngồi thiền.
+           - Hai sư gõ mõ gõ hình ảnh dự phòng mỗi ~2 giây kể cả khi
+             nhạc tắt (cơ chế sẵn có ở vòng lặp chính); khói hương, lửa
+             nến/đèn, đèn lồng, hào quang và cánh sen nền chạy vô điều
+             kiện trong drawBackground/vòng lặp — kể cả khi sảnh TRỐNG
+             khách, khung hình không bao giờ là ảnh tĩnh.
+           Mọi chuyển động giữ nhịp chậm, mềm, trang nghiêm. */
+        var antiStaticNextAt = 0; // mốc giờ tường của đợt động tác định kỳ tiếp theo
+        function gestureEnvelope(u, t) {
+          if (!u || !u.gestureT0) return 0;
+          var age = t - u.gestureT0;
+          if (age < 0 || age > 3.6) return 0;
+          return Math.sin((age / 3.6) * Math.PI); // lên chậm — giữ — xuống chậm
+        }
+        function antiStaticStep(t) {
+          if (t < antiStaticNextAt) return;
+          antiStaticNextAt = t + 20 + Math.random() * 10; // đợt tiếp sau 20–30 giây
+          var seated = [];
+          Object.keys(users).forEach(function (id) {
+            var u = users[id];
+            if (u && u !== centralUser && (u.action === "seated" || u.action === "meditating" || u.action === "standing")) seated.push(u);
+          });
+          if (!seated.length) return;
+          var n = Math.min(seated.length, 1 + Math.floor(Math.random() * 3)); // 1–3 khách
+          for (var i = 0; i < n; i++) {
+            var pick = seated.splice(Math.floor(Math.random() * seated.length), 1)[0];
+            if (pick) pick.gestureT0 = t + i * 0.7; // so le nhau 0,7 giây, không đồng loạt
+          }
+        }
+
         function drawPerson(u, isMe, t) {
           var moving = Math.abs(u.tx - u.x) > 2 || Math.abs(u.ty - u.y) > 2;
           var bob = u.action === "walking" && moving ? Math.abs(Math.sin(u.phase)) * 3 : 0;
+          var use3D = CHUA3D_ON;
           var x = u.x, y = u.y - bob;
           // Bản .19 — tỉ lệ theo hàng hội chúng: hàng trước lớn nhất; nhân
-          // vật TRUNG TÂM đang làm lễ được phóng lớn và tỏa hào quang vàng
-          var ds = 1;
-          if (u === centralUser) ds = 1.16;
-          else if (u.cushion !== null && u.cushion !== undefined && CUSHIONS[u.cushion]) ds = CUSHIONS[u.cushion].s * 1.06;
+          // vật TRUNG TÂM đang làm lễ được phóng lớn và tỏa hào quang vàng.
+          // Bản .32: mọi tỉ lệ nhân thêm PERSON_BOOST (~1,32 lần) — người
+          // to và nét đậm rõ hơn ở khung phát sóng; riêng đế quỳ và vạt áo
+          // nữ đã thu hẹp nhẹ trong khổ vẽ (xem kneelBase/bodyPath) để ở
+          // hàng gần nhất thân người vẫn không dính vào ghế kề bên.
+          var ds = PERSON_BOOST;
+          if (u === centralUser) ds = 1.16 * PERSON_BOOST;
+          else if (u.cushion !== null && u.cushion !== undefined && CUSHIONS[u.cushion]) ds = CUSHIONS[u.cushion].s * 1.06 * PERSON_BOOST;
           ctx.save();
           ctx.translate(u.x, u.y + 6); ctx.scale(ds, ds); ctx.translate(-u.x, -(u.y + 6));
           if (u === centralUser && centralState.mode !== "idle") {
@@ -5376,9 +5540,11 @@
             ctx.fillStyle = cg3;
             ctx.fillRect(x - 58, y - 74, 116, 116);
           }
-          // Bóng
-          ctx.fillStyle = "rgba(20,10,4,0.3)";
-          ctx.beginPath(); ctx.ellipse(u.x, u.y + 6, 17, 5, 0, 0, 6.29); ctx.fill();
+          // Bóng (chế độ 3D: mô hình tự có bóng mềm riêng)
+          if (!use3D) {
+            ctx.fillStyle = "rgba(20,10,4,0.3)";
+            ctx.beginPath(); ctx.ellipse(u.x, u.y + 6, 17, 5, 0, 0, 6.29); ctx.fill();
+          }
 
           var isFemale = normalizeGender(u.gender) === "nu";
           function head(hx, hy) {
@@ -5387,27 +5553,39 @@
             ctx.fillStyle = "#eec39a"; // gáy
             ctx.fillRect(hx - 3, hy + 6, 6, 5);
             if (isFemale) {
-              // NỮ: tóc dài đen phủ kín sau đầu, chảy xuống lưng + búi cao cài hoa sen
-              ctx.fillStyle = "#2e211a";
-              ctx.beginPath(); ctx.ellipse(hx, hy + 4, 11.5, 14.5, 0, 0, 6.29); ctx.fill();
-              ctx.beginPath(); ctx.arc(hx, hy - 12.5, 4.2, 0, 6.29); ctx.fill(); // búi tóc
-              ctx.fillStyle = "#e88bb0";
-              ctx.beginPath(); ctx.arc(hx + 5, hy - 13.5, 2.6, 0, 6.29); ctx.fill(); // hoa sen cài tóc
-              ctx.fillStyle = "#f6d365";
-              ctx.beginPath(); ctx.arc(hx + 5, hy - 13.5, 1, 0, 6.29); ctx.fill();
-            } else {
-              // NAM: tóc ngắn đen phủ kín gáy, vành tai hai bên
+              // NI CÔ (bản .39): MŨ VẢI TU xám tro ôm kín đỉnh và sau đầu,
+              // chỉ hở gáy da ở dưới vành mũ — không còn tóc dài/búi/hoa sen
               ctx.fillStyle = "#eec39a";
               ctx.beginPath(); ctx.ellipse(hx - 9.8, hy + 1, 2.2, 3.4, 0, 0, 6.29); ctx.fill();
               ctx.beginPath(); ctx.ellipse(hx + 9.8, hy + 1, 2.2, 3.4, 0, 0, 6.29); ctx.fill();
-              ctx.fillStyle = "#241a12";
-              ctx.beginPath(); ctx.arc(hx, hy - 0.5, 10, 0, 6.29); ctx.fill();
-              ctx.beginPath(); ctx.ellipse(hx, hy + 5.5, 9.6, 5.5, 0, 0, 3.14); ctx.fill();
+              ctx.fillStyle = "#6f6656";
+              ctx.beginPath(); ctx.arc(hx, hy - 0.5, 10.5, 0, 6.29); ctx.fill();
+              ctx.fillStyle = "#5d5546";
+              ctx.beginPath(); ctx.ellipse(hx, hy + 6.5, 10.2, 3.4, 0, 0, 6.29); ctx.fill(); // vành mũ ôm gáy
+              ctx.fillStyle = "rgba(255,244,214,0.35)";
+              ctx.beginPath(); ctx.ellipse(hx - 3.5, hy - 4.5, 3.4, 2.1, -0.5, 0, 6.29); ctx.fill();
+            } else {
+              // SƯ (bản .39): đầu TRỌC HẲN nhìn từ phía sau — da đầu tròn
+              // bóng, vành tai hai bên, vệt sáng trên đỉnh đầu cạo nhẵn
+              ctx.fillStyle = "#eec39a";
+              ctx.beginPath(); ctx.ellipse(hx - 9.8, hy + 1, 2.2, 3.4, 0, 0, 6.29); ctx.fill();
+              ctx.beginPath(); ctx.ellipse(hx + 9.8, hy + 1, 2.2, 3.4, 0, 0, 6.29); ctx.fill();
+              ctx.beginPath(); ctx.arc(hx, hy - 0.5, 10.5, 0, 6.29); ctx.fill();
+              ctx.fillStyle = "rgba(120,90,60,0.35)"; // vệt tóc cạo rất ngắn còn lại sát da đầu
+              ctx.beginPath(); ctx.arc(hx, hy - 0.5, 10.5, 3.6, 5.9); ctx.fill();
+              ctx.fillStyle = "rgba(255,240,205,0.55)"; // đầu trọc bóng
+              ctx.beginPath(); ctx.ellipse(hx - 3.5, hy - 4.5, 3.6, 2.2, -0.5, 0, 6.29); ctx.fill();
+            }
+            // CHUỖI TRÀNG HẠT quanh cổ (cả sư lẫn ni cô): vòng hạt gỗ nhỏ
+            // ôm sát chân cổ, nhìn từ phía sau vẫn nhận ra người tu hành
+            ctx.fillStyle = "#4a2c14";
+            for (var bdi = 0; bdi < 5; bdi++) {
+              ctx.beginPath(); ctx.arc(hx + (bdi - 2) * 4.1, hy + 10.6 - Math.abs(bdi - 2) * 0.9, 1.5, 0, 6.29); ctx.fill();
             }
           }
           // Nửa thân: nữ = áo xòe rộng như váy dài, nam = áo thẳng + thắt lưng + ống quần
           function bodyPath(halfW, topY, botY, lift) {
-            var flare = isFemale ? halfW + 6 : halfW;
+            var flare = isFemale ? halfW + 4 : halfW; // bản .32: vạt xòe nữ thu từ +6 xuống +4 để sau phóng to không lấn ghế kề
             ctx.beginPath();
             ctx.moveTo(x - flare, botY);
             ctx.quadraticCurveTo(x - halfW, topY + 6, x, topY + (lift || 0));
@@ -5422,16 +5600,19 @@
             }
           }
           function kneelBase() {
+            // Bản .32: đế quỳ thu từ ±20 xuống ±17 trong khổ vẽ — sau khi
+            // nhân PERSON_BOOST, bề ngang đế ở hàng gần nhất vẫn ~ như cũ
+            // nên không lấn sang ghế kề, trong khi thân và đầu to hẳn lên.
             ctx.fillStyle = shade(u.color, -28);
             ctx.beginPath();
-            ctx.moveTo(x - 20, y + 4);
-            ctx.quadraticCurveTo(x, y - 6, x + 20, y + 4);
-            ctx.quadraticCurveTo(x, y + 9, x - 20, y + 4);
+            ctx.moveTo(x - 17, y + 4);
+            ctx.quadraticCurveTo(x, y - 6, x + 17, y + 4);
+            ctx.quadraticCurveTo(x, y + 9, x - 17, y + 4);
             ctx.closePath(); ctx.fill();
           }
 
           var kneelPose = u.action === "meditating" || u.action === "standing" || u.action === "seated" || (u.action === "walking" && !moving);
-          if (kneelPose) {
+          if (kneelPose && !use3D) {
             // Bản .19: hội chúng QUỲ dự lễ nhìn từ sau lưng (không còn đứng/ngồi thiền quay mặt ra)
             if (u.action === "meditating") {
               var pulse = (Math.sin(t * 1.6 + u.phase) + 1) / 2;
@@ -5454,11 +5635,19 @@
             // không ai rời ghế, lối đi không bị ảnh hưởng. Người đang
             // đi / vái lạy / dâng hương giữ nguyên chuyển động vốn có.
             var breath = (u.action === "seated" || u.action === "meditating" || u.action === "standing")
-              ? Math.sin(t * 1.5 + (u.phase || 0) * 2.13) * 1.4 : 0;
+              ? Math.sin(t * 1.5 + (u.phase || 0) * 2.13) * 2.4 : 0;
+            // CHỐNG LIVE TĨNH (bản .40) cho cả lớp 2D dự phòng: thân đu
+            // đưa ngang rõ hơn, thỉnh thoảng cúi đầu nhẹ (nod2, lệch pha
+            // từng người) và động tác vái tại chỗ định kỳ 20–30 giây
+            // (gest2 theo envelope của antiStaticStep).
+            var sway2 = Math.sin(t * 0.8 + (u.phase || 0) * 1.7) * 1.3;
+            var nod2 = Math.pow(Math.max(0, Math.sin(t * 0.45 + (u.phase || 0) * 2.7)), 3) * 2.6;
+            var gest2 = gestureEnvelope(u, t) * 7;
+            var bowPx = nod2 + gest2;
             ctx.fillStyle = u.color;
-            bodyPath(12, y - 24, y + 2, -breath);
-            head(x, y - 31 - breath);
-          } else if (u.action === "bowing") {
+            bodyPath(12, y - 24 + bowPx * 0.55, y + 2, -breath);
+            head(x + sway2, y - 31 - breath + bowPx);
+          } else if (u.action === "bowing" && !use3D) {
             // Vái lạy: chu kỳ 1,8s — quỳ, cúi mình xuống sâu rồi ngẩng lên (3 lạy liên tiếp)
             var cyc = ((t - u.actionT0) % 1.8) / 1.8;
             var depth = Math.sin(cyc * Math.PI); // 0 -> 1 -> 0
@@ -5478,7 +5667,7 @@
               ctx.beginPath(); ctx.arc(x + 16, y + 1, 3, 0, 6.29); ctx.fill();
             }
             head(x, y - 31 + depth * 17);
-          } else if (u.action === "offering") {
+          } else if (u.action === "offering" && !use3D) {
             // Dâng hương: đứng trước lư hương, hai tay nâng ba nén nhang, khẽ cúi mình
             var bowA = 2.5 + Math.sin((t - u.actionT0) * 2.1) * 1.6;
             ctx.fillStyle = u.color;
@@ -5506,7 +5695,7 @@
               ctx.fillStyle = "#ff6a4d";
               ctx.beginPath(); ctx.arc(x + dx, y - 75 + bowA, 3.1, 0, 6.29); ctx.fill();
             });
-          } else {
+          } else if (!use3D) {
             // Đứng / đi lại
             var sway = Math.sin(u.phase) * 1.6;
             ctx.fillStyle = u.color;
@@ -5542,9 +5731,13 @@
           var label = seatedCompact
             ? shortName
             : ((u.isTikTok && u !== centralUser) ? plainName : genderSymbol(u.gender) + " " + plainName + " — " + genderLabel(u.gender) + actLabel);
-          ctx.font = seatedCompact ? "700 9.5px 'Be Vietnam Pro', sans-serif" : "700 11px 'Be Vietnam Pro', sans-serif";
+          // Bản .32: riêng biển tên GỌN của người đang ngồi yên dùng cỡ
+          // chữ nhỏ hơn trong khổ vẽ (6.8 thay 9.5) để sau khi hình người
+          // nhân 1,32 lần, khổ biển trên màn hình vẫn ~ như bản trước —
+          // biển vẫn nằm trên đầu, không phình sang biển của ghế kề bên.
+          ctx.font = seatedCompact ? "700 6.8px 'Be Vietnam Pro', sans-serif" : "700 11px 'Be Vietnam Pro', sans-serif";
           var w = ctx.measureText(label).width + 16;
-          var plateY = y - 72;
+          var plateY = y - 72 - (use3D ? 38 : 0); // 3D: người cao hơn ~1,5 lần (bản .39 đầu to tròn hơn nữa) nên biển tên nâng thêm để không đè đầu mô hình
           // BIỂN TÊN LỚN KHI ĐANG ĐI (bản .24): người đang đi bộ (vừa vào
           // chùa đi tìm ghế, đang bước ra làm lễ, đang rời chùa) mang
           // biển tên CỠ ĐỌC ĐƯỢC suốt cả quãng đường — vẽ NGOÀI tỉ lệ
@@ -5556,7 +5749,7 @@
           if (u.action === "walking" && u !== centralUser) {
             ctx.restore(); // thoát tỉ lệ theo hàng ghế — vẽ biển theo tọa độ thật của khung
             var wLabel = genderSymbol(u.gender) + " " + plainName + (u.leaving ? " · đang rời chùa" : (u.pendingSit ? " · đang vào chùa" : ((u.pendingOffer || u.pendingBow || u.pendingBell) ? " · đang ra làm lễ" : "")));
-            var headTopW = (u.y + 6) - (51 + bob) * ds;
+            var headTopW = (u.y + 6) - ((use3D ? 120 : 51) + bob) * ds;
             ctx.font = "800 13.5px 'Be Vietnam Pro', sans-serif";
             var wW = ctx.measureText(wLabel).width + 22;
             var wX = Math.max(4, Math.min(W - wW - 4, x - wW / 2));
@@ -5608,7 +5801,7 @@
           }
           // Cọc nối bảng tên với đầu
           ctx.strokeStyle = "rgba(60,38,14,0.55)"; ctx.lineWidth = 1.4;
-          ctx.beginPath(); ctx.moveTo(x, plateY + 19); ctx.lineTo(x, y - 46); ctx.stroke(); ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(x, plateY + 19); ctx.lineTo(x, y - (use3D ? 80 : 46)); ctx.stroke(); ctx.lineWidth = 1;
           ctx.fillStyle = isMe ? "rgba(179,64,42,0.95)" : (isFemale ? "rgba(122,62,102,0.92)" : "rgba(38,58,78,0.92)");
           ctx.strokeStyle = "#e9c66a"; ctx.lineWidth = 1.4;
           rr(x - w / 2, plateY, w, 19, 9); ctx.fill(); ctx.stroke(); ctx.lineWidth = 1;
@@ -5719,6 +5912,454 @@
             ctx.restore();
           }
           ctx.restore(); // khôi phục tỉ lệ vẽ theo hàng (bản .19)
+        }
+
+        /* ================= NHÂN VẬT 3D — Three.js/WebGL (bản .38; tạo hình .39) =================
+           Bản .39 (lệnh chủ chùa): tạo hình lại TOÀN BỘ người 3D thành
+           SƯ và NI CÔ phong cách HOẠT HÌNH — khách "nam" là sư đầu trọc
+           bóng áo tràng nâu/vàng đất, khách "nữ" là ni cô đội mũ vải tu
+           áo tràng xám tro/nâu nhạt; cả hai cùng tỉ lệ hoạt hình đầu to
+           tròn, thân ngắn mũm mĩm, áo tràng dài phủ chân và chuỗi tràng
+           hạt quanh cổ; hai sư gõ mõ đồng bộ cùng phong cách, mặt hiền
+           hoạt hình (mắt to nhắm, mày cong, má hồng). Kích thước TO,
+           mọi hoạt động, biển tên và dự phòng 2D giữ nguyên như .38;
+           hình 2D dự phòng cũng đã đổi đầu/áo sang sư/ni cô.
+           Lớp mô hình 3D phủ ĐÚNG khung sân khấu 540×960 của sảnh 2D:
+           camera trực giao dùng chung hệ tọa độ với canvas 2D (x giữ
+           nguyên, y lật qua H − y, z = y × 0,12 cho hàng trước che hàng
+           sau) nên CHÂN mô hình đáp đúng vị trí ghế/đệm, đúng điểm đứng
+           dâng hương và đúng đường đi mà logic 2D đang điều khiển —
+           mô hình chỉ là LỚP VẼ thay cho thân người 2D, mọi luật ghế,
+           lối đi, nghi lễ giữ nguyên ở tầng logic cũ. Biển tên/bong bóng
+           vẫn do drawPerson vẽ ở lớp 2D trên đầu mô hình.
+           Mô hình chibi dựng từ khối cơ bản (cầu, capsule, trụ) — KHÔNG
+           tải model ngoài; hình học và vật liệu DÙNG CHUNG cho mọi
+           nhân vật nên 100 khách vẫn nhẹ. KÍCH THƯỚC: khổ vẽ ngồi ≈ 76
+           đơn vị × cùng hệ số ds của bản 2D (đã gồm PERSON_BOOST 1,32)
+           → người ngồi cao ≈ 1,5 lần nhân vật 2D vừa phóng; đứng/đi
+           ≈ 105 đơn vị. Người ngồi chỉ chạy hoạt ảnh thở rẻ (scale/
+           rotation nhẹ); đi bộ, vái, dâng hương mới chạy hoạt ảnh đầy
+           đủ. Three.js nạp bất đồng bộ từ CDN: nạp hỏng, WebGL lỗi
+           hoặc máy yếu (khung hình chậm kéo dài) thì TỰ ĐỘNG ở lại /
+           quay về người 2D — sảnh không bao giờ trống người. */
+        var CHUA3D = { figs: {}, monks: [], ready: false, slowFrames: 0, slowSince: 0 };
+        var chua3dRenderer = null, chua3dScene = null, chua3dCam = null, chua3dCanvas = null;
+        var C3GEO = null, C3MAT = null, C3MATC = {};
+
+        function chua3DBoot() {
+          if (window.__c3booted) return;
+          window.__c3booted = true;
+          var urls = [
+            "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js",
+            "https://unpkg.com/three@0.160.0/build/three.min.js"
+          ];
+          var i = 0;
+          (function next() {
+            if (window.THREE) { chua3DInit(); return; }
+            if (i >= urls.length) return; // không nạp được Three.js: giữ nguyên người 2D
+            var s = document.createElement("script");
+            s.src = urls[i++]; s.async = true;
+            s.onload = function () { if (window.THREE) chua3DInit(); else next(); };
+            s.onerror = next;
+            document.head.appendChild(s);
+          })();
+        }
+
+        function c3Mat(color) {
+          if (!color) color = "#dcd9cf";
+          if (!C3MATC[color]) C3MATC[color] = new THREE.MeshLambertMaterial({ color: new THREE.Color(color) });
+          return C3MATC[color];
+        }
+        function c3MatDark(color) {
+          if (!color) color = "#dcd9cf";
+          var key = color + "|d";
+          if (!C3MATC[key]) {
+            var c = new THREE.Color(color); c.multiplyScalar(0.74);
+            C3MATC[key] = new THREE.MeshLambertMaterial({ color: c });
+          }
+          return C3MATC[key];
+        }
+        function setRobe(fig, color) {
+          if (!color) color = "#dcd9cf";
+          fig.robeColor = color;
+          var robe = c3Mat(color), robeD = c3MatDark(color);
+          fig.robed.forEach(function (r) { r.m.material = r.dark ? robeD : robe; });
+        }
+        // Hệ số tỉ lệ của mô hình: KHỚP hệ số ds mà drawPerson dùng cho
+        // người 2D (theo hàng ghế / nhân vật trung tâm) để phối cảnh
+        // xa–gần của sảnh không đổi, chỉ có khổ người to lên ~1,5 lần.
+        function personScale3D(u) {
+          if (u === centralUser) return 1.16 * PERSON_BOOST;
+          if (u.cushion !== null && u.cushion !== undefined && CUSHIONS[u.cushion]) return CUSHIONS[u.cushion].s * 1.06 * PERSON_BOOST;
+          return PERSON_BOOST;
+        }
+
+        function buildFigure(kind, robeColor) {
+          var T = window.THREE;
+          var fig = { kindKey: kind, robeColor: robeColor, robed: [], mix: { sit: 1, pray: 0 } };
+          var robe = c3Mat(robeColor), robeD = c3MatDark(robeColor);
+          var skin = c3Mat("#eec39a"), skinD = c3Mat("#e2b184");
+          var root = new T.Group(); fig.root = root;
+          // Bóng mềm dưới chân (đĩa tối trong mặt phẳng màn hình)
+          var sh = new T.Mesh(C3GEO.circle, C3MAT.shadow);
+          sh.scale.set(25, 6.5, 1); sh.position.set(0, 1, -3); root.add(sh);
+          var hips = new T.Group(); root.add(hips); fig.hips = hips;
+          // Đế ngồi xếp bằng — hiện khi ngồi/quỳ, là "đệm thịt" dưới thân
+          // (bản .39: bè rộng hơn theo thân mũm hoạt hình)
+          var base = new T.Mesh(C3GEO.sphere, robeD);
+          base.scale.set(23, 7.5, 15); base.position.set(0, 4, 0); hips.add(base); fig.base = base;
+          fig.robed.push({ m: base, dark: true });
+          function leg(side) {
+            var lg = new T.Group(); lg.position.set(8.5 * side, 1, 0);
+            var m = new T.Mesh(C3GEO.capsule, robeD);
+            m.scale.set(11, 13, 11); m.position.y = -13.5; lg.add(m);
+            fig.robed.push({ m: m, dark: true });
+            var foot = new T.Mesh(C3GEO.sphere, c3Mat("#3a2c20"));
+            foot.scale.set(4.8, 3, 7.5); foot.position.set(0, -26.5, -3.5); lg.add(foot);
+            hips.add(lg); return lg;
+          }
+          fig.legL = leg(-1); fig.legR = leg(1);
+          var torsoG = new T.Group(); torsoG.position.y = 2; hips.add(torsoG); fig.torsoG = torsoG;
+          // THÂN HOẠT HÌNH (bản .39): ngắn và mũm mĩm hơn hẳn bản .38 —
+          // thân bè ngang, thấp xuống để đầu to tròn chiếm tỉ lệ chính.
+          var torso = new T.Mesh(C3GEO.capsule, robe);
+          torso.scale.set(30, 12.5, 22); torso.position.y = 13; torsoG.add(torso);
+          fig.torso = torso; fig.torsoBaseY = 12.5;
+          fig.robed.push({ m: torso, dark: false });
+          // ÁO TRÀNG DÀI PHỦ CHÂN cho CẢ sư lẫn ni cô: tà áo hình nón cụt
+          // xòe từ eo xuống sát đế ngồi/chân — dấu hiệu người tu hành rõ
+          // nhất từ phía sau, thay cho váy nữ riêng của bản .38.
+          var skirt = new T.Mesh(C3GEO.cone, robe);
+          skirt.scale.set(33, 25, 24); skirt.position.y = 8; torsoG.add(skirt);
+          fig.robed.push({ m: skirt, dark: false });
+          fig.skirt = skirt;
+          if (kind === "monk" || kind === "male") {
+            // Dải y chéo vai vàng nâu của nhà sư (sư khách + hai sư gõ mõ)
+            var sash = new T.Mesh(C3GEO.box, c3Mat("#c8892a"));
+            sash.scale.set(4.5, 28, 22.5); sash.position.set(-3, 13, 0); sash.rotation.z = 0.55; torsoG.add(sash);
+          }
+          // CHUỖI TRÀNG HẠT quanh cổ: vòng hạt gỗ nhỏ ôm sát cổ áo —
+          // nhìn từ phía sau vẫn thấy rõ vòng hạt chạy quanh gáy.
+          var beadMat = c3Mat("#4a2c14");
+          var beads = new T.Group(); beads.position.set(0, 27.5, 0); beads.rotation.x = 0.5; torsoG.add(beads);
+          for (var bi = 0; bi < 11; bi++) {
+            var ba = (bi / 11) * Math.PI * 2;
+            var bd = new T.Mesh(C3GEO.sphere, beadMat);
+            bd.scale.set(1.9, 1.9, 1.9);
+            bd.position.set(Math.cos(ba) * 10.5, Math.sin(ba) * 4.2, Math.sin(ba) * 8.5);
+            beads.add(bd);
+          }
+          fig.beads = beads;
+          function arm(side) {
+            var ag = new T.Group(); ag.position.set(16 * side, 24, 0);
+            var m = new T.Mesh(C3GEO.capsule, robe);
+            m.scale.set(10, 9.5, 10); m.position.y = -10.5; ag.add(m);
+            fig.robed.push({ m: m, dark: false });
+            var hand = new T.Mesh(C3GEO.sphere, skin);
+            hand.scale.set(4.1, 4.1, 4.1); hand.position.y = -21.5; ag.add(hand);
+            torsoG.add(ag); return ag;
+          }
+          fig.armL = arm(-1); fig.armR = arm(1);
+          // ĐẦU HOẠT HÌNH (bản .39): đầu TO TRÒN hơn hẳn thân (tỉ lệ
+          // chibi hoạt hình), cổ ngắn — tổng chiều cao người giữ nguyên
+          // khổ TO của bản .38 vì thân đã hạ thấp bù lại.
+          var headG = new T.Group(); headG.position.y = 35; torsoG.add(headG); fig.headG = headG; fig.headBaseY = 35;
+          var neck = new T.Mesh(C3GEO.cyl, skinD);
+          neck.scale.set(8, 5.5, 8); neck.position.y = 0; headG.add(neck);
+          var head = new T.Mesh(C3GEO.sphere, skin);
+          head.scale.set(19.5, 20.5, 18.5); head.position.y = 16; headG.add(head);
+          [-1, 1].forEach(function (sd) {
+            var ear = new T.Mesh(C3GEO.sphere, skin);
+            ear.scale.set(3, 4.2, 3); ear.position.set(19.2 * sd, 14, 0); headG.add(ear);
+          });
+          // Vệt sáng bóng trên đầu trọc — đầu cạo nhẵn bóng kiểu hoạt hình
+          var shine = new T.Mesh(C3GEO.sphere, C3MAT.shine);
+          shine.scale.set(7, 3.2, 6); shine.position.set(-6, 31, 6); shine.rotation.z = -0.45; headG.add(shine);
+          if (kind === "female") {
+            // NI CÔ: đội MŨ VẢI TU xám tro ôm đỉnh đầu (không còn tóc dài,
+            // búi và hoa sen của người thường) — phân biệt rõ với sư đầu
+            // trọc hẳn, vẫn cùng một dáng đầu to tròn hoạt hình.
+            var capF = new T.Mesh(C3GEO.cap, c3Mat("#6f6656"));
+            capF.scale.set(20.4, 21.4, 19.4); capF.position.y = 16.4; headG.add(capF);
+            var knotF = new T.Mesh(C3GEO.sphere, c3Mat("#5d5546"));
+            knotF.scale.set(3.4, 2.6, 3.4); knotF.position.set(0, 35.5, 1); headG.add(knotF);
+          } else if (kind === "male") {
+            // SƯ (khách "nam"): đầu TRỌC HẲN bóng — không còn mũ tóc đen
+            // của người thường; chỉ thêm vệt sáng đầu trọc đã vẽ ở trên
+            // và tràng hạt quanh cổ (vẽ ở phần thân) là đủ nhận diện.
+          } else if (kind === "monk") {
+            // SƯ GÕ MÕ: đầu trọc quay mặt ra hội chúng — mặt HIỀN kiểu
+            // hoạt hình: mắt to nhắm an nhiên, mày cong, miệng mỉm và
+            // hai má ửng hồng nhẹ cho ra chất hoạt hình thân thiện.
+            var dark = c3Mat("#4a3018");
+            [-1, 1].forEach(function (sd) {
+              var eye = new T.Mesh(C3GEO.sphere, dark);
+              eye.scale.set(2.7, 1.15, 0.9); eye.position.set(7 * sd, 17, 17.6); headG.add(eye);
+              var brow = new T.Mesh(C3GEO.sphere, dark);
+              brow.scale.set(3.1, 0.8, 0.7); brow.position.set(7 * sd, 21.5, 17.2); headG.add(brow);
+              var cheek = new T.Mesh(C3GEO.sphere, c3Mat("#e8a58c"));
+              cheek.scale.set(3.6, 2.2, 1); cheek.position.set(11 * sd, 10.5, 15.5); headG.add(cheek);
+            });
+            var mouth = new T.Mesh(C3GEO.box, dark);
+            mouth.scale.set(4.6, 0.9, 0.7); mouth.position.set(0, 8, 18.2); headG.add(mouth);
+            // Mõ gỗ đặt ngay trước mặt sư + đệm kê đỏ
+            var moG = new T.Group(); moG.position.set(0, 0, 21); root.add(moG);
+            var moBase = new T.Mesh(C3GEO.circle, c3Mat("#93331f"));
+            moBase.scale.set(15, 4.5, 1); moBase.position.set(0, 2, 0); moG.add(moBase);
+            var mo = new T.Mesh(C3GEO.sphere, c3Mat("#a35a28"));
+            mo.scale.set(14.5, 10, 11.5); mo.position.set(0, 10.5, 0); moG.add(mo);
+            var moTop = new T.Mesh(C3GEO.sphere, c3Mat("#7c3a1a"));
+            moTop.scale.set(9, 3, 7); moTop.position.set(0, 17.5, 0); moG.add(moTop);
+            function stick(armG) {
+              var sg = new T.Group(); sg.position.set(0, -23, 1); armG.add(sg);
+              var st = new T.Mesh(C3GEO.cyl, c3Mat("#6e4520"));
+              st.scale.set(1.6, 17, 1.6); st.position.set(0, -7, 2); st.rotation.x = 0.35; sg.add(st);
+              var tip = new T.Mesh(C3GEO.sphere, c3Mat("#a33327"));
+              tip.scale.set(3.4, 3.4, 3.4); tip.position.set(0, -14.5, 5); sg.add(tip);
+              return sg;
+            }
+            fig.stickL = stick(fig.armL); fig.stickR = stick(fig.armR);
+          }
+          // Ba nén hương trên tay — chỉ hiện trong tư thế dâng hương
+          var inc = new T.Group(); inc.position.set(0, 56, -8); torsoG.add(inc);
+          [-1, 0, 1].forEach(function (i2) {
+            var st2 = new T.Mesh(C3GEO.cyl, c3Mat("#8a4a2a"));
+            st2.scale.set(1.15, 27, 1.15); st2.position.set(i2 * 3.4, 13, 0); st2.rotation.z = i2 * -0.1; inc.add(st2);
+            var tip2 = new T.Mesh(C3GEO.sphere, C3MAT.tipGlow);
+            tip2.scale.set(2.1, 2.1, 2.1); tip2.position.set(i2 * 6, 27.5, 0); inc.add(tip2);
+            var halo2 = new T.Mesh(C3GEO.sphere, C3MAT.tipHalo);
+            halo2.scale.set(5.5, 5.5, 5.5); halo2.position.copy(tip2.position); inc.add(halo2);
+          });
+          inc.visible = false; fig.incense = inc;
+          // Vòng hào quang vàng quanh đầu khi tọa thiền (thay vòng 2D ở chế độ 3D)
+          var ringMat = new T.MeshBasicMaterial({ color: 0xe6aa28, transparent: true, opacity: 0.7, side: T.DoubleSide, depthWrite: false });
+          var ring = new T.Mesh(C3GEO.ring, ringMat);
+          ring.position.set(0, 58, 4); ring.visible = false; root.add(ring);
+          fig.ring = ring; fig.ringMat = ringMat;
+          return fig;
+        }
+
+        function chua3DGetFig(id, u) {
+          var kind = normalizeGender(u.gender) === "nu" ? "female" : "male";
+          var fig = CHUA3D.figs[id];
+          if (fig && fig.kindKey !== kind) { chua3dScene.remove(fig.root); delete CHUA3D.figs[id]; fig = null; }
+          if (!fig) { fig = buildFigure(kind, u.color); CHUA3D.figs[id] = fig; chua3dScene.add(fig.root); }
+          if (fig.robeColor !== (u.color || "#dcd9cf")) setRobe(fig, u.color);
+          return fig;
+        }
+
+        function chua3DPose(fig, u, t, dt) {
+          var act = u.action || "seated";
+          var ph = u.phase || 0;
+          var k = Math.min(1, dt * 6.5); if (k <= 0) k = 0.02;
+          var sit = 1, moving = false;
+          if (act === "walking") { sit = 0; moving = Math.abs(u.tx - u.x) > 2 || Math.abs(u.ty - u.y) > 2; }
+          else if (act === "offering" || act === "belling") sit = 0;
+          else if (act === "standing" && u.waitingGate) sit = 0;
+          // Đứng dậy / ngồi xuống MƯỢT: tỉ lệ ngồi nội suy theo thời gian,
+          // hông nâng dần 6 → 34, chân duỗi dần ra khỏi tư thế xếp bằng.
+          fig.mix.sit += (sit - fig.mix.sit) * k;
+          var s = fig.mix.sit;
+          var swing = (act === "walking" && moving) ? Math.sin(ph) : 0;
+          var bobY = (act === "walking" && moving) ? Math.abs(Math.sin(ph)) * 2.6 : 0;
+          fig.hips.position.y = 6 + (1 - s) * 28;
+          fig.base.visible = s > 0.2;
+          var bs = Math.max(0.25, s);
+          fig.base.scale.set(23 * (0.6 + 0.4 * bs), 7.5 * bs, 15);
+          var fold = s * 1.9;
+          fig.legL.rotation.x = fold + swing * 0.8 * (1 - s);
+          fig.legR.rotation.x = fold - swing * 0.8 * (1 - s);
+          fig.legL.rotation.z = s * 0.5;
+          fig.legR.rotation.z = -s * 0.5;
+          fig.legL.visible = fig.legR.visible = s < 0.9;
+          // VÁI LẠY: gập người THẬT theo đúng chu kỳ 1,8 giây của nghi lễ
+          // 2D — BOW_DUR 5,4 giây = đúng 3 nhịp cúi xuống–ngẩng lên.
+          var bow = 0;
+          if (act === "bowing") { var cyc = ((((t - (u.actionT0 || 0)) % 1.8) + 1.8) % 1.8) / 1.8; bow = Math.sin(cyc * Math.PI); }
+          else if (act === "offering") bow = 0.10 + 0.07 * Math.sin((t - (u.actionT0 || 0)) * 2.1); // dâng hương: khẽ cúi mình liên tục như 2D
+          // Động tác định kỳ chống tĩnh (bản .40) cộng vào bow TRƯỚC
+          // khi áp vào thân/đầu ở hai dòng dưới: vái nhẹ tại chỗ theo
+          // envelope của antiStaticStep (pray đi kèm ở khối chắp tay).
+          if (act === "seated" || act === "meditating" || act === "standing") bow = Math.max(bow, gestureEnvelope(u, t) * 0.55);
+          fig.torsoG.rotation.x += ((-bow * 0.98) - fig.torsoG.rotation.x) * Math.min(1, dt * 10 || 0.02);
+          fig.torsoG.position.y = 2 - bow * 8.5;
+          fig.headG.rotation.x = -bow * 0.4 - ((act === "seated" || act === "meditating" || act === "standing") ? Math.pow(Math.max(0, Math.sin(t * 0.45 + ph * 2.7)), 3) * 0.12 : 0); // cúi đầu nhẹ định kỳ, lệch pha từng người (bản .40)
+          // THỞ + đu đưa rất nhẹ khi yên vị (hoạt ảnh rẻ: chỉ scale/rotation)
+          var calm = (act === "meditating" || act === "seated" || act === "standing") ? 1 : 0.3;
+          var br = Math.sin(t * 1.5 + ph * 2.13);
+          // CHỐNG LIVE TĨNH (bản .40): thở + đu đưa BIÊN ĐỘ RÕ hơn hẳn
+          // bản cũ (thấy rõ ở khung 1080×1920), vẫn chậm và mềm.
+          fig.torso.scale.y = fig.torsoBaseY * (1 + 0.065 * br * calm);
+          fig.torsoG.rotation.z = Math.sin(t * 0.8 + ph * 1.7) * 0.05 * calm;
+          fig.headG.rotation.z = Math.sin(t * 0.6 + ph * 2.3) * 0.045 * calm;
+          fig.headG.position.y = fig.headBaseY + br * 0.9 * calm;
+          // CHẮP TAY: người đang ngồi/thiền thỉnh thoảng chắp tay vài giây,
+          // lệch pha từng người theo u.phase — không đồng loạt như robot.
+          var prayT = 0;
+          if (act === "meditating" || act === "seated") {
+            // Chắp tay ĐỀU ĐẶN theo chu kỳ ~33 giây (bản .40 — trước
+            // đây ~118 giây mới chắp một lần rất ngắn, khung live dễ
+            // trông như tĩnh): mỗi chu kỳ chắp ~8 giây, lên/xuống mềm
+            // trong ~1,7 giây, lệch pha từng người theo ph.
+            var pc = ((t * 0.03) + ph * 0.618) % 1;
+            if (pc < 0.24) prayT = Math.max(0, Math.min(1, Math.min(pc / 0.05, (0.24 - pc) / 0.05)));
+          }
+          // Động tác định kỳ chống tĩnh: vái nhẹ/chắp tay cúi đầu tại
+          // chỗ theo envelope 3,6 giây của antiStaticStep.
+          var genv = gestureEnvelope(u, t);
+          if (genv > 0.02 && (act === "seated" || act === "meditating" || act === "standing")) {
+            prayT = Math.max(prayT, Math.min(1, genv * 1.5)); // bow của động tác này đã cộng ở khối bow phía trên
+          }
+          fig.mix.pray += (prayT - fig.mix.pray) * Math.min(1, dt * 3);
+          var pr = fig.mix.pray;
+          // Đích góc tay cho từng tư thế (rotX = đưa tay ra trước/lên, rotZ = khép vào giữa)
+          var lx, lz, rx, rz;
+          if (act === "walking") { lx = swing * 0.55; rx = -swing * 0.55; lz = 0.10; rz = -0.10; }
+          else if (act === "offering") { lx = 2.55; rx = 2.55; lz = 0.16; rz = -0.16; } // hai tay nâng hương lên ngang trán
+          else if (act === "belling") { lx = 0.15; rx = 1.5 + Math.sin((t - (u.actionT0 || 0)) * 2.6) * 0.55; lz = 0.12; rz = -0.2; }
+          else if (act === "bowing") { var reach = bow > 0.35 ? (bow - 0.35) / 0.65 : 0; lx = 0.45 + reach * 0.9; rx = lx; lz = 0.34 - reach * 0.1; rz = -lz; } // cúi sâu thì hai tay chống xuống đất như 2D
+          else { lx = 0.55 + pr * 0.45; rx = lx; lz = 0.38 + pr * 0.55; rz = -lz; } // tay đặt lòng → chắp tay
+          var ka = Math.min(1, dt * 8); if (ka <= 0) ka = 0.02;
+          fig.armL.rotation.x += (lx - fig.armL.rotation.x) * ka;
+          fig.armL.rotation.z += (lz - fig.armL.rotation.z) * ka;
+          fig.armR.rotation.x += (rx - fig.armR.rotation.x) * ka;
+          fig.armR.rotation.z += (rz - fig.armR.rotation.z) * ka;
+          fig.incense.visible = act === "offering";
+          if (fig.ring) {
+            var med = act === "meditating";
+            fig.ring.visible = med;
+            if (med) {
+              var pu = (Math.sin(t * 1.6 + ph) + 1) / 2;
+              fig.ring.scale.setScalar(31 + pu * 4);
+              fig.ringMat.opacity = 0.75 - pu * 0.3;
+              fig.ring.position.y = 58 + br * 1.2;
+            }
+          }
+          // Vị trí + tỉ lệ: khớp hệ tọa độ sân khấu 2D tuyệt đối
+          var ds = personScale3D(u);
+          fig.root.scale.set(ds, ds, ds);
+          fig.root.position.set(u.x, H - (u.y + 6) + bobY, u.y * 0.12);
+          fig.root.rotation.z = (act === "walking" && moving) ? Math.sin(ph) * 0.045 : 0;
+        }
+
+        function chua3DMonks(t) {
+          // Cùng công thức nhịp gõ của hình 2D: chạm mõ đúng mốc giờ
+          // tường monkLastHitAt (khớp tiếng mõ thật), thân khẽ cúi theo.
+          var sinceHit = t - monkLastHitAt;
+          var lift = sinceHit <= 0 ? 0 : Math.min(1, (sinceHit - 0.1) / 0.45);
+          lift = 1 - (1 - lift) * (1 - lift);
+          var dip = (sinceHit >= 0 && sinceHit < 0.34) ? Math.sin((sinceHit / 0.34) * Math.PI) * 2.2 : 0;
+          CHUA3D.monks.forEach(function (mf, i) {
+            var mk = MO_MONKS[i]; if (!mk) return;
+            mf.root.position.set(mk.x, H - (mk.y + 7), mk.y * 0.12);
+            mf.hips.position.y = 6;
+            mf.base.visible = true;
+            mf.legL.visible = mf.legR.visible = false;
+            var hitArm = mk.flip > 0 ? mf.armR : mf.armL;
+            var restArm = mk.flip > 0 ? mf.armL : mf.armR;
+            if (mf.stickL) mf.stickL.visible = mk.flip <= 0;
+            if (mf.stickR) mf.stickR.visible = mk.flip > 0;
+            hitArm.rotation.x = -(0.55 + lift * 0.75); // dùi chạm mõ khi lift = 0, giơ cao khi lift = 1
+            hitArm.rotation.z = (mk.flip > 0 ? -1 : 1) * 0.25;
+            restArm.rotation.x = 0.5;
+            restArm.rotation.z = (mk.flip > 0 ? 1 : -1) * 0.35;
+            mf.torsoG.rotation.x = dip * 0.045;
+            mf.headG.rotation.x = dip * 0.06; // đầu sư gật nhẹ theo đúng nhịp gõ mõ (bản .40)
+            mf.torsoG.position.y = 2 - dip * 0.35;
+            mf.torso.scale.y = mf.torsoBaseY * (1 + 0.03 * Math.sin(t * 1.5 + mk.phase * 2.13));
+          });
+        }
+
+        function chua3DUpdate(t, dt) {
+          if (!CHUA3D.ready) return;
+          // CANH HIỆU NĂNG: máy thật sự yếu (dưới ~20 khung/giây kéo
+          // dài hơn ~15 giây) mới tự tắt lớp 3D, trả sảnh về người 2D
+          // như cũ — máy chạy 25–30 fps vẫn giữ 3D bình thường. (dt
+          // của vòng lặp chính bị kẹp ở 0,05 nên ngưỡng chậm lấy sát
+          // mức kẹp đó.)
+          if (dt >= 0.049) CHUA3D.slowFrames++; else CHUA3D.slowFrames = Math.max(0, CHUA3D.slowFrames - 1);
+          if (CHUA3D.slowFrames > 300 && performance.now() - CHUA3D.slowSince > 10000) { chua3DDisable(); return; }
+          var alive = {};
+          Object.keys(users).forEach(function (id) {
+            var u = users[id]; if (!u) return;
+            alive[id] = true;
+            chua3DPose(chua3DGetFig(id, u), u, t, dt);
+          });
+          if (centralState.mode !== "idle") {
+            alive.__central = true;
+            chua3DPose(chua3DGetFig("__central", centralUser), centralUser, t, dt);
+          }
+          Object.keys(CHUA3D.figs).forEach(function (id) {
+            if (!alive[id]) { chua3dScene.remove(CHUA3D.figs[id].root); delete CHUA3D.figs[id]; }
+          });
+          chua3DMonks(t);
+          chua3dRenderer.render(chua3dScene, chua3dCam);
+        }
+
+        function chua3DDisable() {
+          CHUA3D_ON = false;
+          CHUA3D.ready = false;
+          if (chua3dCanvas) chua3dCanvas.style.display = "none";
+        }
+
+        function chua3DInit() {
+          if (CHUA3D.ready) return;
+          try {
+            var T = window.THREE;
+            if (!T || !T.WebGLRenderer) return;
+            chua3dCanvas = document.createElement("canvas");
+            chua3dCanvas.className = "gl3d";
+            chua3dCanvas.width = W; chua3dCanvas.height = H;
+            canvas.parentNode.appendChild(chua3dCanvas);
+            chua3dRenderer = new T.WebGLRenderer({ canvas: chua3dCanvas, alpha: true, antialias: true, powerPreference: "high-performance" });
+            chua3dRenderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+            chua3dRenderer.setSize(W, H, false);
+            chua3dRenderer.setClearColor(0x000000, 0);
+            chua3dScene = new T.Scene();
+            // Camera trực giao: trục x trùng canvas 2D, trục y là H − y2D.
+            chua3dCam = new T.OrthographicCamera(0, W, H, 0, 1, 3000);
+            chua3dCam.position.set(0, 0, 1000);
+            chua3dCam.lookAt(0, 0, 0);
+            chua3dScene.add(new T.HemisphereLight(0xfff2dd, 0x5a4028, 1.05));
+            var dl = new T.DirectionalLight(0xffe6bb, 1.15);
+            dl.position.set(180, 500, 600);
+            chua3dScene.add(dl);
+            var dl2 = new T.DirectionalLight(0xffd9a0, 0.35);
+            dl2.position.set(-300, 200, -400); // ánh sáng hắt từ phía ban thờ
+            chua3dScene.add(dl2);
+            C3GEO = {
+              sphere: new T.SphereGeometry(1, 18, 14),
+              cyl: new T.CylinderGeometry(0.5, 0.5, 1, 12),
+              capsule: new T.CapsuleGeometry(0.5, 1, 5, 12),
+              circle: new T.CircleGeometry(1, 26),
+              ring: new T.RingGeometry(0.86, 1, 42),
+              cone: new T.CylinderGeometry(0.40, 0.78, 1, 16),
+              box: new T.BoxGeometry(1, 1, 1),
+              cap: new T.SphereGeometry(1, 18, 10, 0, Math.PI * 2, 0, Math.PI * 0.60)
+            };
+            C3MAT = {
+              shadow: new T.MeshBasicMaterial({ color: 0x140a04, transparent: true, opacity: 0.30, depthWrite: false }),
+              shine: new T.MeshBasicMaterial({ color: 0xfff3d0, transparent: true, opacity: 0.38, depthWrite: false }),
+              tipGlow: new T.MeshBasicMaterial({ color: 0xff6a4d }),
+              tipHalo: new T.MeshBasicMaterial({ color: 0xff6a46, transparent: true, opacity: 0.25, depthWrite: false })
+            };
+            MO_MONKS.forEach(function () {
+              var mf = buildFigure("monk", "#7a4a21");
+              mf.root.scale.setScalar(1.45);
+              chua3dScene.add(mf.root);
+              CHUA3D.monks.push(mf);
+            });
+            chua3dRenderer.render(chua3dScene, chua3dCam); // dựng thử một khung: WebGL chết là bắt được ngay tại đây
+            chua3dCanvas.addEventListener("webglcontextlost", function (e) { e.preventDefault(); chua3DDisable(); }, false);
+            CHUA3D.ready = true;
+            CHUA3D.slowSince = performance.now();
+            CHUA3D_ON = true;
+          } catch (err) {
+            CHUA3D_ON = false;
+            CHUA3D.ready = false;
+            if (chua3dCanvas && chua3dCanvas.parentNode) chua3dCanvas.parentNode.removeChild(chua3dCanvas);
+          }
         }
 
         /* ---------------- Hành động: dâng hương / vái lạy / thiền ---------------- */
@@ -6346,6 +6987,10 @@
           }
           if (!monkHits.length && wallT - monkLastHitAt >= 2.0) monkLastHitAt = wallT;
 
+          // CHỐNG LIVE TĨNH (bản .40): cứ 20–30 giây, 1–3 khách đang
+          // ngồi làm một động tác rõ tại chỗ (xem antiStaticStep).
+          antiStaticStep(wallT);
+
           // Nhân vật TRUNG TÂM làm lễ theo hàng đợi sự kiện (giờ tường)
           centralStep(t, dt);
 
@@ -6476,7 +7121,7 @@
           drawCushions();
           drawBellStand(t);
           drawBurner(t);
-          drawMoMonks(t); // hai vị sư gõ mõ cố định hai bên khu lễ — vẽ sau nền/lư, trước hội chúng đang làm lễ ở thảm lễ
+          if (!CHUA3D_ON) drawMoMonks(t); // hai vị sư gõ mõ cố định hai bên khu lễ — vẽ sau nền/lư, trước hội chúng đang làm lễ ở thảm lễ (3D bật thì hai sư do lớp 3D vẽ)
           // Hào quang Đại Lễ vẽ Ở LỚP NÀY — SAU toàn bộ phần tĩnh của
           // ban thờ (ảnh nền, ba tượng, khu dâng hương, giá chuông, lư
           // hương) và TRƯỚC khói/người: không lớp tĩnh nào được vẽ đè
@@ -6506,6 +7151,9 @@
           // đang đi từ cửa tới đúng ghế của mình.
           sorted.filter(function (e) { return e.u.action !== "walking"; }).forEach(function (e) { drawPerson(e.u, e.id === myId, t); });
           sorted.filter(function (e) { return e.u.action === "walking"; }).forEach(function (e) { drawPerson(e.u, e.id === myId, t); });
+          // Lớp nhân vật 3D: đồng bộ mô hình theo đúng trạng thái logic
+          // (vị trí, ghế, hành động, pha bước) của từng khách + hai sư.
+          if (CHUA3D_ON) chua3DUpdate(t, dt);
 
           // Cánh sen rơi (cánh VÀNG của Đại Lễ: lớn hơn, vàng đậm tương
           // phản rõ trên nền sảnh, thêm gân cánh sẫm để nhìn ra cánh hoa)
@@ -6550,6 +7198,7 @@
           requestAnimationFrame(frame);
         }
         startMainLoop();
+        chua3DBoot(); // nạp Three.js bất đồng bộ — xong và WebGL khỏe mới thay lớp người 2D bằng mô hình 3D
 
         /* ---------------- Tương tác đi lại ---------------- */
         function setTarget(clientX, clientY) {
@@ -6855,6 +7504,18 @@
           "Chúc {ten} tâm sáng như trăng rằm, lộc đến như hoa sen nở giữa hồ thanh.",
           "Phước lành gửi tới {ten}: tai qua nạn khỏi, công việc thuận buồm xuôi gió."
         ];
+        /* Phần LỜI CHÚC rút từ chính kho GIFT_BLESSINGS ở trên (bỏ phần
+           mở đầu và tên) để ghép vào MẪU CÂU CẢM ƠN CỐ ĐỊNH đọc thành
+           tiếng (bản .40): “Cảm ơn <Tên> đã gửi đến chùa món quà, chúc
+           thí chủ <Tên> <LỜI CHÚC>” — cùng thứ tự xoay vòng với lời
+           chúc hiện trên cuốn thư. */
+        var GIFT_WISHES = [
+          "thân tâm an lạc, vạn sự hanh thông, phúc lộc đầy nhà!",
+          "gia đạo bình an, sức khỏe dồi dào, tài lộc như nước.",
+          "luôn gặp quý nhân, đường đời rộng mở.",
+          "tâm sáng như trăng rằm, lộc đến như hoa sen nở giữa hồ thanh.",
+          "tai qua nạn khỏi, công việc thuận buồm xuôi gió."
+        ];
         var giftQueue = [];
         var giftShowing = false;
         var giftBlessIdx = 0;
@@ -7078,6 +7739,7 @@
           }
           if (giftThanksEl) giftThanksEl.textContent = tier === "grand" ? "🙏✨ ĐẠI LỄ TRI ÂN ✨🙏" : (tier === "medium" ? "🙏 Tri ân tấm lòng vàng 🙏" : "🙏 Tri ân tấm lòng vàng");
           var bless = GIFT_BLESSINGS[giftBlessIdx % GIFT_BLESSINGS.length].split("{ten}").join(g.name);
+          var blessWish = GIFT_WISHES[giftBlessIdx % GIFT_WISHES.length];
           giftBlessIdx++;
           if (giftWhoEl) {
             // Tên người tặng + tên quà là dữ liệu từ xa (TikTok Live):
@@ -7133,8 +7795,11 @@
               petals.push({ gold: true, x0: bpx, y0: bpy, x: bpx, y: bpy, spawnT: spawnNowS, rot0: brot, rot: brot, vr: (Math.random() - 0.5) * 2.4, vy: 52 + Math.random() * 34, p: Math.random() * 6, s: 1.35 + Math.random() * 0.95 });
             }
           }
-          // Giọng đọc: đọc lời cảm tạ kèm tên khách + tên quà theo
-          // hàng đợi, nhịp "bless" ấm áp truyền cảm. CHỐT CHẶN THỨ
+          // Giọng đọc: đọc lời cảm ơn theo ĐÚNG MẪU CỐ ĐỊNH của chủ
+          // chùa (bản .40) — “Cảm ơn <Tên> đã gửi đến chùa món quà,
+          // chúc thí chủ <Tên> <LỜI CHÚC>” — bằng profile "thanks"
+          // riêng: chậm hơn, trầm hơn, và đã lọc icon ở enqueueSpeak.
+          // CHỐT CHẶN THỨ
           // HAI ngay tại điểm đọc: khóa của món quà này đã từng được
           // xếp vào hàng đọc rồi thì TUYỆT ĐỐI không xếp lại — mỗi
           // món quà chỉ được đọc đúng một lần.
@@ -7143,7 +7808,7 @@
           if (!gAlreadySpoken) {
             var gNow = Date.now();
             gSpeakKeys.forEach(function (k) { giftSpokenKeys[k] = gNow; });
-            enqueueSpeak((tier === "grand" ? "Đại lễ tri ân. " : "") + "Cảm tạ " + donorDisplay + " đã tặng " + g.gift + (g.count > 1 ? " nhân " + g.count : "") + ". " + bless, "bless");
+            enqueueSpeak("Cảm ơn " + donorDisplay + " đã gửi đến chùa món quà, chúc thí chủ " + donorDisplay + " " + blessWish, "thanks");
           }
           note("<strong>🎁 " + escapeHtml(g.name) + "</strong> vừa tặng <strong>" + escapeHtml(g.gift) + "</strong>" + (g.coins > 0 ? " (" + g.coins + " xu — " + (tier === "grand" ? "ĐẠI LỄ" : (tier === "medium" ? "lễ tri ân lớn" : "lễ tri ân")) + ")" : "") + " trên TikTok Live — lời chúc lành đang hiện trên cuốn thư giữa chánh điện. 🙏");
           // Thời lượng khung tính TỪ LÚC KHUNG THẬT SỰ HIỆN ở trên
@@ -7218,7 +7883,7 @@
            web vừa qua cổng — mọi đường đều đã qua chống trùng của
            chaoPhatTuMoi hoặc của chính hàm này) được giọng đọc của
            trang đọc đúng một lần câu mời theo tên:
-           "Mời <Tên> vào chùa, tìm chỗ ngồi lễ Phật".
+           "Mời phật tử <Tên> vào chùa lễ Phật cầu an".
            CHỐNG DỒN DẬP: tối đa 1 câu mời mỗi ~8 giây; trong cửa sổ
            nhịp đó chỉ giữ khách MỚI NHẤT đang chờ — khách cũ hơn bị
            thay thế và bỏ qua, không đọc dồn thành nhiều câu. Chỉ phát
@@ -7241,7 +7906,7 @@
           var nm = invitePendingName;
           invitePendingName = null;
           inviteLastReadAt = now;
-          enqueueSpeak("Mời " + nm + " vào chùa, tìm chỗ ngồi lễ Phật.");
+          enqueueSpeak("Mời phật tử " + nm + " vào chùa lễ Phật cầu an.");
         }
         function docLoiMoiKhachMoi(name, idKey) {
           if (!voiceOn) return;
@@ -7265,8 +7930,9 @@
         /* ----- LỜI CHÀO KHI KHÁCH TIKTOK VỪA VÀO SẢNH CHÙA -----
            Khi server đưa một khách TikTok vào chùa (sự kiện "new_user" với
            nhân vật tt_<tên>), trang hiện trong sảnh một bảng chào trang
-           trọng "🙏 <Tên khách> vừa vào chùa" với chữ TO treo ngay dưới
-           lư hương trong ít giây. Nhiều khách vào cùng lúc thì lời chào
+           trọng ở GIỮA SẢNH với đúng câu mẫu “Mời phật tử <Tên khách>
+           vào chùa lễ Phật cầu an” (bản .40) trong ít
+           giây. Nhiều khách vào cùng lúc thì lời chào
            xếp hàng hiện lần lượt; nếu khách vào quá đông, gộp phần còn
            lại vào cùng một lời chào để bảng không chạy mãi. Cầu nối cũng
            có thể gọi trực tiếp window.chaoPhatTuMoi({ ten: "Tên khách" })
@@ -7297,9 +7963,14 @@
             welcomeBanner.setAttribute("aria-hidden", "true");
             return;
           }
-          // Tên khách là dữ liệu từ xa: dựng bằng textContent như trên.
+          // BẢNG THÔNG BÁO GIỮA SẢNH (bản .40 — mẫu chủ chùa chốt):
+          // “Mời phật tử <TÊN KHÁCH> vào chùa lễ Phật cầu an” — bảng
+          // nổi căn giữa sảnh dưới bàn thờ, hiện vài giây rồi tự ẩn,
+          // nhiều khách thì xếp hàng lần lượt qua pumpWelcome (không
+          // chồng bảng). Tên khách là dữ liệu từ xa: dựng bằng
+          // textContent như trên.
           welcomeTextEl.textContent = "";
-          welcomeTextEl.appendChild(document.createTextNode("🙏 "));
+          welcomeTextEl.appendChild(document.createTextNode("Mời phật tử "));
           var wwName = document.createElement("strong");
           wwName.textContent = welcomeCurrent.name;
           welcomeTextEl.appendChild(wwName);
@@ -7308,10 +7979,9 @@
             var wwExtra = document.createElement("strong");
             wwExtra.textContent = welcomeCurrent.extra + " Phật tử";
             welcomeTextEl.appendChild(wwExtra);
-            welcomeTextEl.appendChild(document.createTextNode(" khác vừa vào chùa"));
-          } else {
-            welcomeTextEl.appendChild(document.createTextNode(" vừa vào chùa"));
+            welcomeTextEl.appendChild(document.createTextNode(" khác"));
           }
+          welcomeTextEl.appendChild(document.createTextNode(" vào chùa lễ Phật cầu an"));
           welcomeBanner.classList.add("show");
           welcomeBanner.setAttribute("aria-hidden", "false");
         }
@@ -7347,8 +8017,9 @@
           if (recent && now - recent.at < 6000 && (!idKey || !recent.hadId)) return;
           if (idKey) welcomeSeenIds[idKey] = true;
           welcomeRecent[nm] = { at: now, hadId: !!idKey };
-          // Lớp giọng đọc bổ sung cho đúng khách mới này: đọc lời mời
-          // "Mời <Tên> vào chùa, tìm chỗ ngồi lễ Phật" — chỉ tới được
+          // Lớp giọng đọc bổ sung cho đúng khách mới này: đọc đúng câu
+          // mẫu của bảng giữa sảnh “Mời phật tử <Tên> vào chùa lễ Phật
+          // cầu an” — chỉ tới được
           // đây khi đã qua chống trùng ở trên nên mỗi khách đúng một
           // lần; nhịp chống dồn dập nằm trong docLoiMoiKhachMoi.
           docLoiMoiKhachMoi(nm, idKey);
@@ -7622,7 +8293,7 @@
           }
           // --- Trạng thái nhạc ở cột phải ---
           if (musicStatusSideEl) {
-            var trackLabel = isYtMode(musicMode) ? ytLabel() + (musicMode === "youtube-batnha" && dharmaReading ? " (đang đọc pháp — nhạc tạm dừng hẳn, chỉ còn mõ)" : "") : (musicMode === "tonghop" ? "Tổng hợp · An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút" + (chant && chant.running && chant.phase === "tung" ? " (đang đợt tụng — nhạc nền tắt hẳn, chỉ còn mõ)" : "") + (dharmaReading ? " (đang đọc pháp — nhạc nền tắt hẳn, chỉ còn mõ)" : "") : (musicMode === "chant" ? "Nhạc Phật pháp · tụng kinh · gõ mõ · chuông bát" : "Thiền tịnh tâm · chuông bát & hơi thở"));
+            var trackLabel = isYtMode(musicMode) ? ytLabel() + (isDharmaYtMode() && dharmaReading ? " (đang đọc pháp — nhạc tạm dừng hẳn, chỉ còn mõ)" : "") : (musicMode === "tonghop" ? "Tổng hợp · An Nhiên + gõ mõ tụng kinh + đọc pháp mỗi 3 phút" + (chant && chant.running && chant.phase === "tung" ? " (đang đợt tụng — nhạc nền tắt hẳn, chỉ còn mõ)" : "") + (dharmaReading ? " (đang đọc pháp — nhạc nền tắt hẳn, chỉ còn mõ)" : "") : (musicMode === "chant" ? "Nhạc Phật pháp · tụng kinh · gõ mõ · chuông bát" : "Thiền tịnh tâm · chuông bát & hơi thở"));
             musicStatusSideEl.textContent = soundOn
               ? "🎵 Nhạc nền: BẬT — " + trackLabel + " · âm lượng " + Math.round(musicVolume * 100) + "%"
               : "🔇 Nhạc nền đang TẮT — bấm nút “🎵 Nhạc thiền: Bật” dưới chánh điện để mở lại.";
@@ -7638,7 +8309,9 @@
           btnSound.setAttribute("aria-pressed", soundOn ? "true" : "false");
           if (soundOn) {
             tryStartMusic();
-            note(musicMode === "youtube-batnha"
+            note(musicMode === "youtube-goc"
+              ? "Đã bật <strong>Nhạc thiền tĩnh tâm an lạc (YouTube)</strong> — nhạc gốc của chùa, bài của kênh Nhạc Thiền Tịnh Tâm sẽ phát và tự lặp lại liên tục. Dùng thanh âm lượng để chỉnh to nhỏ."
+              : musicMode === "youtube-batnha"
               ? "Đã bật <strong>Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo (YouTube)</strong> — bản nhạc thiền của kênh Phật Pháp Tu Tâm sẽ phát và tự lặp lại liên tục; cứ 3 phút nhạc tạm dừng hẳn để chùa đọc một đoạn pháp, chỉ còn tiếng mõ, đọc xong nhạc tự phát tiếp. Dùng thanh âm lượng để chỉnh to nhỏ."
               : musicMode === "youtube-sleep"
               ? "Đã bật <strong>Pháp thoại trước khi ngủ (YouTube)</strong> — bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ & Chữa Lành Phiền Não | Lời Phật Dạy” của kênh Gieo Mầm Phước Báu sẽ phát và tự lặp lại. Dùng thanh âm lượng để chỉnh to nhỏ."
@@ -7698,8 +8371,10 @@
           } else if (soundOn) {
             tryStartMusic();
           }
-          note(musicMode === "youtube-batnha"
-            ? "<strong>Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo (YouTube):</strong> bản “Nhạc Thiền Phật Giáo - Bát Nhã Diệu Tâm | An nhiên &amp; Giác ngộ” của kênh Phật Pháp Tu Tâm, phát qua trình phát YouTube chính thức và tự lặp lại liên tục. Cứ 3 phút một lần nhạc tạm dừng hẳn — chỉ còn tiếng mõ gõ nhịp và giọng đọc đọc một đoạn pháp ngắn — đọc xong nhạc tự phát tiếp. Đây là bản mặc định khi vào chùa. Nếu video bị chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về nhạc thiền tịnh tâm có sẵn."
+          note(musicMode === "youtube-goc"
+            ? "<strong>Nhạc thiền tĩnh tâm an lạc (YouTube):</strong> nhạc gốc của chùa — bài “Nhạc Thiền Tĩnh Tâm An Lạc - Lắng Nghe Và Cảm Nhận Sự Bình An Trong Tâm Hồn - HAY TUYỆT” của kênh Nhạc Thiền Tịnh Tâm, phát qua trình phát YouTube chính thức và tự lặp lại liên tục. Đây là bản mặc định khi vào chùa. Nếu video bị chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về nhạc thiền tịnh tâm có sẵn."
+            : musicMode === "youtube-batnha"
+            ? "<strong>Bát Nhã Diệu Tâm — Nhạc Thiền Phật Giáo (YouTube):</strong> bản “Nhạc Thiền Phật Giáo - Bát Nhã Diệu Tâm | An nhiên &amp; Giác ngộ” của kênh Phật Pháp Tu Tâm, phát qua trình phát YouTube chính thức và tự lặp lại liên tục. Cứ 3 phút một lần nhạc tạm dừng hẳn — chỉ còn tiếng mõ gõ nhịp và giọng đọc đọc một đoạn pháp ngắn — đọc xong nhạc tự phát tiếp. Nếu video bị chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về nhạc thiền tịnh tâm có sẵn."
             : musicMode === "youtube-sleep"
             ? "<strong>Pháp thoại trước khi ngủ (YouTube):</strong> bài “Nghe Trước Khi Ngủ Để Tâm An, Hết Mất Ngủ & Chữa Lành Phiền Não | Lời Phật Dạy” của kênh Gieo Mầm Phước Báu, phát qua trình phát YouTube chính thức và tự lặp lại. Nếu video bị chặn nhúng hoặc lỗi tải, chùa sẽ tự chuyển về nhạc thiền tịnh tâm có sẵn."
             : musicMode === "youtube"
@@ -8038,7 +8713,11 @@
             enqueueSpeak("Phật tử " + shownName + " gửi lời cầu nguyện: " + text, "bless");
           }
         }
-        addChatSys("Chào mừng bạn đến chùa 🙏 Hãy nhắn đôi lời lành cùng mọi người.");
+        // Bản .39 (lệnh chủ chùa): KHÔNG còn dòng chữ chào mừng khách
+        // đến chùa hiện trên giao diện nữa — không ghi
+        // vào khung chat, dòng sự kiện hay viên chữ giữa sảnh. Lời chào
+        // bằng GIỌNG ĐỌC tên từng khách mới ("Mời <Tên> vào chùa, tìm
+        // chỗ ngồi lễ Phật") và bảng tên khách vừa vào vẫn giữ nguyên.
         updateChatHint();
 
         /* ----- Người nào rời chùa thì nhân vật đi bộ ra cửa rồi mới khuất -----
